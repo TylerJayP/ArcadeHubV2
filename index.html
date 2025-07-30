@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArcadeHub - Your Team's Game Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="arcade-container">
+        <div class="crt-overlay"></div>
+        
+        <header class="arcade-header">
+            <div class="player-info">
+                <div class="player-dropdown" id="player-dropdown">
+                    <span class="player-name" id="player-name-btn">PLAYER: <span id="username">GUEST</span> ▼</span>
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <div class="dropdown-item current-player">
+                            <span class="player-icon">👤</span>
+                            <span id="current-player-name">GUEST</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" id="change-player-btn">
+                            <span class="player-icon">🔄</span>
+                            Change Player
+                        </div>
+                        <div class="dropdown-item" id="logout-btn">
+                            <span class="player-icon">🚪</span>
+                            Logout
+                        </div>
+                    </div>
+                </div>
+                <div class="token-section">
+                    <span class="token-count">TOKENS: <span id="token-display">3</span></span>
+                </div>
+            </div>
+            <h1 class="arcade-title">🕹️ ARCADE HUB 🕹️</h1>
+            <div class="subtitle">SELECT YOUR GAME</div>
+        </header>
+
+        <main class="arcade-main">
+            <div class="arcade-cabinet">
+                <div class="cabinet-screen" id="game-area">
+                    <div class="game-library" id="game-library">
+                        <!-- Games will be loaded here -->
+                    </div>
+                    
+                    <div class="game-frame" id="game-frame" style="display: none;">
+                        <div class="game-header">
+                            <button class="back-btn" id="back-btn">← BACK TO ARCADE</button>
+                            <span class="game-title" id="current-game-title"></span>
+                            <div class="game-controls">
+                                <button class="zoom-btn" id="zoom-btn">🔍 ZOOM</button>
+                                <button class="fullscreen-btn" id="fullscreen-btn">⛶ EXPAND</button>
+                                <div class="score-display">SCORE: <span id="live-score">0</span></div>
+                            </div>
+                        </div>
+                        <div class="game-container" id="game-container">
+                            <iframe id="game-iframe" src="" frameborder="0"></iframe>
+                        </div>
+                        
+                        <!-- Fullscreen overlay controls -->
+                        <div class="fullscreen-overlay" id="fullscreen-overlay">
+                            <button class="fullscreen-back-btn" id="fullscreen-back-btn">🏠 BACK TO HUB</button>
+                        </div>
+                        
+                        <div class="fullscreen-hint" id="fullscreen-hint">
+                            Hover top-left corner to return to hub
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cabinet-controls">
+                    <div class="control-panel">
+                        <div class="joystick"></div>
+                        <div class="buttons">
+                            <div class="button red"></div>
+                            <div class="button blue"></div>
+                            <div class="button yellow"></div>
+                        </div>
+                    </div>
+                    <div class="coin-slot">
+                        <div class="slot"></div>
+                        <span>INSERT COIN</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="leaderboard-panel" id="leaderboard-panel">
+            <h3>🏆 LEADERBOARDS 🏆</h3>
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" data-game="rock-and-roll">Rock & Roll</button>
+                <button class="tab-btn" data-game="quickshot">QuickShot</button>
+                <button class="tab-btn" data-game="zombie-shooter">Zombie Defense</button>
+            </div>
+            <div class="leaderboard-content" id="leaderboard-content">
+                <!-- Leaderboard will be populated here -->
+            </div>
+        </div>
+
+        <footer class="arcade-footer">
+            <p>🎮 Team MiniGames Collection | Score to compete on leaderboards! 🎮</p>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <h2>🎮 Welcome to ArcadeHub!</h2>
+            <p>Enter your name to start playing:</p>
+            <input type="text" id="username-input" placeholder="Enter your name..." maxlength="15">
+            <button id="login-btn">START GAMING</button>
+        </div>
+    </div>
+
+    <script src="js/gameRegistry.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/gameLoader.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

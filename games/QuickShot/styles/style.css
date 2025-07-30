@@ -1,0 +1,125 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #8B4513, #D2691E);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2F1B14;
+}
+
+.game-container {
+    background: #F4E4BC;
+    border: 8px solid #8B4513;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-width: 500px;
+    width: 90%;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #8B0000;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 30px;
+}
+
+.status {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 40px 0;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.ready { color: #FF6B35; }
+.set { color: #F7931E; }
+.go { 
+    color: #228B22; 
+    animation: pulse 0.5s ease-in-out;
+}
+.too-early { 
+    color: #DC143C; 
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.instructions {
+    background: #FFF8DC;
+    border: 2px dashed #8B4513;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    font-size: 1.1em;
+}
+
+.results {
+    display: none;
+    margin-top: 30px;
+}
+
+.result-item {
+    background: #FFFACD;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #DEB887;
+    font-size: 1.2em;
+}
+
+.winner {
+    background: #90EE90;
+    border-color: #32CD32;
+    font-weight: bold;
+}
+
+.loser {
+    background: #FFB6C1;
+    border-color: #DC143C;
+}
+
+.start-btn {
+    background: #8B4513;
+    color: #F4E4BC;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.3em;
+    font-family: inherit;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.start-btn:hover {
+    background: #A0522D;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.space-hint {
+    font-size: 0.9em;
+    color: #8B4513;
+    margin-top: 15px;
+}

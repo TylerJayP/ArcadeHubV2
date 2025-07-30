@@ -1,0 +1,62 @@
+{
+    "name": "",
+    "student": 6,
+    "project": 4,
+    "students_choice": 1,
+    "easy_to_work_with": [
+      {
+        "team_mate": #,
+        "easy": 0.0
+      },
+      {
+        "team_mate": #,
+        "easy": 0.0
+      },
+      {
+        "team_mate": #,
+        "easy": 0.0
+      },
+      {
+        "team_mate": #,
+        "easy": 0.0
+      }
+    ],
+    "presentations": [
+      {
+        "team": 1,
+        "presentation": 4,
+        "ai": 4,
+        "technology": 3
+      }, 
+      {
+        "team": 2,
+        "presentation": 3,
+        "ai": 4,
+        "technology": 5
+      },
+      {
+        "team": 3,
+        "presentation": #,
+        "ai": #,
+        "technology": #
+      },
+      {
+        "team": 4,
+        "presentation": #,
+        "ai": #,
+        "technology": #
+      },
+      {
+        "team": 5,
+        "presentation": #,
+        "ai": #,
+        "technology": #
+      },
+      {
+        "team": 5,
+        "presentation": NA,
+        "ai": NA,
+        "technology": NA
+      }
+    ]
+  }

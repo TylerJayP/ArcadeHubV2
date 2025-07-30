@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Draw Showdown</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🤠 Quick Draw Showdown 🔫</h1>
+        
+        <div class="instructions">
+            Wait for "GO!" then press <strong>SPACE</strong> as fast as you can!<br>
+            Don't press early or you lose!
+        </div>
+
+        <div id="status" class="status">Press Start to Begin</div>
+
+        <div id="results" class="results">
+            <div id="playerTime" class="result-item"></div>
+            <div id="botTime" class="result-item"></div>
+            <div id="outcome" class="result-item"></div>
+        </div>
+
+        <button id="startBtn" class="start-btn">Start Showdown</button>
+        
+        <div class="space-hint">Press SPACE when you see "GO!"</div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

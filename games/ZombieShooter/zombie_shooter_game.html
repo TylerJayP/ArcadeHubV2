@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zombie Defense - Clash Style</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #4CAF50;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            border: 3px solid #2E7D32;
+            background: #81C784;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 16px;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 200px;
+        }
+        #shop {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 14px;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 250px;
+            display: none;
+        }
+        
+        #shop-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 101;
+        }
+        
+        #build-button {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            background: #8BC34A;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 101;
+        }
+        
+        #shop-button:hover {
+            background: #FFA500;
+        }
+        
+        #build-button:hover {
+            background: #689F38;
+        }
+        
+        #build-menu {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 14px;
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+            display: none;
+            border: 2px solid #8BC34A;
+        }
+        
+        #build-mode-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(139, 195, 74, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 50;
+            display: none;
+        }
+        
+        #close-shop {
+            background: #FF4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        #pause-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+            font-size: 48px;
+            color: white;
+            font-weight: bold;
+        }
+        .shop-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .shop-item:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: #FFD700;
+        }
+        .shop-item.owned {
+            background: rgba(0,255,0,0.3);
+            border-color: #00FF00;
+        }
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 14px;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+        }
+        #wave-info {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: white;
+            font-size: 16px;
+            z-index: 100;
+            background: rgba(255,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="pause-overlay">⏸️ GAME PAUSED</div>
+    
+    <button id="shop-button" onclick="openShop()">🛒 SHOP</button>
+    <button id="build-button" onclick="openBuildMenu()">🔨 BUILD</button>
+    
+    <div id="ui">
+        <div style="color: #FFD700; font-size: 20px; font-weight: bold;">🧟‍♂️ ZOMBIE DEFENSE</div>
+        <div>💰 Points: <span id="points">0</span></div>
+        <div>🪵 Wood: <span id="wood">0</span></div>
+        <div>⚙️ Iron: <span id="iron">0</span></div>
+        <div>💧 Water: <span id="water">0</span></div>
+        <div>❤️ Health: <span id="health">100</span></div>
+        <div>🔫 Weapon: <span id="weapon">Pistol</span></div>
+        <div>📦 Ammo: <span id="ammo">30</span></div>
+        <div>🏠 Buildings: <span id="buildings">0</span></div>
+        <div>👥 Helpers: <span id="helpers">0</span></div>
+    </div>
+
+    <div id="shop">
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px; text-align: center;">🛒 GAME SHOP</div>
+        
+        <div style="color: #87CEEB; font-weight: bold; margin: 10px 0;">🔫 WEAPONS</div>
+        <div class="shop-item" onclick="buyWeapon('rifle', 50)" id="rifle-shop">
+            🔫 Rifle - 50 pts<br>
+            <small>Faster firing, more damage</small>
+        </div>
+        <div class="shop-item" onclick="buyWeapon('shotgun', 100)" id="shotgun-shop">
+            💥 Shotgun - 100 pts<br>
+            <small>Spread shot, high damage</small>
+        </div>
+        <div class="shop-item" onclick="buyWeapon('machinegun', 200)" id="machinegun-shop">
+            ⚡ Machine Gun - 200 pts<br>
+            <small>Rapid fire, unlimited ammo</small>
+        </div>
+        
+        <div style="color: #90EE90; font-weight: bold; margin: 10px 0;">👥 HELPERS</div>
+        <div class="shop-item" onclick="buyHelper('soldier', 80)" id="soldier-shop">
+            🎖️ Soldier - 80 pts<br>
+            <small>Auto-shoots zombies nearby</small>
+        </div>
+        <div class="shop-item" onclick="buyHelper('medic', 120)" id="medic-shop">
+            🏥 Medic - 120 pts<br>
+            <small>Slowly heals you over time</small>
+        </div>
+        <div class="shop-item" onclick="buyHelper('builder', 100)" id="builder-shop">
+            🔨 Builder - 100 pts<br>
+            <small>Auto-repairs damaged buildings</small>
+        </div>
+        
+        <div style="color: #FFB6C1; font-weight: bold; margin: 10px 0;">🎁 SUPPLIES</div>
+        <div class="shop-item" onclick="buyUpgrade('health', 30)" id="health-shop">
+            💊 Health Pack - 30 pts<br>
+            <small>Restore full health</small>
+        </div>
+        <div class="shop-item" onclick="buyUpgrade('ammo', 20)" id="ammo-shop">
+            📦 Ammo Pack - 20 pts<br>
+            <small>Add 50% ammo (can exceed max)</small>
+        </div>
+        
+        <button id="close-shop" onclick="closeShop()">❌ Close Shop</button>
+    </div>
+
+    <div id="build-menu">
+        <div style="color: #8BC34A; font-weight: bold; margin-bottom: 10px; text-align: center;">🔨 BUILD MENU</div>
+        
+        <div style="color: #FFD700; margin: 10px 0;">Current Materials:</div>
+        <div>🪵 Wood: <span id="build-wood">0</span></div>
+        <div>⚙️ Iron: <span id="build-iron">0</span></div>
+        <div>💧 Water: <span id="build-water">0</span></div>
+        
+        <div style="color: #87CEEB; font-weight: bold; margin: 15px 0 10px 0;">🏗️ BUILDINGS</div>
+        <div class="shop-item" onclick="selectBuildItem('wall', event)" id="wall-build">
+            🧱 Wall - 5 Wood<br>
+            <small>Basic defensive barrier</small>
+        </div>
+        <div class="shop-item" onclick="selectBuildItem('house', event)" id="house-build">
+            🏠 House - 15 Wood<br>
+            <small>Increases max health by 20</small>
+        </div>
+        <div class="shop-item" onclick="selectBuildItem('iron-wall', event)" id="iron-wall-build">
+            ⚙️ Iron Wall - 8 Iron<br>
+            <small>Stronger defensive barrier</small>
+        </div>
+        <div class="shop-item" onclick="selectBuildItem('water-tower', event)" id="water-tower-build">
+            💧 Water Tower - 10 Water + 5 Wood<br>
+            <small>Slowly regenerates health</small>
+        </div>
+        
+        <div style="margin: 15px 0; color: #90EE90;">
+            Selected: <span id="selected-build" style="color: #FFD700;">None</span>
+        </div>
+        <div style="font-size: 12px; color: #CCCCCC; margin: 10px 0;">
+            Click on ground to place selected building. Buildings won't stack!<br>
+            <span style="color: #FFD700;">💡 TIP:</span> Click and drag existing buildings or helpers to move them around!
+        </div>
+        
+        <button id="close-build" onclick="closeBuildMenu(event)" style="background: #FF4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-top: 10px; width: 100%;">❌ Close Build Menu</button>
+    </div>
+
+    <div id="build-mode-indicator">
+        🔨 BUILD MODE - Click to place buildings OR drag existing buildings/helpers to move them - Zombies paused
+    </div>
+
+    <div id="instructions">
+        <div style="color: #FFD700; font-weight: bold;">🎮 CONTROLS:</div>
+        <div><strong>WASD:</strong> Move around</div>
+        <div><strong>Mouse:</strong> Aim and shoot</div>
+        <div><strong>E:</strong> Cut down trees</div>
+        <div><strong>1:</strong> Build Wall (5 wood)</div>
+        <div><strong>2:</strong> Build House (15 wood)</div>
+        <div><strong>R:</strong> Reload weapon (restore to max)</div>
+        <div><strong>🛒 Shop:</strong> Buy helpers & upgrades</div>
+        <div><strong>🔨 Build:</strong> Build structures (pauses game)</div>
+        <div><strong>N:</strong> Force next wave (debug)</div>
+        <div><strong>G:</strong> Show game state (debug)</div>
+        <div><strong>F:</strong> Fix broken wave (debug)</div>
+        <br>
+        <div style="color: #8FBC8F; font-size: 12px;">
+            🌲 Trees give 5-8 wood each! Build walls to protect yourself!<br>
+            🏠 Houses give you more health! Buildings won't stack!<br>
+            ⏰ You get 60 seconds before first wave, 45 seconds between waves!<br>
+            🗺️ After wave 5: Map areas always visible on right side!<br>
+            🧟‍♂️ Each wave adds 5 more zombies than the previous!<br>
+            📦 Ammo packs add 50% more ammo (can carry 2x weapon capacity)!
+        </div>
+    </div>
+
+    <div id="wave-info">
+        <div style="font-size: 18px; font-weight: bold;">WAVE <span id="wave">1</span></div>
+        <div>Zombies: <span id="zombies-left">5</span> left</div>
+        <div id="wave-timer" style="color: #FFD700;"></div>
+        <div id="area-info" style="margin-top: 10px; color: #87CEEB;">
+            Area: <span id="current-area">Base Camp</span>
+        </div>
+    </div>
+
+    <div id="area-selector" style="position: absolute; bottom: 30%; right: 10px; display: none; z-index: 100;">
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px; text-align: center;">🗺️ MAP AREAS</div>
+        <button onclick="changeArea('base')" style="display: block; width: 100%; margin: 5px 0; padding: 8px; background: #8BC34A; border: none; border-radius: 5px; cursor: pointer;">
+            🏠 Base Camp
+        </button>
+        <button onclick="changeArea('city')" style="display: block; width: 100%; margin: 5px 0; padding: 8px; background: #9E9E9E; border: none; border-radius: 5px; cursor: pointer;">
+            🏙️ City (Iron)
+        </button>
+        <button onclick="changeArea('forest')" style="display: block; width: 100%; margin: 5px 0; padding: 8px; background: #4CAF50; border: none; border-radius: 5px; cursor: pointer;">
+            🌲 Forest (Wood)
+        </button>
+        <button onclick="changeArea('ocean')" style="display: block; width: 100%; margin: 5px 0; padding: 8px; background: #2196F3; border: none; border-radius: 5px; cursor: pointer;">
+            🌊 Ocean (Water)
+        </button>
+    </div>
+
+    <script>
+        // Game state
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = window.innerWidth - 20;
+        canvas.height = window.innerHeight - 20;
+
+        const gameState = {
+            player: {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                size: 20,
+                health: 100,
+                maxHealth: 100,
+                weapon: 'pistol',
+                ammo: 60, // Start with double ammo capacity
+                maxAmmo: 30,
+                angle: 0,
+                lastShot: 0
+            },
+            camera: {
+                x: 0,
+                y: 0
+            },
+            points: 0,
+            wood: 0,
+            iron: 0,
+            water: 0,
+            wave: 1,
+            zombiesInWave: 5,
+            zombiesLeft: 5,
+            waveTimer: 60,
+            betweenWaves: true,
+            currentArea: 'base',
+            areasUnlocked: false,
+            keys: {},
+            mouse: { x: 0, y: 0, down: false },
+            trees: [],
+            zombies: [],
+            bullets: [],
+            buildings: [],
+            particles: [],
+            helpers: [],
+            isPaused: false,
+            inBuildMode: false,
+            selectedBuildType: null,
+            lastBuildTime: 0,
+            selectedObject: null,
+            selectedObjectType: null, // 'building' or 'helper'
+            isDragging: false,
+            dragOffset: { x: 0, y: 0 }
+        };
+
+        const weapons = {
+            pistol: { damage: 20, fireRate: 500, maxAmmo: 30, spread: 0.1 },
+            rifle: { damage: 35, fireRate: 300, maxAmmo: 50, spread: 0.05 },
+            shotgun: { damage: 50, fireRate: 800, maxAmmo: 20, spread: 0.3, pellets: 5 },
+            machinegun: { damage: 25, fireRate: 100, maxAmmo: 999, spread: 0.15 }
+        };
+
+        const ownedWeapons = ['pistol'];
+
+        // Initialize game
+        function init() {
+            generateTrees();
+            // Don't start wave immediately - wait for timer
+            console.log(`Game initialized! Starting between waves with ${gameState.waveTimer} seconds until wave ${gameState.wave}`);
+            console.log(`betweenWaves: ${gameState.betweenWaves}, zombiesInWave: ${gameState.zombiesInWave}`);
+            gameLoop();
+            
+            // Event listeners
+            window.addEventListener('keydown', (e) => {
+                gameState.keys[e.code] = true;
+                
+                if (e.code === 'KeyE') cutNearestTree();
+                if (e.code === 'Digit1') buildWall();
+                if (e.code === 'Digit2') buildHouse();
+                if (e.code === 'KeyR') reload();
+                
+                // Debug: Force start next wave with 'N' key
+                if (e.code === 'KeyN' && gameState.betweenWaves) {
+                    console.log('Manually forcing next wave to start!');
+                    gameState.waveTimer = 0;
+                }
+                
+                // Debug: Show current game state with 'G' key
+                if (e.code === 'KeyG') {
+                    console.log('=== GAME STATE DEBUG ===');
+                    console.log(`Wave: ${gameState.wave}`);
+                    console.log(`Between waves: ${gameState.betweenWaves}`);
+                    console.log(`Wave timer: ${gameState.waveTimer}`);
+                    console.log(`Zombies in wave: ${gameState.zombiesInWave}`);
+                    console.log(`Zombies left: ${gameState.zombiesLeft}`);
+                    console.log(`Current zombies: ${gameState.zombies.length}`);
+                    console.log('========================');
+                }
+                
+                // Debug: Fix broken wave state with 'F' key
+                if (e.code === 'KeyF') {
+                    console.log('Fixing broken wave state...');
+                    gameState.zombies = []; // Clear any remaining zombies
+                    gameState.zombiesLeft = 0; // Reset counter
+                    if (!gameState.betweenWaves) {
+                        console.log('Forcing wave completion...');
+                        // This will trigger the wave completion logic on next update
+                    }
+                }
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                gameState.keys[e.code] = false;
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                gameState.mouse.x = e.clientX - rect.left;
+                gameState.mouse.y = e.clientY - rect.top;
+                
+                // Handle dragging objects in build mode
+                if (gameState.inBuildMode && gameState.isDragging && gameState.selectedObject) {
+                    const newX = gameState.mouse.x - gameState.dragOffset.x;
+                    const newY = gameState.mouse.y - gameState.dragOffset.y;
+                    
+                    // Validate new position
+                    if (canMoveObjectTo(gameState.selectedObject, newX, newY)) {
+                        gameState.selectedObject.x = newX;
+                        gameState.selectedObject.y = newY;
+                    }
+                }
+                
+                // Change cursor style when hovering over moveable objects in build mode
+                if (gameState.inBuildMode && !gameState.isDragging) {
+                    const hoverObject = getObjectAtMouse();
+                    if (hoverObject) {
+                        canvas.style.cursor = 'move';
+                    } else {
+                        canvas.style.cursor = 'crosshair';
+                    }
+                } else if (gameState.inBuildMode && gameState.isDragging) {
+                    canvas.style.cursor = 'grabbing';
+                } else {
+                    canvas.style.cursor = 'crosshair';
+                }
+            });
+            
+            canvas.addEventListener('mousedown', (e) => {
+                gameState.mouse.down = true;
+                
+                if (gameState.inBuildMode) {
+                    // Check if clicking on existing building or helper to select/move
+                    const clickedObject = getObjectAtMouse();
+                    
+                    if (clickedObject) {
+                        // Select object for moving
+                        gameState.selectedObject = clickedObject.object;
+                        gameState.selectedObjectType = clickedObject.type;
+                        gameState.isDragging = true;
+                        gameState.dragOffset = {
+                            x: gameState.mouse.x - clickedObject.object.x,
+                            y: gameState.mouse.y - clickedObject.object.y
+                        };
+                        console.log(`Selected ${clickedObject.type} for moving`);
+                    } else if (gameState.selectedBuildType) {
+                        // Place new building
+                        placeBuildingAtMouse();
+                    }
+                }
+            });
+            
+            canvas.addEventListener('mouseup', (e) => {
+                gameState.mouse.down = false;
+                
+                // Stop dragging in build mode
+                if (gameState.inBuildMode && gameState.isDragging) {
+                    gameState.isDragging = false;
+                    gameState.selectedObject = null;
+                    gameState.selectedObjectType = null;
+                    console.log("Stopped dragging object");
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth - 20;
+                canvas.height = window.innerHeight - 20;
+            });
+            
+            // Prevent build menu clicks from propagating to canvas
+            document.getElementById('build-menu').addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            document.getElementById('shop').addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            // Right-click to deselect objects in build mode
+            canvas.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if (gameState.inBuildMode && gameState.selectedObject) {
+                    gameState.selectedObject = null;
+                    gameState.selectedObjectType = null;
+                    gameState.isDragging = false;
+                    console.log("Deselected object");
+                }
+            });
+        }
+
+        function generateTrees() {
+            gameState.trees = [];
+            let treeCount = 50;
+            
+            // Different tree counts and types based on area
+            if (gameState.currentArea === 'forest') {
+                treeCount = 80; // More trees in forest
+            } else if (gameState.currentArea === 'city') {
+                treeCount = 10; // Fewer trees in city
+            } else if (gameState.currentArea === 'ocean') {
+                treeCount = 5; // Almost no trees at ocean
+            }
+            
+            for (let i = 0; i < treeCount; i++) {
+                gameState.trees.push({
+                    x: Math.random() * (canvas.width * 2) - canvas.width / 2,
+                    y: Math.random() * (canvas.height * 2) - canvas.height / 2,
+                    size: 30 + Math.random() * 20,
+                    health: 3,
+                    respawnTimer: 0,
+                    maxRespawnTime: 30000 + Math.random() * 20000 // 30-50 seconds
+                });
+            }
+        }
+
+        function respawnTrees() {
+            const now = Date.now();
+            const maxTrees = gameState.currentArea === 'forest' ? 80 : 
+                           gameState.currentArea === 'city' ? 10 : 
+                           gameState.currentArea === 'ocean' ? 5 : 50;
+            
+            // Calculate how many trees we're missing
+            const missingTrees = maxTrees - gameState.trees.length;
+            
+            // SUPER AGGRESSIVE: Guaranteed spawning every 5 frames when low
+            if (missingTrees > maxTrees * 0.5 && Date.now() % 5 === 0) {
+                for (let i = 0; i < Math.min(2, missingTrees); i++) {
+                    gameState.trees.push({
+                        x: Math.random() * (canvas.width * 2) - canvas.width / 2,
+                        y: Math.random() * (canvas.height * 2) - canvas.height / 2,
+                        size: 30 + Math.random() * 20,
+                        health: 3,
+                        respawnTimer: 0,
+                        maxRespawnTime: 30000 + Math.random() * 20000
+                    });
+                }
+            }
+            
+            if (missingTrees > 0) {
+                // Much higher spawn rates for instant resource availability
+                let spawnChance = 0.3; // Base 30% chance (3x faster)
+                let treesToSpawn = 1;
+                
+                if (missingTrees > maxTrees * 0.3) {
+                    spawnChance = 0.6; // 60% chance when 30%+ missing
+                    treesToSpawn = 2;
+                }
+                if (missingTrees > maxTrees * 0.5) {
+                    spawnChance = 0.8; // 80% chance when 50%+ missing  
+                    treesToSpawn = 3;
+                }
+                if (missingTrees > maxTrees * 0.7) {
+                    spawnChance = 1.0; // 100% chance when 70%+ missing
+                    treesToSpawn = Math.min(5, missingTrees); // Spawn up to 5 at once
+                }
+                
+                if (Math.random() < spawnChance) {
+                    // Always spawn multiple trees for faster recovery
+                    
+                    for (let i = 0; i < treesToSpawn; i++) {
+                        // 50% chance to spawn near player for convenience
+                        let x, y;
+                        if (Math.random() < 0.5 && missingTrees > maxTrees * 0.4) {
+                            // Spawn near player but not too close
+                            const angle = Math.random() * Math.PI * 2;
+                            const distance = 100 + Math.random() * 200;
+                            x = gameState.player.x + Math.cos(angle) * distance;
+                            y = gameState.player.y + Math.sin(angle) * distance;
+                            
+                            // Keep within bounds
+                            x = Math.max(50, Math.min(canvas.width - 50, x));
+                            y = Math.max(50, Math.min(canvas.height - 50, y));
+                        } else {
+                            // Random placement
+                            x = Math.random() * (canvas.width * 2) - canvas.width / 2;
+                            y = Math.random() * (canvas.height * 2) - canvas.height / 2;
+                        }
+                        
+                        gameState.trees.push({
+                            x: x,
+                            y: y,
+                            size: 30 + Math.random() * 20,
+                            health: 3,
+                            respawnTimer: 0,
+                            maxRespawnTime: 30000 + Math.random() * 20000
+                        });
+                    }
+                }
+            }
+            
+            // TURBO MODE: Instant burst spawning every 30 frames when very low
+            if (missingTrees > maxTrees * 0.8 && Date.now() % 30 === 0) {
+                const burstSpawn = Math.min(10, missingTrees);
+                for (let i = 0; i < burstSpawn; i++) {
+                    gameState.trees.push({
+                        x: Math.random() * (canvas.width * 2) - canvas.width / 2,
+                        y: Math.random() * (canvas.height * 2) - canvas.height / 2,
+                        size: 30 + Math.random() * 20,
+                        health: 3,
+                        respawnTimer: 0,
+                        maxRespawnTime: 30000 + Math.random() * 20000
+                    });
+                }
+            }
+        }
+
+        function changeArea(area) {
+            if (area !== gameState.currentArea) {
+                gameState.currentArea = area;
+                generateTrees();
+                generateAreaSpecificResources();
+                
+                // Clear zombies when changing areas
+                gameState.zombies = [];
+                
+                // Update area display
+                const areaNames = {
+                    base: 'Base Camp',
+                    city: 'City',
+                    forest: 'Forest',
+                    ocean: 'Ocean'
+                };
+                document.getElementById('current-area').textContent = areaNames[area];
+            }
+            
+            // Keep area selector visible (don't hide it)
+        }
+
+        function generateAreaSpecificResources() {
+            // Add area-specific resource nodes
+            if (gameState.currentArea === 'city') {
+                // Add iron deposits in city
+                for (let i = 0; i < 15; i++) {
+                    gameState.trees.push({
+                        x: Math.random() * (canvas.width * 2) - canvas.width / 2,
+                        y: Math.random() * (canvas.height * 2) - canvas.height / 2,
+                        size: 25,
+                        health: 5,
+                        type: 'iron',
+                        respawnTimer: 0,
+                        maxRespawnTime: 45000
+                    });
+                }
+            } else if (gameState.currentArea === 'ocean') {
+                // Add water sources in ocean
+                for (let i = 0; i < 20; i++) {
+                    gameState.trees.push({
+                        x: Math.random() * (canvas.width * 2) - canvas.width / 2,
+                        y: Math.random() * (canvas.height * 2) - canvas.height / 2,
+                        size: 35,
+                        health: 2,
+                        type: 'water',
+                        respawnTimer: 0,
+                        maxRespawnTime: 20000
+                    });
+                }
+            }
+        }
+
+        function startWave() {
+            gameState.zombiesLeft = gameState.zombiesInWave;
+            gameState.betweenWaves = false;
+            
+            console.log(`Starting Wave ${gameState.wave} with ${gameState.zombiesInWave} zombies! (zombiesLeft: ${gameState.zombiesLeft})`);
+            
+            // Visual wave start effect
+            for (let i = 0; i < 50; i++) {
+                gameState.particles.push({
+                    x: canvas.width / 2 + (Math.random() - 0.5) * 300,
+                    y: canvas.height / 2 + (Math.random() - 0.5) * 200,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 40,
+                    color: '#FF4444'
+                });
+            }
+            
+            // Spawn zombies from edges (faster spawning for better flow)
+            for (let i = 0; i < gameState.zombiesInWave; i++) {
+                setTimeout(() => {
+                    if (!gameState.betweenWaves) { // Only spawn if wave is still active
+                        spawnZombie();
+                        console.log(`Spawned zombie ${i + 1}/${gameState.zombiesInWave}, total spawned: ${gameState.zombies.length}`);
+                    }
+                }, i * 2000); // Reduced from 4000 to 2000ms for faster spawning
+            }
+        }
+
+        function spawnZombie() {
+            const side = Math.floor(Math.random() * 4);
+            let x, y;
+            
+            switch(side) {
+                case 0: x = -50; y = Math.random() * canvas.height; break;
+                case 1: x = canvas.width + 50; y = Math.random() * canvas.height; break;
+                case 2: x = Math.random() * canvas.width; y = -50; break;
+                case 3: x = Math.random() * canvas.width; y = canvas.height + 50; break;
+            }
+            
+            gameState.zombies.push({
+                x: x,
+                y: y,
+                size: 15,
+                health: 50 + gameState.wave * 10,
+                maxHealth: 50 + gameState.wave * 10,
+                speed: 0.5 + gameState.wave * 0.1,
+                angle: 0,
+                lastAttack: 0
+            });
+        }
+
+        function cutNearestTree() {
+            const player = gameState.player;
+            let closest = null;
+            let closestDist = 60;
+            
+            gameState.trees.forEach((tree, index) => {
+                const dist = Math.sqrt((tree.x - player.x) ** 2 + (tree.y - player.y) ** 2);
+                if (dist < closestDist) {
+                    closest = index;
+                    closestDist = dist;
+                }
+            });
+            
+            if (closest !== null) {
+                gameState.trees[closest].health--;
+                if (gameState.trees[closest].health <= 0) {
+                    const tree = gameState.trees[closest];
+                    let particleColor = '#8B4513';
+                    
+                    // Give different resources based on tree type
+                    if (tree.type === 'iron') {
+                        gameState.iron += 2 + Math.floor(Math.random() * 3);
+                        particleColor = '#757575';
+                    } else if (tree.type === 'water') {
+                        gameState.water += 4 + Math.floor(Math.random() * 4);
+                        particleColor = '#2196F3';
+                    } else {
+                        // Regular tree gives wood (increased amount)
+                        gameState.wood += 5 + Math.floor(Math.random() * 4); // 5-8 wood per tree
+                        particleColor = '#8B4513';
+                    }
+                    
+                    // Add particles
+                    for (let i = 0; i < 10; i++) {
+                        gameState.particles.push({
+                            x: tree.x,
+                            y: tree.y,
+                            vx: (Math.random() - 0.5) * 5,
+                            vy: (Math.random() - 0.5) * 5,
+                            life: 30,
+                            color: particleColor
+                        });
+                    }
+                    
+                    gameState.trees.splice(closest, 1);
+                    
+                    // INSTANT REPLACEMENT: Spawn 1-2 new trees immediately when one is cut
+                    const replacementTrees = Math.random() < 0.7 ? 1 : 2; // 70% chance for 1, 30% for 2
+                    for (let i = 0; i < replacementTrees; i++) {
+                        // Spawn away from player to not interfere
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = 150 + Math.random() * 300;
+                        let newX = gameState.player.x + Math.cos(angle) * distance;
+                        let newY = gameState.player.y + Math.sin(angle) * distance;
+                        
+                        // Keep within reasonable bounds
+                        newX = Math.max(50, Math.min(canvas.width - 50, newX));
+                        newY = Math.max(50, Math.min(canvas.height - 50, newY));
+                        
+                        gameState.trees.push({
+                            x: newX,
+                            y: newY,
+                            size: 30 + Math.random() * 20,
+                            health: 3,
+                            respawnTimer: 0,
+                            maxRespawnTime: 30000 + Math.random() * 20000,
+                            type: tree.type // Maintain the same type
+                        });
+                    }
+                }
+            }
+        }
+
+        function canPlaceBuildingAt(x, y, size) {
+            // Check if position would overlap with existing buildings
+            for (let building of gameState.buildings) {
+                const distance = Math.sqrt((building.x - x) ** 2 + (building.y - y) ** 2);
+                if (distance < (building.size + size) / 2 + 10) { // 10 pixel buffer between buildings
+                    return false;
+                }
+            }
+            
+            // Check if too close to player
+            const playerDist = Math.sqrt((gameState.player.x - x) ** 2 + (gameState.player.y - y) ** 2);
+            if (playerDist < 40) {
+                return false;
+            }
+            
+            return true;
+        }
+
+        function getObjectAtMouse() {
+            const mouseX = gameState.mouse.x;
+            const mouseY = gameState.mouse.y;
+            
+            // Check buildings first
+            for (let building of gameState.buildings) {
+                const distance = Math.sqrt((building.x - mouseX) ** 2 + (building.y - mouseY) ** 2);
+                if (distance < building.size / 2) {
+                    return { object: building, type: 'building' };
+                }
+            }
+            
+            // Check helpers
+            for (let helper of gameState.helpers) {
+                const distance = Math.sqrt((helper.x - mouseX) ** 2 + (helper.y - mouseY) ** 2);
+                if (distance < helper.size) {
+                    return { object: helper, type: 'helper' };
+                }
+            }
+            
+            return null;
+        }
+
+        function canMoveObjectTo(object, newX, newY) {
+            // Keep within canvas bounds
+            const margin = object.size || 20;
+            if (newX < margin || newX > canvas.width - margin || 
+                newY < margin || newY > canvas.height - margin) {
+                return false;
+            }
+            
+            // Check if new position would overlap with other objects
+            const objectSize = object.size || 20;
+            
+            // Check against buildings (excluding self)
+            for (let building of gameState.buildings) {
+                if (building === object) continue;
+                const distance = Math.sqrt((building.x - newX) ** 2 + (building.y - newY) ** 2);
+                if (distance < (building.size + objectSize) / 2 + 5) {
+                    return false;
+                }
+            }
+            
+            // Check against helpers (excluding self)
+            for (let helper of gameState.helpers) {
+                if (helper === object) continue;
+                const distance = Math.sqrt((helper.x - newX) ** 2 + (helper.y - newY) ** 2);
+                if (distance < (helper.size + objectSize) + 5) {
+                    return false;
+                }
+            }
+            
+            // Check if too close to player
+            const playerDist = Math.sqrt((gameState.player.x - newX) ** 2 + (gameState.player.y - newY) ** 2);
+            if (playerDist < 40) {
+                return false;
+            }
+            
+            return true;
+        }
+
+        function placeBuildingAtMouse() {
+            if (!gameState.selectedBuildType) {
+                console.log("No building type selected");
+                return;
+            }
+            
+            // Prevent rapid building (500ms cooldown)
+            const now = Date.now();
+            if (now - gameState.lastBuildTime < 500) {
+                console.log("Building cooldown active");
+                return;
+            }
+            
+            const x = gameState.mouse.x;
+            const y = gameState.mouse.y;
+            
+            console.log(`Attempting to place ${gameState.selectedBuildType} at (${x}, ${y})`);
+            
+            let canAfford = false;
+            let cost = {};
+            let buildingData = {};
+            
+            switch(gameState.selectedBuildType) {
+                case 'wall':
+                    canAfford = gameState.wood >= 5;
+                    cost = { wood: 5 };
+                    buildingData = { type: 'wall', health: 100, maxHealth: 100, size: 25 };
+                    break;
+                case 'house':
+                    canAfford = gameState.wood >= 15;
+                    cost = { wood: 15 };
+                    buildingData = { type: 'house', health: 200, maxHealth: 200, size: 40 };
+                    break;
+                case 'iron-wall':
+                    canAfford = gameState.iron >= 8;
+                    cost = { iron: 8 };
+                    buildingData = { type: 'iron-wall', health: 300, maxHealth: 300, size: 25 };
+                    break;
+                case 'water-tower':
+                    canAfford = gameState.water >= 10 && gameState.wood >= 5;
+                    cost = { water: 10, wood: 5 };
+                    buildingData = { type: 'water-tower', health: 150, maxHealth: 150, size: 35 };
+                    break;
+            }
+            
+            console.log(`Can afford: ${canAfford}, Current resources: wood=${gameState.wood}, iron=${gameState.iron}, water=${gameState.water}`);
+            
+            const canPlace = canPlaceBuildingAt(x, y, buildingData.size);
+            console.log(`Can place at location: ${canPlace}`);
+            
+            if (canAfford && canPlace) {
+                // Subtract resources
+                Object.keys(cost).forEach(resource => {
+                    gameState[resource] -= cost[resource];
+                });
+                
+                // Create building
+                gameState.buildings.push({
+                    x: x,
+                    y: y,
+                    ...buildingData
+                });
+                
+                console.log(`Successfully placed ${gameState.selectedBuildType} at (${x}, ${y})`);
+                
+                // Special effects for certain buildings
+                if (gameState.selectedBuildType === 'house') {
+                    gameState.player.maxHealth += 20;
+                    gameState.player.health = Math.min(gameState.player.health + 20, gameState.player.maxHealth);
+                }
+                
+                // Update build time
+                gameState.lastBuildTime = now;
+                
+                // Clear selection after placing
+                gameState.selectedBuildType = null;
+                document.getElementById('selected-build').textContent = 'None';
+                
+                // Clear highlighting
+                document.querySelectorAll('.shop-item').forEach(item => {
+                    item.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                });
+                
+                // Construction particles
+                for (let i = 0; i < 15; i++) {
+                    gameState.particles.push({
+                        x: x + (Math.random() - 0.5) * buildingData.size,
+                        y: y + (Math.random() - 0.5) * buildingData.size,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: (Math.random() - 0.5) * 4,
+                        life: 30,
+                        color: '#FFD700'
+                    });
+                }
+            } else {
+                console.log(`Cannot place building - canAfford: ${canAfford}, canPlace: ${canPlace}`);
+            }
+        }
+
+        function buildWall() {
+            // Find suitable position near player
+            let attempts = 0;
+            while (attempts < 20) {
+                const angle = (Math.PI * 2 * attempts) / 20;
+                const x = gameState.player.x + Math.cos(angle) * 50;
+                const y = gameState.player.y + Math.sin(angle) * 50;
+                
+                if (gameState.wood >= 5 && canPlaceBuildingAt(x, y, 25)) {
+                    gameState.buildings.push({
+                        x: x,
+                        y: y,
+                        type: 'wall',
+                        health: 100,
+                        maxHealth: 100,
+                        size: 25
+                    });
+                    gameState.wood -= 5;
+                    break;
+                }
+                attempts++;
+            }
+        }
+
+        function buildHouse() {
+            // Find suitable position near player
+            let attempts = 0;
+            while (attempts < 20) {
+                const angle = (Math.PI * 2 * attempts) / 20;
+                const x = gameState.player.x + Math.cos(angle) * 60;
+                const y = gameState.player.y + Math.sin(angle) * 60;
+                
+                if (gameState.wood >= 15 && canPlaceBuildingAt(x, y, 40)) {
+                    gameState.buildings.push({
+                        x: x,
+                        y: y,
+                        type: 'house',
+                        health: 200,
+                        maxHealth: 200,
+                        size: 40
+                    });
+                    gameState.wood -= 15;
+                    gameState.player.maxHealth += 20;
+                    gameState.player.health = gameState.player.maxHealth;
+                    break;
+                }
+                attempts++;
+            }
+        }
+
+        function shoot() {
+            const now = Date.now();
+            const weapon = weapons[gameState.player.weapon];
+            
+            if (now - gameState.player.lastShot < weapon.fireRate || gameState.player.ammo <= 0) return;
+            
+            gameState.player.lastShot = now;
+            gameState.player.ammo--;
+            
+            const pellets = weapon.pellets || 1;
+            
+            for (let i = 0; i < pellets; i++) {
+                const spread = (Math.random() - 0.5) * weapon.spread;
+                const angle = gameState.player.angle + spread;
+                
+                gameState.bullets.push({
+                    x: gameState.player.x,
+                    y: gameState.player.y,
+                    vx: Math.cos(angle) * 5,
+                    vy: Math.sin(angle) * 5,
+                    damage: weapon.damage,
+                    life: 100
+                });
+            }
+        }
+
+        function reload() {
+            const currentWeapon = weapons[gameState.player.weapon];
+            const maxCarryAmmo = currentWeapon.maxAmmo * 2; // Can carry 2x base ammo
+            
+            // For simplicity, reload fills you back to your current maximum capacity
+            const previousAmmo = gameState.player.ammo;
+            gameState.player.ammo = Math.min(maxCarryAmmo, Math.max(gameState.player.ammo, currentWeapon.maxAmmo));
+            
+            if (gameState.player.ammo > previousAmmo) {
+                console.log(`Reloaded! Ammo: ${gameState.player.ammo}/${maxCarryAmmo}`);
+            } else {
+                console.log("Already at full capacity!");
+            }
+        }
+
+        function buyWeapon(weapon, cost) {
+            if (gameState.points >= cost && !ownedWeapons.includes(weapon)) {
+                gameState.points -= cost;
+                ownedWeapons.push(weapon);
+                gameState.player.weapon = weapon;
+                gameState.player.maxAmmo = weapons[weapon].maxAmmo;
+                gameState.player.ammo = weapons[weapon].maxAmmo * 2; // Start with double ammo when buying new weapon
+                document.getElementById(weapon + '-shop').classList.add('owned');
+                
+                console.log(`Bought ${weapon}! Starting ammo: ${gameState.player.ammo}`);
+            }
+        }
+
+        function buyUpgrade(type, cost) {
+            if (gameState.points >= cost) {
+                gameState.points -= cost;
+                if (type === 'health') {
+                    gameState.player.health = gameState.player.maxHealth;
+                } else if (type === 'ammo') {
+                    // Add ammo instead of just refilling to max
+                    const currentWeapon = weapons[gameState.player.weapon];
+                    const ammoToAdd = Math.floor(currentWeapon.maxAmmo * 0.5); // Add 50% of max ammo
+                    gameState.player.ammo = Math.min(currentWeapon.maxAmmo * 2, gameState.player.ammo + ammoToAdd); // Can hold 2x max ammo
+                    
+                    console.log(`Added ${ammoToAdd} ammo. Current ammo: ${gameState.player.ammo}/${currentWeapon.maxAmmo * 2}`);
+                    
+                    // Show ammo gained particles
+                    for (let i = 0; i < 10; i++) {
+                        gameState.particles.push({
+                            x: gameState.player.x + (Math.random() - 0.5) * 30,
+                            y: gameState.player.y + (Math.random() - 0.5) * 30,
+                            vx: (Math.random() - 0.5) * 3,
+                            vy: (Math.random() - 0.5) * 3,
+                            life: 30,
+                            color: '#FFD700'
+                        });
+                    }
+                }
+            }
+        }
+
+        function openShop() {
+            gameState.isPaused = true;
+            document.getElementById('shop').style.display = 'block';
+            document.getElementById('shop-button').style.display = 'none';
+            document.getElementById('build-button').style.display = 'none';
+            document.getElementById('pause-overlay').style.display = 'flex';
+        }
+
+        function closeShop() {
+            gameState.isPaused = false;
+            gameState.inBuildMode = false;
+            document.getElementById('shop').style.display = 'none';
+            document.getElementById('shop-button').style.display = 'block';
+            document.getElementById('build-button').style.display = 'block';
+            document.getElementById('pause-overlay').style.display = 'none';
+        }
+
+        function openBuildMenu() {
+            gameState.isPaused = true;
+            gameState.inBuildMode = true;
+            document.getElementById('build-menu').style.display = 'block';
+            document.getElementById('shop-button').style.display = 'none';
+            document.getElementById('build-button').style.display = 'none';
+            document.getElementById('build-mode-indicator').style.display = 'block';
+        }
+
+        function closeBuildMenu(event) {
+            // Prevent event from propagating to canvas
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            
+            gameState.isPaused = false;
+            gameState.inBuildMode = false;
+            gameState.selectedBuildType = null;
+            gameState.selectedObject = null;
+            gameState.selectedObjectType = null;
+            gameState.isDragging = false;
+            document.getElementById('build-menu').style.display = 'none';
+            document.getElementById('shop-button').style.display = 'block';
+            document.getElementById('build-button').style.display = 'block';
+            document.getElementById('build-mode-indicator').style.display = 'none';
+            document.getElementById('selected-build').textContent = 'None';
+            
+            // Clear highlighting
+            document.querySelectorAll('.shop-item').forEach(item => {
+                item.style.backgroundColor = 'rgba(255,255,255,0.1)';
+            });
+        }
+
+        function selectBuildItem(type, event) {
+            // Prevent event from propagating to canvas
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            
+            gameState.selectedBuildType = type;
+            const names = {
+                'wall': 'Wall (5 Wood)',
+                'house': 'House (15 Wood)', 
+                'iron-wall': 'Iron Wall (8 Iron)',
+                'water-tower': 'Water Tower (10 Water + 5 Wood)'
+            };
+            document.getElementById('selected-build').textContent = names[type] || type;
+            console.log(`Selected building type: ${type}`);
+            
+            // Highlight selected item
+            document.querySelectorAll('.shop-item').forEach(item => {
+                item.style.backgroundColor = 'rgba(255,255,255,0.1)';
+            });
+            document.getElementById(`${type}-build`).style.backgroundColor = 'rgba(139, 195, 74, 0.3)';
+        }
+
+        function buyHelper(type, cost) {
+            if (gameState.points >= cost) {
+                gameState.points -= cost;
+                
+                // Spawn helper near player
+                const helper = {
+                    x: gameState.player.x + (Math.random() - 0.5) * 100,
+                    y: gameState.player.y + (Math.random() - 0.5) * 100,
+                    type: type,
+                    health: 100,
+                    maxHealth: 100,
+                    size: 15,
+                    lastAction: 0,
+                    angle: 0
+                };
+                
+                // Keep helper on screen
+                helper.x = Math.max(30, Math.min(canvas.width - 30, helper.x));
+                helper.y = Math.max(30, Math.min(canvas.height - 30, helper.y));
+                
+                gameState.helpers.push(helper);
+            }
+        }
+
+        function updatePlayer() {
+            const speed = 3;
+            
+            if (gameState.keys['KeyW'] || gameState.keys['ArrowUp']) gameState.player.y -= speed;
+            if (gameState.keys['KeyS'] || gameState.keys['ArrowDown']) gameState.player.y += speed;
+            if (gameState.keys['KeyA'] || gameState.keys['ArrowLeft']) gameState.player.x -= speed;
+            if (gameState.keys['KeyD'] || gameState.keys['ArrowRight']) gameState.player.x += speed;
+            
+            // Keep player on screen
+            gameState.player.x = Math.max(20, Math.min(canvas.width - 20, gameState.player.x));
+            gameState.player.y = Math.max(20, Math.min(canvas.height - 20, gameState.player.y));
+            
+            // Aim towards mouse
+            const dx = gameState.mouse.x - gameState.player.x;
+            const dy = gameState.mouse.y - gameState.player.y;
+            gameState.player.angle = Math.atan2(dy, dx);
+            
+            // Handle mouse clicks for shooting only (building placement handled in mousedown event)
+            if (gameState.mouse.down && !gameState.inBuildMode) {
+                shoot();
+            }
+        }
+
+        function updateZombies() {
+            gameState.zombies.forEach((zombie, zIndex) => {
+                // Move towards player
+                const dx = gameState.player.x - zombie.x;
+                const dy = gameState.player.y - zombie.y;
+                const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                
+                if (dist > 0) {
+                    // Calculate intended movement
+                    const moveX = (dx / dist) * zombie.speed;
+                    const moveY = (dy / dist) * zombie.speed;
+                    const newX = zombie.x + moveX;
+                    const newY = zombie.y + moveY;
+                    
+                    // Check collision with buildings before moving
+                    let canMove = true;
+                    gameState.buildings.forEach(building => {
+                        const buildDist = Math.sqrt((building.x - newX) ** 2 + (building.y - newY) ** 2);
+                        if (buildDist < building.size + 15) { // Add buffer for zombie size
+                            canMove = false;
+                            
+                            // Attack building if close
+                            const currentDist = Math.sqrt((building.x - zombie.x) ** 2 + (building.y - zombie.y) ** 2);
+                            if (currentDist < building.size + 20 && Date.now() - zombie.lastAttack > 1000) {
+                                building.health -= 20;
+                                zombie.lastAttack = Date.now();
+                                
+                                // Building damage particles
+                                for (let i = 0; i < 3; i++) {
+                                    gameState.particles.push({
+                                        x: building.x,
+                                        y: building.y,
+                                        vx: (Math.random() - 0.5) * 4,
+                                        vy: (Math.random() - 0.5) * 4,
+                                        life: 20,
+                                        color: building.type === 'wall' ? '#8D6E63' : '#D7CCC8'
+                                    });
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Only move if not blocked by buildings
+                    if (canMove) {
+                        zombie.x = newX;
+                        zombie.y = newY;
+                    }
+                    
+                    zombie.angle = Math.atan2(dy, dx);
+                }
+                
+                // Attack player if close
+                if (dist < 30 && Date.now() - zombie.lastAttack > 1000) {
+                    gameState.player.health -= 10;
+                    zombie.lastAttack = Date.now();
+                    
+                    // Blood particles
+                    for (let i = 0; i < 5; i++) {
+                        gameState.particles.push({
+                            x: gameState.player.x,
+                            y: gameState.player.y,
+                            vx: (Math.random() - 0.5) * 3,
+                            vy: (Math.random() - 0.5) * 3,
+                            life: 20,
+                            color: '#FF0000'
+                        });
+                    }
+                }
+            });
+            
+            // Remove dead zombies
+            gameState.zombies = gameState.zombies.filter(zombie => zombie.health > 0);
+            
+            // Check if wave is complete (fixed to handle negative zombiesLeft)
+            if (gameState.zombies.length === 0 && gameState.zombiesLeft <= 0 && !gameState.betweenWaves) {
+                console.log(`Wave ${gameState.wave} completed! Current zombies: ${gameState.zombies.length}, zombiesLeft: ${gameState.zombiesLeft}`);
+                
+                // Reset zombiesLeft to 0 if it went negative
+                gameState.zombiesLeft = 0;
+                
+                gameState.wave++;
+                gameState.zombiesInWave += 5; // Add 5 extra zombies each wave
+                gameState.betweenWaves = true;
+                gameState.waveTimer = 45; // More time to prepare between waves
+                gameState.points += gameState.wave * 10; // Bonus for completing wave
+                
+                console.log(`Next wave (${gameState.wave}) will have ${gameState.zombiesInWave} zombies. Timer set to 45 seconds.`);
+                
+                // Unlock areas after wave 5
+                if (gameState.wave === 6 && !gameState.areasUnlocked) {
+                    gameState.areasUnlocked = true;
+                    // Keep area selector visible by default after unlocking
+                    document.getElementById('area-selector').style.display = 'block';
+                    
+                    // Show unlock message
+                    for (let i = 0; i < 30; i++) {
+                        gameState.particles.push({
+                            x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+                            y: canvas.height / 2 + (Math.random() - 0.5) * 100,
+                            vx: (Math.random() - 0.5) * 3,
+                            vy: (Math.random() - 0.5) * 3,
+                            life: 60,
+                            color: '#FFD700'
+                        });
+                    }
+                }
+            }
+        }
+
+        function updateBullets() {
+            gameState.bullets.forEach((bullet, bIndex) => {
+                bullet.x += bullet.vx;
+                bullet.y += bullet.vy;
+                bullet.life--;
+                
+                // Check zombie hits
+                gameState.zombies.forEach((zombie, zIndex) => {
+                    const dist = Math.sqrt((bullet.x - zombie.x) ** 2 + (bullet.y - zombie.y) ** 2);
+                    if (dist < zombie.size) {
+                        zombie.health -= bullet.damage;
+                        
+                        // Hit particles
+                        for (let i = 0; i < 3; i++) {
+                            gameState.particles.push({
+                                x: zombie.x,
+                                y: zombie.y,
+                                vx: (Math.random() - 0.5) * 4,
+                                vy: (Math.random() - 0.5) * 4,
+                                life: 15,
+                                color: '#FF0000'
+                            });
+                        }
+                        
+                        if (zombie.health <= 0) {
+                            gameState.points += 10 + gameState.wave;
+                            gameState.zombiesLeft = Math.max(0, gameState.zombiesLeft - 1); // Prevent negative
+                            
+                            console.log(`Zombie killed! zombiesLeft: ${gameState.zombiesLeft}, zombies array length: ${gameState.zombies.length - 1}`);
+                            
+                            // Death explosion
+                            for (let i = 0; i < 15; i++) {
+                                gameState.particles.push({
+                                    x: zombie.x,
+                                    y: zombie.y,
+                                    vx: (Math.random() - 0.5) * 6,
+                                    vy: (Math.random() - 0.5) * 6,
+                                    life: 25,
+                                    color: '#FF4444'
+                                });
+                            }
+                        }
+                        
+                        bullet.life = 0;
+                    }
+                });
+            });
+            
+            gameState.bullets = gameState.bullets.filter(bullet => bullet.life > 0 && 
+                bullet.x > -50 && bullet.x < canvas.width + 50 && 
+                bullet.y > -50 && bullet.y < canvas.height + 50);
+        }
+
+        function updateParticles() {
+            gameState.particles.forEach(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vx *= 0.98;
+                particle.vy *= 0.98;
+                particle.life--;
+            });
+            
+            gameState.particles = gameState.particles.filter(particle => particle.life > 0);
+        }
+
+        function updateBuildings() {
+            gameState.buildings = gameState.buildings.filter(building => building.health > 0);
+            
+            // Water towers provide healing
+            gameState.buildings.forEach(building => {
+                if (building.type === 'water-tower') {
+                    const distance = Math.sqrt((building.x - gameState.player.x) ** 2 + (building.y - gameState.player.y) ** 2);
+                    if (distance < 100 && gameState.player.health < gameState.player.maxHealth) {
+                        // Heal 0.1 health per frame when near water tower (6 health per second at 60fps)
+                        gameState.player.health = Math.min(gameState.player.maxHealth, gameState.player.health + 0.1);
+                    }
+                }
+            });
+        }
+
+        function updateHelpers() {
+            const now = Date.now();
+            
+            gameState.helpers.forEach((helper, index) => {
+                if (helper.health <= 0) return;
+                
+                if (helper.type === 'soldier') {
+                    // Find nearest zombie to shoot
+                    let nearestZombie = null;
+                    let nearestDist = 150; // Shooting range
+                    
+                    gameState.zombies.forEach(zombie => {
+                        const dist = Math.sqrt((zombie.x - helper.x) ** 2 + (zombie.y - helper.y) ** 2);
+                        if (dist < nearestDist) {
+                            nearestZombie = zombie;
+                            nearestDist = dist;
+                        }
+                    });
+                    
+                    if (nearestZombie && now - helper.lastAction > 800) {
+                        helper.lastAction = now;
+                        helper.angle = Math.atan2(nearestZombie.y - helper.y, nearestZombie.x - helper.x);
+                        
+                        // Create bullet
+                        gameState.bullets.push({
+                            x: helper.x,
+                            y: helper.y,
+                            vx: Math.cos(helper.angle) * 6,
+                            vy: Math.sin(helper.angle) * 6,
+                            damage: 30,
+                            life: 100
+                        });
+                    }
+                    
+                } else if (helper.type === 'medic') {
+                    // Heal player slowly
+                    if (gameState.player.health < gameState.player.maxHealth && now - helper.lastAction > 2000) {
+                        helper.lastAction = now;
+                        gameState.player.health = Math.min(gameState.player.maxHealth, gameState.player.health + 15);
+                        
+                        // Healing particles
+                        for (let i = 0; i < 5; i++) {
+                            gameState.particles.push({
+                                x: gameState.player.x,
+                                y: gameState.player.y,
+                                vx: (Math.random() - 0.5) * 2,
+                                vy: (Math.random() - 0.5) * 2,
+                                life: 30,
+                                color: '#00FF00'
+                            });
+                        }
+                    }
+                    
+                } else if (helper.type === 'builder') {
+                    // Repair nearest damaged building
+                    let nearestBuilding = null;
+                    let nearestDist = 100; // Repair range
+                    
+                    gameState.buildings.forEach(building => {
+                        if (building.health < building.maxHealth) {
+                            const dist = Math.sqrt((building.x - helper.x) ** 2 + (building.y - helper.y) ** 2);
+                            if (dist < nearestDist) {
+                                nearestBuilding = building;
+                                nearestDist = dist;
+                            }
+                        }
+                    });
+                    
+                    if (nearestBuilding && now - helper.lastAction > 1500) {
+                        helper.lastAction = now;
+                        nearestBuilding.health = Math.min(nearestBuilding.maxHealth, nearestBuilding.health + 25);
+                        
+                        // Repair particles
+                        for (let i = 0; i < 3; i++) {
+                            gameState.particles.push({
+                                x: nearestBuilding.x,
+                                y: nearestBuilding.y,
+                                vx: (Math.random() - 0.5) * 3,
+                                vy: (Math.random() - 0.5) * 3,
+                                life: 25,
+                                color: '#FFD700'
+                            });
+                        }
+                    }
+                }
+                
+                // Helpers take damage from zombies too
+                gameState.zombies.forEach(zombie => {
+                    const dist = Math.sqrt((zombie.x - helper.x) ** 2 + (zombie.y - helper.y) ** 2);
+                    if (dist < 25 && now - zombie.lastAttack > 1000) {
+                        helper.health -= 15;
+                        zombie.lastAttack = now;
+                    }
+                });
+            });
+            
+            // Remove dead helpers
+            gameState.helpers = gameState.helpers.filter(helper => helper.health > 0);
+        }
+
+        function updateWaveTimer() {
+            if (gameState.betweenWaves) {
+                gameState.waveTimer -= 1/60;
+                
+                // Debug: Log timer every 5 seconds
+                if (Math.floor(gameState.waveTimer) % 5 === 0 && gameState.waveTimer > 0 && Math.abs(gameState.waveTimer - Math.floor(gameState.waveTimer)) < 0.1) {
+                    console.log(`Wave timer: ${Math.ceil(gameState.waveTimer)} seconds until wave ${gameState.wave}`);
+                }
+                
+                if (gameState.waveTimer <= 0) {
+                    console.log(`Timer expired! Starting wave ${gameState.wave}`);
+                    startWave();
+                }
+            }
+        }
+
+        function draw() {
+            // Clear canvas with area-specific background
+            let backgroundColor = '#81C784'; // Base green
+            
+            if (gameState.currentArea === 'city') {
+                backgroundColor = '#BDBDBD'; // Gray concrete
+            } else if (gameState.currentArea === 'forest') {
+                backgroundColor = '#388E3C'; // Dark forest green
+            } else if (gameState.currentArea === 'ocean') {
+                backgroundColor = '#1976D2'; // Ocean blue
+            }
+            
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw trees and resource nodes
+            gameState.trees.forEach(tree => {
+                if (tree.type === 'iron') {
+                    // Iron deposits (gray rocks)
+                    ctx.fillStyle = '#616161';
+                    ctx.fillRect(tree.x - tree.size/2, tree.y - tree.size/2, tree.size, tree.size);
+                    
+                    // Iron shine
+                    ctx.fillStyle = '#E0E0E0';
+                    ctx.fillRect(tree.x - tree.size/3, tree.y - tree.size/3, tree.size/2, tree.size/2);
+                    
+                } else if (tree.type === 'water') {
+                    // Water sources (blue circles)
+                    ctx.fillStyle = '#1976D2';
+                    ctx.beginPath();
+                    ctx.arc(tree.x, tree.y, tree.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Water sparkle
+                    ctx.fillStyle = '#E3F2FD';
+                    ctx.beginPath();
+                    ctx.arc(tree.x - tree.size/3, tree.y - tree.size/3, tree.size/4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                } else {
+                    // Regular trees
+                    ctx.fillStyle = '#2E7D32';
+                    ctx.beginPath();
+                    ctx.arc(tree.x, tree.y, tree.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Tree trunk
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(tree.x - 5, tree.y - 5, 10, 10);
+                }
+                
+                // Health bar for damaged resources
+                const maxHealth = tree.type === 'iron' ? 5 : tree.type === 'water' ? 2 : 3;
+                if (tree.health < maxHealth) {
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fillRect(tree.x - 15, tree.y - tree.size - 10, 30, 5);
+                    ctx.fillStyle = '#00FF00';
+                    ctx.fillRect(tree.x - 15, tree.y - tree.size - 10, 30 * (tree.health / maxHealth), 5);
+                }
+            });
+            
+            // Draw buildings
+            gameState.buildings.forEach(building => {
+                // Highlight selected building in build mode
+                if (gameState.inBuildMode && gameState.selectedObject === building) {
+                    ctx.strokeStyle = '#FFD700';
+                    ctx.lineWidth = 4;
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(building.x - building.size/2 - 5, building.y - building.size/2 - 5, 
+                                 building.size + 10, building.size + 10);
+                    ctx.setLineDash([]);
+                }
+                
+                if (building.type === 'wall') {
+                    ctx.fillStyle = '#8D6E63';
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
+                } else if (building.type === 'iron-wall') {
+                    // Iron wall (metallic gray)
+                    ctx.fillStyle = '#616161';
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
+                    
+                    // Metal shine
+                    ctx.fillStyle = '#E0E0E0';
+                    ctx.fillRect(building.x - building.size/3, building.y - building.size/3, building.size/2, building.size/3);
+                } else if (building.type === 'house') {
+                    // House base
+                    ctx.fillStyle = '#D7CCC8';
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
+                    
+                    // Roof
+                    ctx.fillStyle = '#FF5722';
+                    ctx.beginPath();
+                    ctx.moveTo(building.x - building.size/2 - 5, building.y - building.size/2);
+                    ctx.lineTo(building.x, building.y - building.size/2 - 15);
+                    ctx.lineTo(building.x + building.size/2 + 5, building.y - building.size/2);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Door
+                    ctx.fillStyle = '#8D6E63';
+                    ctx.fillRect(building.x - 5, building.y, 10, building.size/2);
+                } else if (building.type === 'water-tower') {
+                    // Tower base
+                    ctx.fillStyle = '#90CAF9';
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
+                    
+                    // Water tank (top)
+                    ctx.fillStyle = '#1976D2';
+                    ctx.beginPath();
+                    ctx.arc(building.x, building.y - building.size/3, building.size/3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Support beams
+                    ctx.fillStyle = '#8D6E63';
+                    ctx.fillRect(building.x - 2, building.y - building.size/2, 4, building.size);
+                    ctx.fillRect(building.x - building.size/4, building.y - 2, building.size/2, 4);
+                    
+                    // Water droplets (animation effect)
+                    if (Math.random() < 0.3) {
+                        ctx.fillStyle = '#E3F2FD';
+                        ctx.beginPath();
+                        ctx.arc(building.x + (Math.random() - 0.5) * building.size/2, 
+                               building.y + building.size/3, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                // Health bar
+                if (building.health < building.maxHealth) {
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2 - 15, building.size, 5);
+                    ctx.fillStyle = '#00FF00';
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2 - 15, 
+                        building.size * (building.health / building.maxHealth), 5);
+                }
+                
+                // Show move cursor hint in build mode
+                if (gameState.inBuildMode && !gameState.isDragging) {
+                    const mouseX = gameState.mouse.x;
+                    const mouseY = gameState.mouse.y;
+                    const distance = Math.sqrt((building.x - mouseX) ** 2 + (building.y - mouseY) ** 2);
+                    if (distance < building.size / 2) {
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                        ctx.beginPath();
+                        ctx.arc(building.x, building.y, building.size / 2 + 5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            });
+            
+            // Draw zombies (human-like)
+            gameState.zombies.forEach(zombie => {
+                ctx.save();
+                ctx.translate(zombie.x, zombie.y);
+                ctx.rotate(zombie.angle);
+                
+                // Human-like zombie body
+                // Torso
+                ctx.fillStyle = '#8FBC8F'; // Pale green skin
+                ctx.fillRect(-6, -8, 12, 16);
+                
+                // Head
+                ctx.fillStyle = '#7a9a7a'; // Decaying skin tone
+                ctx.beginPath();
+                ctx.arc(0, -12, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Arms
+                ctx.fillStyle = '#8FBC8F';
+                ctx.fillRect(-10, -6, 4, 12); // Left arm
+                ctx.fillRect(6, -6, 4, 12);   // Right arm
+                
+                // Legs
+                ctx.fillRect(-6, 8, 5, 10);   // Left leg
+                ctx.fillRect(1, 8, 5, 10);    // Right leg
+                
+                // Hands
+                ctx.beginPath();
+                ctx.arc(-8, 3, 2, 0, Math.PI * 2); // Left hand
+                ctx.arc(8, 3, 2, 0, Math.PI * 2);  // Right hand
+                ctx.fill();
+                
+                // Feet
+                ctx.fillRect(-6, 18, 5, 3);   // Left foot
+                ctx.fillRect(1, 18, 5, 3);    // Right foot
+                
+                // Zombie features
+                // Glowing red eyes
+                ctx.fillStyle = '#FF0000';
+                ctx.beginPath();
+                ctx.arc(-2, -12, 1.5, 0, Math.PI * 2); // Left eye
+                ctx.arc(2, -12, 1.5, 0, Math.PI * 2);  // Right eye
+                ctx.fill();
+                
+                // Blood stains
+                ctx.fillStyle = '#8B0000';
+                ctx.beginPath();
+                ctx.arc(-3, -2, 1, 0, Math.PI * 2); // Blood on chest
+                ctx.arc(4, 2, 0.8, 0, Math.PI * 2);  // Blood on arm
+                ctx.fill();
+                
+                // Torn clothes (dark patches)
+                ctx.fillStyle = '#2F4F2F';
+                ctx.fillRect(-5, -3, 3, 6);  // Torn shirt
+                ctx.fillRect(-4, 10, 3, 4);  // Torn pants
+                
+                ctx.restore();
+                
+                // Health bar
+                if (zombie.health < zombie.maxHealth) {
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fillRect(zombie.x - zombie.size, zombie.y - zombie.size - 15, zombie.size * 2, 5);
+                    ctx.fillStyle = '#00FF00';
+                    ctx.fillRect(zombie.x - zombie.size, zombie.y - zombie.size - 15, 
+                        zombie.size * 2 * (zombie.health / zombie.maxHealth), 5);
+                }
+            });
+            
+            // Draw helpers
+            gameState.helpers.forEach(helper => {
+                // Highlight selected helper in build mode
+                if (gameState.inBuildMode && gameState.selectedObject === helper) {
+                    ctx.strokeStyle = '#00FF00';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.arc(helper.x, helper.y, helper.size + 8, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                
+                // Show move cursor hint in build mode
+                if (gameState.inBuildMode && !gameState.isDragging) {
+                    const mouseX = gameState.mouse.x;
+                    const mouseY = gameState.mouse.y;
+                    const distance = Math.sqrt((helper.x - mouseX) ** 2 + (helper.y - mouseY) ** 2);
+                    if (distance < helper.size) {
+                        ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+                        ctx.beginPath();
+                        ctx.arc(helper.x, helper.y, helper.size + 5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                ctx.save();
+                ctx.translate(helper.x, helper.y);
+                ctx.rotate(helper.angle);
+                
+                // Helper body based on type
+                if (helper.type === 'soldier') {
+                    ctx.fillStyle = '#8BC34A'; // Green soldier
+                    ctx.fillRect(-helper.size/2, -helper.size/2, helper.size, helper.size);
+                    
+                    // Weapon
+                    ctx.fillStyle = '#424242';
+                    ctx.fillRect(helper.size/2, -2, 15, 3);
+                    
+                    // Helmet
+                    ctx.fillStyle = '#2E7D32';
+                    ctx.beginPath();
+                    ctx.arc(0, -helper.size/2, helper.size/3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                } else if (helper.type === 'medic') {
+                    ctx.fillStyle = '#FFCDD2'; // Pink medic
+                    ctx.fillRect(-helper.size/2, -helper.size/2, helper.size, helper.size);
+                    
+                    // Red cross
+                    ctx.fillStyle = '#F44336';
+                    ctx.fillRect(-2, -6, 4, 12);
+                    ctx.fillRect(-6, -2, 12, 4);
+                    
+                } else if (helper.type === 'builder') {
+                    ctx.fillStyle = '#FF9800'; // Orange builder
+                    ctx.fillRect(-helper.size/2, -helper.size/2, helper.size, helper.size);
+                    
+                    // Hard hat
+                    ctx.fillStyle = '#FFD54F';
+                    ctx.beginPath();
+                    ctx.arc(0, -helper.size/2, helper.size/3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Tool
+                    ctx.fillStyle = '#8D6E63';
+                    ctx.fillRect(helper.size/2, -3, 12, 6);
+                }
+                
+                ctx.restore();
+                
+                // Helper health bar
+                if (helper.health < helper.maxHealth) {
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fillRect(helper.x - helper.size, helper.y - helper.size - 15, helper.size * 2, 3);
+                    ctx.fillStyle = '#00FF00';
+                    ctx.fillRect(helper.x - helper.size, helper.y - helper.size - 15, 
+                        helper.size * 2 * (helper.health / helper.maxHealth), 3);
+                }
+            });
+            
+            // Draw player
+            ctx.save();
+            ctx.translate(gameState.player.x, gameState.player.y);
+            ctx.rotate(gameState.player.angle);
+            
+            // Player body
+            ctx.fillStyle = '#2196F3';
+            ctx.fillRect(-gameState.player.size/2, -gameState.player.size/2, gameState.player.size, gameState.player.size);
+            
+            // Weapon
+            ctx.fillStyle = '#424242';
+            ctx.fillRect(gameState.player.size/2, -2, 20, 4);
+            
+            ctx.restore();
+            
+            // Player health bar
+            if (gameState.player.health < gameState.player.maxHealth) {
+                ctx.fillStyle = '#FF0000';
+                ctx.fillRect(gameState.player.x - gameState.player.size, gameState.player.y - gameState.player.size - 15, gameState.player.size * 2, 5);
+                ctx.fillStyle = '#00FF00';
+                ctx.fillRect(gameState.player.x - gameState.player.size, gameState.player.y - gameState.player.size - 15, 
+                    gameState.player.size * 2 * (gameState.player.health / gameState.player.maxHealth), 5);
+            }
+            
+            // Draw bullets
+            gameState.bullets.forEach(bullet => {
+                ctx.fillStyle = '#FFEB3B';
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Draw particles
+            gameState.particles.forEach(particle => {
+                ctx.fillStyle = particle.color;
+                ctx.globalAlpha = particle.life / 30;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+            
+            // Show building preview in build mode
+            if (gameState.inBuildMode && gameState.selectedBuildType) {
+                const mouseX = gameState.mouse.x;
+                const mouseY = gameState.mouse.y;
+                
+                let size = 25;
+                let canPlace = false;
+                
+                switch(gameState.selectedBuildType) {
+                    case 'wall':
+                    case 'iron-wall':
+                        size = 25;
+                        canPlace = canPlaceBuildingAt(mouseX, mouseY, size);
+                        break;
+                    case 'house':
+                        size = 40;
+                        canPlace = canPlaceBuildingAt(mouseX, mouseY, size);
+                        break;
+                    case 'water-tower':
+                        size = 35;
+                        canPlace = canPlaceBuildingAt(mouseX, mouseY, size);
+                        break;
+                }
+                
+                // Draw preview with transparency
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = canPlace ? '#00FF00' : '#FF0000';
+                ctx.strokeStyle = canPlace ? '#008000' : '#800000';
+                ctx.lineWidth = 2;
+                
+                if (gameState.selectedBuildType === 'house') {
+                    ctx.fillRect(mouseX - size/2, mouseY - size/2, size, size);
+                    ctx.strokeRect(mouseX - size/2, mouseY - size/2, size, size);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(mouseX, mouseY, size/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+                
+                ctx.globalAlpha = 1.0; // Reset transparency
+            }
+            
+            // Draw crosshair
+            ctx.strokeStyle = '#FF0000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(gameState.mouse.x - 10, gameState.mouse.y);
+            ctx.lineTo(gameState.mouse.x + 10, gameState.mouse.y);
+            ctx.moveTo(gameState.mouse.x, gameState.mouse.y - 10);
+            ctx.lineTo(gameState.mouse.x, gameState.mouse.y + 10);
+            ctx.stroke();
+        }
+
+        function updateUI() {
+            document.getElementById('points').textContent = gameState.points;
+            document.getElementById('wood').textContent = gameState.wood;
+            document.getElementById('iron').textContent = gameState.iron;
+            document.getElementById('water').textContent = gameState.water;
+            document.getElementById('health').textContent = Math.max(0, Math.floor(gameState.player.health));
+            document.getElementById('weapon').textContent = gameState.player.weapon.charAt(0).toUpperCase() + gameState.player.weapon.slice(1);
+            const currentWeapon = weapons[gameState.player.weapon];
+            const maxCarryAmmo = currentWeapon ? currentWeapon.maxAmmo * 2 : 30;
+            document.getElementById('ammo').textContent = `${gameState.player.ammo}/${maxCarryAmmo}`;
+            document.getElementById('buildings').textContent = gameState.buildings.length;
+            document.getElementById('helpers').textContent = gameState.helpers.length;
+            document.getElementById('wave').textContent = gameState.wave;
+            document.getElementById('zombies-left').textContent = Math.max(0, gameState.zombiesLeft);
+            
+            // Update build menu resources
+            if (document.getElementById('build-wood')) {
+                document.getElementById('build-wood').textContent = gameState.wood;
+                document.getElementById('build-iron').textContent = gameState.iron;
+                document.getElementById('build-water').textContent = gameState.water;
+            }
+            
+            if (gameState.betweenWaves) {
+                const timeLeft = Math.ceil(gameState.waveTimer);
+                document.getElementById('wave-timer').innerHTML = `<span style="color: #FFD700; font-size: 16px; font-weight: bold;">⏰ Next wave in: ${timeLeft}s</span>`;
+                
+                // Flash warning when time is low
+                if (timeLeft <= 10) {
+                    document.getElementById('wave-timer').innerHTML = `<span style="color: #FF4444; font-size: 18px; font-weight: bold; text-shadow: 0 0 10px #FF4444;">⚠️ WAVE ${gameState.wave} STARTING IN: ${timeLeft}s ⚠️</span>`;
+                }
+            } else {
+                // Show current wave progress
+                document.getElementById('wave-timer').innerHTML = `<span style="color: #FF6B6B; font-weight: bold;">🧟 WAVE ${gameState.wave} - ${gameState.zombiesLeft} zombies left</span>`;
+            }
+            
+            // Show area unlock notification
+            if (gameState.wave === 6 && gameState.areasUnlocked && gameState.betweenWaves) {
+                const waveTimer = document.getElementById('wave-timer');
+                const timeLeft = Math.ceil(gameState.waveTimer);
+                const baseText = timeLeft <= 10 ? 
+                    `<span style="color: #FF4444; font-size: 18px; font-weight: bold; text-shadow: 0 0 10px #FF4444;">⚠️ WAVE ${gameState.wave} STARTING IN: ${timeLeft}s ⚠️</span>` :
+                    `<span style="color: #FFD700; font-size: 16px; font-weight: bold;">⏰ Next wave in: ${timeLeft}s</span>`;
+                
+                waveTimer.innerHTML = baseText + '<br><span style="color: #FFD700; font-size: 14px; animation: blink 1s infinite;">🗺️ NEW AREAS UNLOCKED! Check the map on the right!</span>';
+            }
+            
+            // Game over
+            if (gameState.player.health <= 0) {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#FF0000';
+                ctx.font = '48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '24px Arial';
+                ctx.fillText(`Final Score: ${gameState.points} points`, canvas.width/2, canvas.height/2 + 50);
+                ctx.fillText('Refresh to play again', canvas.width/2, canvas.height/2 + 80);
+                return;
+            }
+        }
+
+        function gameLoop() {
+            if (gameState.player.health > 0 && !gameState.isPaused) {
+                updatePlayer();
+                updateZombies();
+                updateBullets();
+                updateParticles();
+                updateBuildings();
+                updateHelpers();
+                updateWaveTimer();
+                respawnTrees(); // Add tree respawning
+            }
+            
+            draw();
+            updateUI();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        init();
+    </script>
+</body>
+</html>
