@@ -7,27 +7,43 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>🤠 Quick Draw Showdown 🔫</h1>
-        
-        <div class="instructions">
-            Wait for "GO!" then press <strong>SPACE</strong> as fast as you can!<br>
-            Don't press early or you lose!
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div class="title-box"><h1 class="game-title">🤠 Quick Draw Showdown 🔫</h1></div>
+      <div id="mainMenu" class="main-menu">
+          <h2>Main Menu</h2>
+          <button id="practiceBtn" class="menu-btn">Practice Mode</button>
+          <button id="versusBtn" class="menu-btn">1v1 Mode</button>
+          <button id="tournamentBtn" class="menu-btn">Tournament Mode</button>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <div id="gameTitleBox" class="title-box" style="display:none;"><h1 class="game-title">🤠 Quick Draw Showdown 🔫</h1></div>
+        <div class="game-container" id="gameContainer" style="display:none;">
+          <div id="tournamentSetup" style="display:none; margin-bottom: 15px;">
+            <label>Best of:
+              <select id="tournamentSelect">
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+              </select>
+            </label>
+            <button id="startTournamentBtn" class="menu-btn" style="margin-left:10px;">Start Tournament</button>
+          </div>
+          <div id="tournamentScore" style="display:none; margin-bottom: 15px; font-size: 1.2em; font-weight: bold;"></div>
+          <div class="instructions" id="instructions">
+              <!-- Instructions will be set by JS -->
+          </div>
+          <div id="status" class="status">Press Start to Begin</div>
+          <div id="results" class="results">
+              <div id="player1Time" class="result-item"></div>
+              <div id="player2Time" class="result-item"></div>
+              <div id="outcome" class="result-item"></div>
+          </div>
+          <button id="startBtn" class="start-btn">Start Showdown</button>
+          <button id="backMenuBtn" class="start-btn" style="display:none;">Back to Menu</button>
+          <div class="space-hint" id="spaceHint"></div>
         </div>
-
-        <div id="status" class="status">Press Start to Begin</div>
-
-        <div id="results" class="results">
-            <div id="playerTime" class="result-item"></div>
-            <div id="botTime" class="result-item"></div>
-            <div id="outcome" class="result-item"></div>
-        </div>
-
-        <button id="startBtn" class="start-btn">Start Showdown</button>
-        
-        <div class="space-hint">Press SPACE when you see "GO!"</div>
+      </div>
     </div>
-
     <script src="js/script.js"></script>
 </body>
 </html>

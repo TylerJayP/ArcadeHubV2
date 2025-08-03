@@ -264,16 +264,25 @@ class ArcadeHub {
     renderGameLibrary() {
         const library = document.getElementById('game-library');
         if (!library) return;
-
+    
         const games = window.gameRegistry.getAllGames();
+        
+        // Add placeholder games
+        const placeholderGames = [
+            { id: 'coming-soon-1', name: 'COMING SOON', description: 'New game in development', folder: 'coming-soon-1', preview: '🔜', difficulty: 1, tokensOnWin: 1, scoreType: 'points' },
+            { id: 'coming-soon-2', name: 'COMING SOON', description: 'New game in development', folder: 'coming-soon-2', preview: '🔜', difficulty: 1, tokensOnWin: 1, scoreType: 'points' },
+            { id: 'coming-soon-3', name: 'COMING SOON', description: 'New game in development', folder: 'coming-soon-3', preview: '🔜', difficulty: 1, tokensOnWin: 1, scoreType: 'points' }
+        ];
+        
+        const allGames = [...games, ...placeholderGames];
         
         library.innerHTML = `
             <div class="game-grid">
-                ${games.map(game => this.createGameCard(game)).join('')}
+                ${allGames.map(game => this.createGameCard(game)).join('')}
             </div>
         `;
-
-        // Add click listeners to game cards
+    
+        // Add click listeners to real game cards only
         games.forEach(game => {
             const card = document.getElementById(`game-${game.id}`);
             if (card) {
@@ -297,10 +306,21 @@ class ArcadeHub {
                         ${!isAvailable ? '📁 MISSING' : hasTokens ? '1 TOKEN' : 'NO TOKENS'}
                     </span>
                 </div>
-                <div style="font-size: 0.7rem; color: #888; margin-top: 8px;">
-                    Controls: ${game.controls}
-                </div>
                 ${!isAvailable ? `<div style="font-size: 0.6rem; color: #ff6666; margin-top: 5px;">Add games/${game.folder}/ folder</div>` : ''}
+            </div>
+        `;
+    }
+
+    createComingSoonCard(card) {
+        return `
+            <div class="game-card disabled coming-soon" id="${card.id}">
+                <div class="game-preview">${card.preview}</div>
+                <div class="game-name">${card.name}</div>
+                <div class="game-description">${card.description}</div>
+                <div class="game-info">
+                    <span class="difficulty">★ ?/5</span>
+                    <span class="cost-indicator">SOON</span>
+                </div>
             </div>
         `;
     }
@@ -516,6 +536,10 @@ class ArcadeHub {
         this.updateDisplay();
     }
 }
+
+
+
+
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
