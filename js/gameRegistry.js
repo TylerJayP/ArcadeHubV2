@@ -11,7 +11,7 @@ class GameRegistry {
             id: 'rock-and-roll',
             name: 'ROCK AND ROLL',
             description: 'Rhythm-based driving game - hit the notes and avoid obstacles!',
-            developer: 'Team Member',
+            developer: 'Josh',
             difficulty: 4,
             preview: '🎸',
             folder: 'RockandRoll',
@@ -26,7 +26,7 @@ class GameRegistry {
             id: 'quickshot',
             name: 'QUICK DRAW SHOWDOWN',
             description: 'Lightning-fast reflexes test - beat the computer!',
-            developer: 'Team Member', 
+            developer: 'Sean', 
             difficulty: 2,
             preview: '🤠',
             folder: 'QuickShot',
@@ -41,7 +41,7 @@ class GameRegistry {
             id: 'zombie-shooter',
             name: 'ZOMBIE DEFENSE',
             description: 'Survive waves of zombies! Build defenses and fight back!',
-            developer: 'Team Member',
+            developer: 'Aria',
             difficulty: 5,
             preview: '🧟',
             folder: 'ZombieShooter',
@@ -49,6 +49,21 @@ class GameRegistry {
             tokensOnWin: 4,
             scoreType: 'waves',
             controls: 'WASD + Mouse + E to cut trees'
+        });
+
+        // Zombie Shooter
+        this.addGame({
+            id: 'geo-dash',
+            name: 'GEOMETRY DASH',
+            description: 'Jump over obstacles without hitting them. How far can you get?',
+            developer: 'Tyler',
+            difficulty: 4,
+            preview: '🧟',
+            folder: 'GeoDash',
+            entryFile: 'index.html',
+            tokensOnWin: 4,
+            scoreType: 'points',
+            controls: 'WASD + Spacebar'
         });
     }
 

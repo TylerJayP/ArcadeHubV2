@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="ground"></div>
+        <div id="player"></div>
+        <div id="ui">
+            <div id="scoreInfo">Score: <span id="score">0</span></div>
+            <div id="bestInfo">Best: <span id="bestScore">0</span></div>
+            <div id="modeInfo"></div>
+            <div id="powerJumpIndicator" style="color: #FFD700; font-size: 14px; margin-top: 5px; opacity: 0; transition: opacity 0.2s;">⚡ POWER JUMP READY</div>
+        </div>
+        <div id="progressContainer">
+            <div id="levelInfo">Level 1</div>
+            <div id="progressBar">
+                <div id="progressFill"></div>
+            </div>
+        </div>
+        <div id="instructions">
+            Press SPACE or CLICK to jump! Hold SHIFT + SPACE for power jumps! Land on platforms to stay safe!<br>
+            <small style="color: #888;">Dev Mode: Press Ctrl+D to unlock all levels for testing</small>
+        </div>
+        <div id="modeSelector">
+            <h2>Select Game Mode</h2>
+            <button onclick="selectMode('levels')">Level Mode</button>
+            <button onclick="selectMode('endless')">Endless Mode</button>
+            <button onclick="selectMode('creator')">Level Creator</button>
+        </div>
+        <div id="levelSelector">
+            <h2>Select Level</h2>
+            <div class="levelGrid" id="levelGrid"></div>
+            <button onclick="showModeSelector()" style="margin-top: 20px;">Back to Mode Selection</button>
+        </div>
+        <div id="gameOver">
+            <h2>Game Over!</h2>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button onclick="restartGame()">Try Again</button>
+            <button onclick="showModeSelector()">Mode Selection</button>
+        </div>
+        <div id="levelComplete" style="display: none;">
+            <h2>Level Complete!</h2>
+            <p>Great job! You completed the level!</p>
+            <div id="levelStats"></div>
+            <button onclick="nextLevel()">Next Level</button>
+            <button onclick="showLevelSelector()">Level Select</button>
+        </div>
+        <div id="customLevelSelector">
+            <h2>Level Creator</h2>
+            <div id="customLevelList"></div>
+            <button onclick="openLevelEditor()">Create New Level</button>
+            <button onclick="showModeSelector()" style="margin-top: 20px;">Back to Mode Selection</button>
+        </div>
+        <div id="levelEditor">
+            <div id="editorToolbar">
+                <select id="objectSelect" onchange="selectObjectType()" class="tool-button">
+                    <option value="spike">Spike</option>
+                    <option value="block">Block</option>
+                    <option value="platform">Platform</option>
+                </select>
+                <button id="deleteToggle" class="tool-button" onclick="selectTool('delete')">🗑️ Delete Mode</button>
+                <div id="sizeControls" class="size-control">
+                    Width: <input type="number" id="widthInput" value="60" min="20" max="120">
+                    Height: <input type="number" id="heightInput" value="40" min="20" max="100">
+                </div>
+                <input type="text" id="levelNameInput" placeholder="Level Name" class="tool-button" style="width: 150px;">
+                <button onclick="testLevel()" class="tool-button">🎮 Test</button>
+                <button onclick="saveLevel()" class="tool-button">💾 Save</button>
+                <button onclick="clearLevel()" class="tool-button">🗑️ Clear</button>
+                <button onclick="exitEditor()" class="tool-button">❌ Exit</button>
+            </div>
+            <div id="editorCanvas">
+                <div id="editorGround"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
