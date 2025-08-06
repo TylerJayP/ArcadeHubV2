@@ -13,6 +13,10 @@ const car = {
 let leftPressed = false;
 let rightPressed = false;
 
+// Leaderboard Integration Variables
+let scoreSubmitted = false;
+let lastScoreUpdate = 0;
+
 // Handle keyboard input
 window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') leftPressed = true;
@@ -57,6 +61,38 @@ let lastSpawnTime = 0;
 let spawnInterval = 500; // Default .5 seconds between spawns
 let backgroundImage = null;
 let guitarPickImage = null;
+
+// Leaderboard Integration Functions
+function updateLiveScore(currentScore) {
+    // Only send updates if game is running in ArcadeHub iframe
+    if (window.parent && window.parent !== window) {
+        // Throttle updates to avoid spam (only send every 100 points)
+        if (currentScore - lastScoreUpdate >= 100) {
+            window.parent.postMessage({
+                type: 'score_update',
+                score: currentScore
+            }, '*');
+            lastScoreUpdate = currentScore;
+        }
+    }
+}
+
+function submitFinalScore(finalScore) {
+    // Prevent duplicate submissions
+    if (scoreSubmitted) return;
+    scoreSubmitted = true;
+    
+    // Send final score to ArcadeHub leaderboard system
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: 'game_end',
+            score: finalScore,
+            gameId: 'rock-and-roll'
+        }, '*');
+    }
+    
+    console.log(`Rock and Roll Final Score Submitted: ${finalScore}`);
+}
 
 // Load guitar pick image
 function loadGuitarPick() {
@@ -405,6 +441,9 @@ function resetGame() {
     lastNoteIndex = 0;
     baselineOffset = defaultBaselineOffset;
     lastSpawnTime = 0;
+    // Reset leaderboard integration flags
+    scoreSubmitted = false;
+    lastScoreUpdate = 0;
     stopAudio();
     loadGuitarPick(); // Load guitar pick image
     promptForBpm();
@@ -437,9 +476,13 @@ function update() {
         const ob = obstacles[i];
         if (ob.type === 'indestructible' && checkCollision(car, ob)) {
             gameOver = true;
+            // Submit final score when game ends due to collision
+            submitFinalScore(score);
         }
         if (ob.type === 'note' && !ob.hit && checkCollision(car, ob)) {
             gameOver = true;
+            // Submit final score when game ends due to collision
+            submitFinalScore(score);
         }
     }
     
@@ -457,7 +500,11 @@ function update() {
         }
     }
     
-    if (!gameOver) score++;
+    if (!gameOver) {
+        score++;
+        // Send live score updates during gameplay
+        updateLiveScore(score);
+    }
 }
 
 function draw() {
@@ -521,8 +568,10 @@ window.addEventListener('keydown', (e) => {
             ) {
                 ob.hit = true;
                 score += 50; // Bonus for hitting note
+                // Send live score update for successful note hits
+                updateLiveScore(score);
                 break;
             }
         }
     }
-}); 
+});
