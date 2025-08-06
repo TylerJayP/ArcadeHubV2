@@ -114,6 +114,48 @@
         </div>
     </div>
 
+    <!-- NEW: Custom Leaderboard Results Popup -->
+    <div class="game-results-modal" id="game-results-modal">
+        <div class="game-results-content">
+            <div class="results-header">
+                <div class="game-over-text">GAME OVER</div>
+                <div class="game-name-result" id="game-name-result">GAME NAME</div>
+            </div>
+            
+            <div class="results-body">
+                <div class="final-score-section">
+                    <div class="score-label">FINAL SCORE</div>
+                    <div class="score-value" id="final-score-value">1,234</div>
+                </div>
+                
+                <div class="leaderboard-rank-section">
+                    <div class="rank-icon" id="rank-icon">🏆</div>
+                    <div class="rank-text">
+                        <div class="rank-label">LEADERBOARD RANK</div>
+                        <div class="rank-value" id="rank-value">#1</div>
+                        <div class="rank-comment" id="rank-comment">New High Score!</div>
+                    </div>
+                </div>
+                
+                <div class="tokens-section" id="tokens-section">
+                    <div class="tokens-earned">
+                        <div class="tokens-icon">🪙</div>
+                        <div class="tokens-text">
+                            <div class="tokens-label">TOKENS EARNED</div>
+                            <div class="tokens-value" id="tokens-value">+3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-footer">
+                <button class="play-again-btn" id="play-again-btn">🎮 PLAY AGAIN</button>
+                <button class="view-leaderboard-btn" id="view-leaderboard-btn">🏆 VIEW LEADERBOARD</button>
+                <button class="back-to-hub-btn" id="back-to-hub-btn">🏠 BACK TO HUB</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/gameRegistry.js"></script>
     <script src="js/leaderboard.js"></script>
     <script src="js/gameLoader.js"></script>

@@ -58,7 +58,7 @@ class GameRegistry {
             description: 'Jump over obstacles without hitting them. How far can you get?',
             developer: 'Tyler',
             difficulty: 4,
-            preview: '🧟',
+            preview: '🔷',
             folder: 'GeoDash',
             entryFile: 'index.html',
             tokensOnWin: 4,

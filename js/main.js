@@ -107,7 +107,7 @@ class ArcadeHub {
             fullscreenBackBtn.addEventListener('click', () => this.backToLibrary());
         }
 
-        // Fullscreen button (removed zoom button)
+        // Fullscreen button
         const fullscreenBtn = document.getElementById('fullscreen-btn');
         if (fullscreenBtn) {
             fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
@@ -125,13 +125,55 @@ class ArcadeHub {
             }
         });
 
-        // UPDATED: Better fullscreen overlay logic
+        // FIXED: Better fullscreen overlay logic
         this.setupFullscreenOverlay();
+        
+        // NEW: Setup game results popup event listeners
+        this.setupGameResultsPopup();
+    }
+
+    setupGameResultsPopup() {
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
+        const backToHubBtn = document.getElementById('back-to-hub-btn');
+        
+        if (playAgainBtn) {
+            playAgainBtn.addEventListener('click', () => {
+                this.hideGameResultsPopup();
+                // Reload the current game
+                if (this.currentGame && this.gameIframe) {
+                    this.gameIframe.src = window.gameLoader.getGameUrl(this.currentGame.id);
+                }
+            });
+        }
+        
+        if (viewLeaderboardBtn) {
+            viewLeaderboardBtn.addEventListener('click', () => {
+                this.hideGameResultsPopup();
+                this.backToLibrary();
+                // Scroll to leaderboard and switch to current game's tab
+                setTimeout(() => {
+                    const leaderboard = document.getElementById('leaderboard-panel');
+                    if (leaderboard) {
+                        leaderboard.scrollIntoView({ behavior: 'smooth' });
+                        window.leaderboardManager.updateLeaderboardDisplay(this.currentGame?.id);
+                    }
+                }, 300);
+            });
+        }
+        
+        if (backToHubBtn) {
+            backToHubBtn.addEventListener('click', () => {
+                this.hideGameResultsPopup();
+                this.backToLibrary();
+            });
+        }
     }
 
     setupFullscreenOverlay() {
-        let fullscreenTimeout;
+        let hideTimeout;
         let isMouseOverGame = false;
+        let isMouseOverOverlay = false;
         
         // Track mouse position globally
         document.addEventListener('mousemove', (e) => {
@@ -150,42 +192,52 @@ class ArcadeHub {
                                      e.clientY <= iframeRect.bottom;
                 }
                 
-                // Show overlay when mouse is NOT over the game
-                const showOverlay = !isMouseOverGame;
+                // Check if mouse is over the overlay
+                if (overlay) {
+                    const overlayRect = overlay.getBoundingClientRect();
+                    isMouseOverOverlay = e.clientX >= overlayRect.left && 
+                                        e.clientX <= overlayRect.right && 
+                                        e.clientY >= overlayRect.top && 
+                                        e.clientY <= overlayRect.bottom;
+                }
                 
-                // Show hint when mouse is near bottom-right (only when not over game)
-                const showHint = !isMouseOverGame && 
-                               e.clientX > window.innerWidth - 400 && 
+                // Show overlay when mouse is NOT over the game OR when over the overlay
+                const shouldShowOverlay = !isMouseOverGame || isMouseOverOverlay;
+                
+                // Show hint when mouse is near bottom-right
+                const showHint = e.clientX > window.innerWidth - 400 && 
                                e.clientY > window.innerHeight - 150;
                 
+                // Clear any pending hide timeout
+                if (hideTimeout) {
+                    clearTimeout(hideTimeout);
+                    hideTimeout = null;
+                }
+                
                 if (overlay) {
-                    if (showOverlay) {
+                    if (shouldShowOverlay) {
                         overlay.classList.add('visible');
                     } else {
-                        overlay.classList.remove('visible');
+                        // Add delay before hiding - only hide if mouse is over game AND not over overlay
+                        if (isMouseOverGame && !isMouseOverOverlay) {
+                            hideTimeout = setTimeout(() => {
+                                overlay.classList.remove('visible');
+                            }, 1500); // 1.5 second delay
+                        }
                     }
                 }
                 
                 if (hint) {
-                    if (showHint) {
+                    if (showHint && !isMouseOverGame) {
                         hint.classList.add('visible');
                     } else {
                         hint.classList.remove('visible');
                     }
                 }
-                
-                // Auto-hide after 3 seconds if mouse goes back to game
-                if (isMouseOverGame) {
-                    clearTimeout(fullscreenTimeout);
-                    fullscreenTimeout = setTimeout(() => {
-                        if (overlay) overlay.classList.remove('visible');
-                        if (hint) hint.classList.remove('visible');
-                    }, 3000);
-                }
             }
         });
 
-        // Also show overlay when mouse leaves the window entirely in fullscreen
+        // Show overlay when mouse leaves the window entirely in fullscreen
         document.addEventListener('mouseleave', () => {
             const overlay = document.getElementById('fullscreen-overlay');
             const gameContainer = document.getElementById('game-container');
@@ -194,6 +246,29 @@ class ArcadeHub {
                 overlay.classList.add('visible');
             }
         });
+        
+        // Keep overlay visible when hovering over it
+        const overlay = document.getElementById('fullscreen-overlay');
+        if (overlay) {
+            overlay.addEventListener('mouseenter', () => {
+                isMouseOverOverlay = true;
+                if (hideTimeout) {
+                    clearTimeout(hideTimeout);
+                    hideTimeout = null;
+                }
+                overlay.classList.add('visible');
+            });
+            
+            overlay.addEventListener('mouseleave', () => {
+                isMouseOverOverlay = false;
+                // Only hide if we're also over the game
+                if (isMouseOverGame) {
+                    hideTimeout = setTimeout(() => {
+                        overlay.classList.remove('visible');
+                    }, 500); // Shorter delay when leaving overlay
+                }
+            });
+        }
     }
 
     setupLeaderboardTabs() {
@@ -388,13 +463,8 @@ class ArcadeHub {
         if (gameIframe) {
             this.gameIframe = gameIframe;
             gameIframe.src = gameUrl;
-            
-            // Set up score monitoring
-            this.resetLiveScore();
         }
     }
-
-    // REMOVED: toggleZoom() function
 
     toggleFullscreen() {
         const gameContainer = document.getElementById('game-container');
@@ -478,9 +548,80 @@ class ArcadeHub {
         console.log('Current score:', score);
     }
 
-    resetLiveScore() {
-        // Score display removed from UI, but keeping this for potential future use
-        console.log('Score reset');
+    // NEW: Show custom game results popup
+    showGameResultsPopup(gameData) {
+        const modal = document.getElementById('game-results-modal');
+        const gameNameEl = document.getElementById('game-name-result');
+        const scoreValueEl = document.getElementById('final-score-value');
+        const rankIconEl = document.getElementById('rank-icon');
+        const rankValueEl = document.getElementById('rank-value');
+        const rankCommentEl = document.getElementById('rank-comment');
+        const tokensSection = document.getElementById('tokens-section');
+        const tokensValueEl = document.getElementById('tokens-value');
+        const rankSection = document.querySelector('.leaderboard-rank-section');
+        
+        // Update game name
+        if (gameNameEl) gameNameEl.textContent = gameData.gameName;
+        
+        // Update final score
+        if (scoreValueEl) scoreValueEl.textContent = gameData.formattedScore;
+        
+        // Update rank information
+        if (gameData.rank > 0) {
+            if (rankValueEl) rankValueEl.textContent = `#${gameData.rank}`;
+            
+            // Set rank-specific styling and content
+            rankSection.className = 'leaderboard-rank-section';
+            
+            if (gameData.rank === 1) {
+                rankSection.classList.add('rank-1');
+                if (rankIconEl) rankIconEl.textContent = '👑';
+                if (rankCommentEl) rankCommentEl.textContent = 'New Champion!';
+            } else if (gameData.rank === 2) {
+                rankSection.classList.add('rank-2');
+                if (rankIconEl) rankIconEl.textContent = '🥈';
+                if (rankCommentEl) rankCommentEl.textContent = 'Silver Medal!';
+            } else if (gameData.rank === 3) {
+                rankSection.classList.add('rank-3');
+                if (rankIconEl) rankIconEl.textContent = '🥉';
+                if (rankCommentEl) rankCommentEl.textContent = 'Bronze Medal!';
+            } else if (gameData.rank <= 5) {
+                rankSection.classList.add('rank-other');
+                if (rankIconEl) rankIconEl.textContent = '🎖️';
+                if (rankCommentEl) rankCommentEl.textContent = 'Top 5 Finish!';
+            } else {
+                rankSection.classList.add('rank-other');
+                if (rankIconEl) rankIconEl.textContent = '📊';
+                if (rankCommentEl) rankCommentEl.textContent = `Out of ${window.leaderboardManager.getLeaderboard(gameData.gameId).length} players`;
+            }
+        } else {
+            // No rank (not on leaderboard)
+            if (rankValueEl) rankValueEl.textContent = 'Unranked';
+            if (rankIconEl) rankIconEl.textContent = '🎮';
+            if (rankCommentEl) rankCommentEl.textContent = 'Keep trying!';
+            rankSection.className = 'leaderboard-rank-section rank-other';
+        }
+        
+        // Show/hide tokens section
+        if (gameData.tokensEarned > 0) {
+            tokensSection.classList.remove('hidden');
+            if (tokensValueEl) tokensValueEl.textContent = `+${gameData.tokensEarned}`;
+        } else {
+            tokensSection.classList.add('hidden');
+        }
+        
+        // Show the modal
+        if (modal) {
+            modal.classList.add('show');
+        }
+    }
+
+    // NEW: Hide custom game results popup
+    hideGameResultsPopup() {
+        const modal = document.getElementById('game-results-modal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
     }
 
     handleGameEnd(finalScore, gameId) {
@@ -511,17 +652,17 @@ class ArcadeHub {
             this.updateDisplay();
         }
         
-        // Show result
+        // Show custom results popup instead of alert
         setTimeout(() => {
-            let message = `Game Over!\nFinal Score: ${window.leaderboardManager.formatScore(finalScore, scoreType)}`;
-            if (rank > 0) {
-                message += `\nLeaderboard Rank: #${rank}`;
-            }
-            if (tokensEarned > 0) {
-                message += `\nTokens Earned: ${tokensEarned}`;
-            }
-            
-            alert(message);
+            this.showGameResultsPopup({
+                gameName: game.name,
+                gameId: gameId || game.id,
+                finalScore: finalScore,
+                formattedScore: window.leaderboardManager.formatScore(finalScore, scoreType),
+                rank: rank,
+                tokensEarned: tokensEarned,
+                scoreType: scoreType
+            });
         }, 500);
     }
 
