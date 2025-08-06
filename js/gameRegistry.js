@@ -65,6 +65,20 @@ class GameRegistry {
             scoreType: 'score',
             controls: 'WASD + Spacebar'
         });
+
+            this.addGame({
+            id: 'dice-assassin',
+            name: 'Assassin Dice',
+            description: 'Roll the dice and eliminate your targets before they get you!',
+            developer: 'Marlin',
+            difficulty: 3,
+            preview: '🎲',
+            folder: 'AssassinDice',
+            entryFile: 'index.html',
+            tokensOnWin: 4,
+            scoreType: 'score',
+            controls: 'Mouse + Number Keys 1-6'
+        });
     }
 
     addGame(gameData) {

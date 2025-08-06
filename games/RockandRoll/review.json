@@ -5,20 +5,20 @@
     "students_choice": 1,
     "easy_to_work_with": [
       {
-        "team_mate": #,
-        "easy": 0.0
+        "team_mate": 9,
+        "easy": 4.0
       },
       {
-        "team_mate": #,
-        "easy": 0.0
+        "team_mate": 12,
+        "easy": 4.0
       },
       {
-        "team_mate": #,
-        "easy": 0.0
+        "team_mate": 14,
+        "easy": 5.0
       },
       {
-        "team_mate": #,
-        "easy": 0.0
+        "team_mate": 4,
+        "easy": 4.0
       }
     ],
     "presentations": [
@@ -35,28 +35,22 @@
         "technology": 5
       },
       {
-        "team": 3,
-        "presentation": #,
-        "ai": #,
-        "technology": #
-      },
-      {
         "team": 4,
-        "presentation": #,
-        "ai": #,
-        "technology": #
-      },
-      {
-        "team": 5,
-        "presentation": #,
-        "ai": #,
-        "technology": #
+        "presentation": 4,
+        "ai": 5,
+        "technology": 3
       },
       {
         "team": 5,
         "presentation": NA,
         "ai": NA,
         "technology": NA
-      }
+      },
+      {
+        "team": 6,
+        "presentation": 5,
+        "ai": 3,
+        "technology": 5
+      },
     ]
   }

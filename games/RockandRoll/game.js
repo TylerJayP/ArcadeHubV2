@@ -60,10 +60,10 @@ let lastNoteIndex = 0;
 // Song library with hardcoded BPM and MP3 files
 const songLibrary = [
     { name: "Select a song...", bpm: 120, file: null },
-    { name: "Song 1 - 120 BPM", bpm: 120, file: "songs/song1.mp3" },
-    { name: "Song 2 - 140 BPM", bpm: 140, file: "songs/song2.mp3" },
+    { name: "Stranger - Jumpmonk", bpm: 120, file: "songs/Stranger - Jumpmonk.mp3" },
+    { name: "Willow Tree - Homephone", bpm: 140, file: "songs/Willow Tree - Homephone.mp3" },
     { name: "Hoobastank - The Reason", bpm: 166, file: "songs/Hoobastank - The Reason.mp3" },
-    { name: "Custom BPM", bpm: 120, file: null },
+    { name: "Hot Tea - Homephone", bpm: 166, file: "songs/Hot Tea - Homephone.mp3" },
     { name: "Import Pattern", bpm: 120, file: null, pattern: true }
 ];
 
@@ -305,20 +305,6 @@ function resetGame() {
     promptForBpm();
 }
 
-function endGame() {
-    gameOver = true;
-    stopAudio();
-    
-    // Send score to ArcadeHub leaderboard system
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-            type: 'game_end',
-            score: score,
-            gameId: 'rock-and-roll'
-        }, '*');
-    }
-}
-
 function update() {
     if (gameOver || waitingForBpm) return;
     
@@ -355,12 +341,10 @@ function update() {
     for (let i = 0; i < obstacles.length; i++) {
         const ob = obstacles[i];
         if (ob.type === 'indestructible' && checkCollision(car, ob)) {
-            endGame();
-            return;
+            gameOver = true;
         }
         if (ob.type === 'note' && !ob.hit && checkCollision(car, ob)) {
-            endGame();
-            return;
+            gameOver = true;
         }
     }
     
@@ -380,14 +364,6 @@ function update() {
     }
     
     if (!gameOver) score++;
-    
-    // Send live score updates to ArcadeHub
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-            type: 'score_update',
-            score: score
-        }, '*');
-    }
 }
 
 function draw() {
@@ -453,4 +429,4 @@ window.addEventListener('keydown', (e) => {
             }
         }
     }
-});
+}); 

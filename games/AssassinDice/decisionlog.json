@@ -1,0 +1,1641 @@
+[
+  {
+    "id": "decision_1754459149611_wao6z",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      1,
+      3,
+      1,
+      4,
+      1,
+      1
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      3
+    ],
+    "diceKeptValues": [
+      4
+    ],
+    "pointsGained": 4,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:45:49.611Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459151896_npq2y",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 4,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      2,
+      4,
+      4,
+      4,
+      4
+    ],
+    "alreadyKeptDice": [
+      3
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      0
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:45:51.896Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459154713_qmmz6",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 9,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      4,
+      4,
+      6,
+      6
+    ],
+    "alreadyKeptDice": [
+      3,
+      0
+    ],
+    "availableDiceIndices": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      4
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:45:54.713Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459155129_qfzpo",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 15,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      4,
+      4,
+      6,
+      6
+    ],
+    "alreadyKeptDice": [
+      3,
+      0,
+      4
+    ],
+    "availableDiceIndices": [
+      1,
+      2,
+      5
+    ],
+    "diceKeptIndices": [
+      5
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:45:55.129Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459155895_231cg",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 21,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      4,
+      4,
+      6,
+      6
+    ],
+    "alreadyKeptDice": [
+      3,
+      0,
+      4,
+      5
+    ],
+    "availableDiceIndices": [
+      1,
+      2
+    ],
+    "diceKeptIndices": [
+      1
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:45:55.895Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459156978_rjkph",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 27,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      4,
+      4,
+      6,
+      6
+    ],
+    "alreadyKeptDice": [
+      3,
+      0,
+      4,
+      5,
+      1
+    ],
+    "availableDiceIndices": [
+      2
+    ],
+    "diceKeptIndices": [
+      2
+    ],
+    "diceKeptValues": [
+      4
+    ],
+    "pointsGained": 4,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:45:56.978Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459159127_i9gnj",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "attack",
+    "attackTarget": 1,
+    "diceRolled": [
+      4,
+      1,
+      2,
+      4,
+      6,
+      2
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      1
+    ],
+    "diceKeptValues": [
+      1
+    ],
+    "pointsGained": 1,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:45:59.128Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459164476_5aa43",
+    "playerId": "AI OPPONENT",
+    "isAI": true,
+    "playerScore": 29,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      4,
+      6,
+      5,
+      5,
+      2,
+      4
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ],
+    "diceKeptValues": [
+      4,
+      6,
+      5,
+      5,
+      4
+    ],
+    "pointsGained": 24,
+    "turnFinalScore": null,
+    "gameWon": false,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:04.476Z",
+    "turnNumber": 1
+  },
+  {
+    "id": "decision_1754459168178_ueage",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      23
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      6,
+      1,
+      1
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      2
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:08.178Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459168561_dgzwn",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 5,
+    "opponentScores": [
+      23
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      6,
+      1,
+      1
+    ],
+    "alreadyKeptDice": [
+      2
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      3
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:08.561Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459169028_gikj1",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 11,
+    "opponentScores": [
+      23
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      6,
+      1,
+      1
+    ],
+    "alreadyKeptDice": [
+      2,
+      3
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      1
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:09.028Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459169429_ol0xk",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 17,
+    "opponentScores": [
+      23
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      6,
+      1,
+      1
+    ],
+    "alreadyKeptDice": [
+      2,
+      3,
+      1
+    ],
+    "availableDiceIndices": [
+      0,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      0
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:09.429Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459171044_9cb7j",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 22,
+    "opponentScores": [
+      23
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      6,
+      2,
+      5
+    ],
+    "alreadyKeptDice": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "availableDiceIndices": [
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      5
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:11.044Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459171945_wsrey",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 27,
+    "opponentScores": [
+      23
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      6,
+      2,
+      5
+    ],
+    "alreadyKeptDice": [
+      2,
+      3,
+      1,
+      0,
+      5
+    ],
+    "availableDiceIndices": [
+      4
+    ],
+    "diceKeptIndices": [
+      4
+    ],
+    "diceKeptValues": [
+      2
+    ],
+    "pointsGained": 2,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:11.945Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459174246_06sp7",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 27,
+    "opponentScores": [
+      23
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      6,
+      6,
+      5
+    ],
+    "alreadyKeptDice": [
+      2,
+      3,
+      1,
+      0,
+      5
+    ],
+    "availableDiceIndices": [
+      4
+    ],
+    "diceKeptIndices": [
+      4
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:14.246Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459179941_f4csf",
+    "playerId": "AI OPPONENT",
+    "isAI": true,
+    "playerScore": 23,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      1,
+      4,
+      4,
+      2,
+      3,
+      1
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      1,
+      2
+    ],
+    "diceKeptValues": [
+      4,
+      4
+    ],
+    "pointsGained": 8,
+    "turnFinalScore": null,
+    "gameWon": false,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:19.941Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459183662_i4jzi",
+    "playerId": "AI OPPONENT",
+    "isAI": true,
+    "playerScore": 23,
+    "currentTurnScore": 8,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      3,
+      4,
+      4,
+      6,
+      3,
+      6
+    ],
+    "alreadyKeptDice": [
+      1,
+      2
+    ],
+    "availableDiceIndices": [
+      0,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      3,
+      5
+    ],
+    "diceKeptValues": [
+      6,
+      6
+    ],
+    "pointsGained": 12,
+    "turnFinalScore": null,
+    "gameWon": false,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:23.662Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459187383_d3o7w",
+    "playerId": "AI OPPONENT",
+    "isAI": true,
+    "playerScore": 23,
+    "currentTurnScore": 20,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      1,
+      4,
+      4,
+      6,
+      5,
+      6
+    ],
+    "alreadyKeptDice": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "availableDiceIndices": [
+      0,
+      4
+    ],
+    "diceKeptIndices": [
+      4,
+      0
+    ],
+    "diceKeptValues": [
+      5,
+      1
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": null,
+    "gameWon": false,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:27.383Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459191645_iiy70",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      3,
+      6,
+      5,
+      4,
+      3,
+      2
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      3
+    ],
+    "diceKeptValues": [
+      4
+    ],
+    "pointsGained": 4,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:31.645Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459192895_14qj1",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      3,
+      6,
+      5,
+      4,
+      3,
+      2
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      2
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:32.895Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459193327_35gob",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 5,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      3,
+      6,
+      5,
+      4,
+      3,
+      2
+    ],
+    "alreadyKeptDice": [
+      2
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      1
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:33.327Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459194878_hcxrc",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 11,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      4,
+      6,
+      5,
+      5,
+      1,
+      3
+    ],
+    "alreadyKeptDice": [
+      2,
+      1
+    ],
+    "availableDiceIndices": [
+      0,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      3
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:34.878Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459196744_dfa8e",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 16,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      2,
+      6,
+      5,
+      5,
+      6,
+      3
+    ],
+    "alreadyKeptDice": [
+      2,
+      1,
+      3
+    ],
+    "availableDiceIndices": [
+      0,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      4
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:36.744Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459199111_lffpx",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 22,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      2,
+      6,
+      5,
+      5,
+      6,
+      5
+    ],
+    "alreadyKeptDice": [
+      2,
+      1,
+      3,
+      4
+    ],
+    "availableDiceIndices": [
+      0,
+      5
+    ],
+    "diceKeptIndices": [
+      5
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:39.111Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459200878_8yoia",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 27,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      5,
+      6,
+      5,
+      5,
+      6,
+      5
+    ],
+    "alreadyKeptDice": [
+      2,
+      1,
+      3,
+      4,
+      5
+    ],
+    "availableDiceIndices": [
+      0
+    ],
+    "diceKeptIndices": [
+      0
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:40.878Z",
+    "turnNumber": 2
+  },
+  {
+    "id": "decision_1754459203696_6pbhx",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "attack",
+    "attackTarget": 2,
+    "diceRolled": [
+      5,
+      2,
+      2,
+      6,
+      2,
+      6
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      4
+    ],
+    "diceKeptValues": [
+      2
+    ],
+    "pointsGained": 2,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:43.696Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459204827_b74xy",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 2,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "attack",
+    "attackTarget": 2,
+    "diceRolled": [
+      5,
+      2,
+      2,
+      6,
+      2,
+      6
+    ],
+    "alreadyKeptDice": [
+      4
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ],
+    "diceKeptIndices": [
+      2
+    ],
+    "diceKeptValues": [
+      2
+    ],
+    "pointsGained": 2,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:44.827Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459205344_1xc3b",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 4,
+    "opponentScores": [
+      19
+    ],
+    "activeOpponents": 1,
+    "gameMode": "attack",
+    "attackTarget": 2,
+    "diceRolled": [
+      5,
+      2,
+      2,
+      6,
+      2,
+      6
+    ],
+    "alreadyKeptDice": [
+      4,
+      2
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      3,
+      5
+    ],
+    "diceKeptIndices": [
+      1
+    ],
+    "diceKeptValues": [
+      2
+    ],
+    "pointsGained": 2,
+    "turnFinalScore": 6,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:45.344Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459210776_5kify",
+    "playerId": "AI OPPONENT",
+    "isAI": true,
+    "playerScore": 13,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      1,
+      4,
+      2,
+      2,
+      4,
+      3
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      1,
+      4
+    ],
+    "diceKeptValues": [
+      4,
+      4
+    ],
+    "pointsGained": 8,
+    "turnFinalScore": null,
+    "gameWon": false,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:50.776Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459214496_wpc9l",
+    "playerId": "AI OPPONENT",
+    "isAI": true,
+    "playerScore": 13,
+    "currentTurnScore": 8,
+    "opponentScores": [
+      30
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      6,
+      4,
+      4,
+      5,
+      4,
+      6
+    ],
+    "alreadyKeptDice": [
+      1,
+      4
+    ],
+    "availableDiceIndices": [
+      0,
+      2,
+      3,
+      5
+    ],
+    "diceKeptIndices": [
+      0,
+      3,
+      5
+    ],
+    "diceKeptValues": [
+      6,
+      5,
+      6
+    ],
+    "pointsGained": 17,
+    "turnFinalScore": null,
+    "gameWon": false,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:54.496Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459219144_xknu4",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      8
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      2,
+      4,
+      3,
+      4,
+      5,
+      2
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      4
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": null,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:46:59.144Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459220861_f4myg",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 5,
+    "opponentScores": [
+      8
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      4,
+      6,
+      5,
+      3,
+      5,
+      3
+    ],
+    "alreadyKeptDice": [
+      4
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ],
+    "diceKeptIndices": [
+      2
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": null,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:47:00.861Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459221327_a629i",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 10,
+    "opponentScores": [
+      8
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      4,
+      6,
+      5,
+      3,
+      5,
+      3
+    ],
+    "alreadyKeptDice": [
+      4,
+      2
+    ],
+    "availableDiceIndices": [
+      0,
+      1,
+      3,
+      5
+    ],
+    "diceKeptIndices": [
+      1
+    ],
+    "diceKeptValues": [
+      6
+    ],
+    "pointsGained": 6,
+    "turnFinalScore": null,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:47:01.327Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459224294_0hkq0",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 16,
+    "opponentScores": [
+      8
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      2,
+      6,
+      5,
+      2,
+      5,
+      3
+    ],
+    "alreadyKeptDice": [
+      4,
+      2,
+      1
+    ],
+    "availableDiceIndices": [
+      0,
+      3,
+      5
+    ],
+    "diceKeptIndices": [
+      5
+    ],
+    "diceKeptValues": [
+      3
+    ],
+    "pointsGained": 3,
+    "turnFinalScore": null,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:47:04.294Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459226294_nfjow",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 19,
+    "opponentScores": [
+      8
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      1,
+      6,
+      5,
+      5,
+      5,
+      3
+    ],
+    "alreadyKeptDice": [
+      4,
+      2,
+      1,
+      5
+    ],
+    "availableDiceIndices": [
+      0,
+      3
+    ],
+    "diceKeptIndices": [
+      3
+    ],
+    "diceKeptValues": [
+      5
+    ],
+    "pointsGained": 5,
+    "turnFinalScore": null,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:47:06.294Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459227960_jql55",
+    "playerId": "PLAYER",
+    "isAI": false,
+    "playerScore": 30,
+    "currentTurnScore": 24,
+    "opponentScores": [
+      8
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      4,
+      6,
+      5,
+      5,
+      5,
+      3
+    ],
+    "alreadyKeptDice": [
+      4,
+      2,
+      1,
+      5,
+      3
+    ],
+    "availableDiceIndices": [
+      0
+    ],
+    "diceKeptIndices": [
+      0
+    ],
+    "diceKeptValues": [
+      4
+    ],
+    "pointsGained": 4,
+    "turnFinalScore": null,
+    "gameWon": true,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:47:07.960Z",
+    "turnNumber": 3
+  },
+  {
+    "id": "decision_1754459232322_wsxvi",
+    "playerId": "AI OPPONENT",
+    "isAI": true,
+    "playerScore": 8,
+    "currentTurnScore": 0,
+    "opponentScores": [
+      28
+    ],
+    "activeOpponents": 1,
+    "gameMode": "normal",
+    "attackTarget": null,
+    "diceRolled": [
+      6,
+      2,
+      1,
+      1,
+      4,
+      5
+    ],
+    "alreadyKeptDice": [],
+    "availableDiceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "diceKeptIndices": [
+      0,
+      5
+    ],
+    "diceKeptValues": [
+      6,
+      5
+    ],
+    "pointsGained": 11,
+    "turnFinalScore": null,
+    "gameWon": false,
+    "decisionQuality": null,
+    "gameId": "game_1754459147779_v18my0cn7",
+    "timestamp": "2025-08-06T05:47:12.322Z",
+    "turnNumber": 3
+  }
+]
