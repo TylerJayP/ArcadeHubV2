@@ -1,8 +1,8 @@
 {
   "name": "assassin-dice-game",
   "version": "0.1.0",
-  "homepage": "./",
   "private": true,
+  "homepage": "./",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

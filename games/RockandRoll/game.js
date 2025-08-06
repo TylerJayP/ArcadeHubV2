@@ -45,27 +45,72 @@ let gameOver = false;
 
 let noteTimer = 0;
 let blackTimer = 0;
-const noteSpawnInterval = 30;
-
 let bpm = 120;
 let waitingForBpm = true;
-let noteFallBeats = 4; // Number of beats for a note to reach the baseline
-let obstacleSpeed = 4; // Will be recalculated
+let obstacleSpeed = 2; // Fixed falling speed in pixels per frame
 let currentSong = null;
 let audio = null;
 let notePattern = null;
 let patternStartTime = 0;
 let lastNoteIndex = 0;
+let lastSpawnTime = 0;
+let spawnInterval = 500; // Default .5 seconds between spawns
+let backgroundImage = null;
+let guitarPickImage = null;
 
-// Song library with hardcoded BPM and MP3 files
+// Load guitar pick image
+function loadGuitarPick() {
+    guitarPickImage = new Image();
+    guitarPickImage.onload = function() {
+        // Guitar pick loaded successfully
+        console.log('Guitar pick loaded');
+    };
+    guitarPickImage.onerror = function() {
+        console.log('Failed to load guitar pick image');
+        guitarPickImage = null;
+    };
+    guitarPickImage.src = 'GuitarPick.png';
+}
+
+// Song library with hardcoded BPM, MP3 files, and album art
 const songLibrary = [
-    { name: "Select a song...", bpm: 120, file: null },
-    { name: "Stranger - Jumpmonk", bpm: 120, file: "songs/Stranger - Jumpmonk.mp3" },
-    { name: "Willow Tree - Homephone", bpm: 140, file: "songs/Willow Tree - Homephone.mp3" },
-    { name: "Hoobastank - The Reason", bpm: 166, file: "songs/Hoobastank - The Reason.mp3" },
-    { name: "Hot Tea - Homephone", bpm: 166, file: "songs/Hot Tea - Homephone.mp3" },
-    { name: "Import Pattern", bpm: 120, file: null, pattern: true }
+    { name: "Select a song...", bpm: 120, file: null, background: null },
+    { name: "Stranger - Jumpmonk", bpm: 148, file: "songs/Stranger - Jumpmonk.mp3", background: "backgrounds/Stranger.jpg" },
+    { name: "Willow Tree - Homephone", bpm: 148, file: "songs/Willow Tree - Homephone.mp3", background: "backgrounds/Willow Tree.jpeg" },
+    { name: "Hoobastank - The Reason", bpm: 166, file: "songs/Hoobastank - The Reason.mp3", background: "backgrounds/The Reason.jpg" },
+    { name: "Hot Tea - Homephone", bpm: 90, file: "songs/Hot Tea - Homephone.mp3", background: "backgrounds/Hot Tea.jpeg" },
+    { name: "Import Pattern", bpm: 120, file: null, pattern: true, background: null }
 ];
+
+function loadBackground(song) {
+    if (song && song.background) {
+        backgroundImage = new Image();
+        backgroundImage.onload = function() {
+            // Background loaded successfully
+        };
+        backgroundImage.onerror = function() {
+            console.log('Failed to load background:', song.background);
+            backgroundImage = null;
+        };
+        backgroundImage.src = song.background;
+    } else {
+        backgroundImage = null;
+    }
+}
+
+function drawBackground() {
+    if (backgroundImage) {
+        // Draw background image to fill the canvas
+        ctx.save();
+        ctx.globalAlpha = 0.3; // Make background semi-transparent so it doesn't interfere with gameplay
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+    } else {
+        // Default gray background if no album art
+        ctx.fillStyle = '#444';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+}
 
 function createSongSelector() {
     // Create song selection UI
@@ -110,7 +155,8 @@ function createSongSelector() {
         if (selectedSong) {
             currentSong = selectedSong;
             bpm = selectedSong.bpm;
-            calculateObstacleSpeed();
+            spawnInterval = calculateSpawnInterval();
+            loadBackground(selectedSong);
             
             // Show/hide pattern file input
             const patternFile = document.getElementById('patternFile');
@@ -138,7 +184,7 @@ function createSongSelector() {
                 try {
                     notePattern = JSON.parse(e.target.result);
                     bpm = notePattern.bpm || 120;
-                    calculateObstacleSpeed();
+                    spawnInterval = calculateSpawnInterval();
                     alert('Pattern loaded successfully!');
                 } catch (error) {
                     alert('Error loading pattern: ' + error.message);
@@ -190,17 +236,66 @@ function promptForBpm() {
 }
 
 function checkCollision(rect1, rect2) {
-    return (
-        rect1.x < rect2.x + rect2.width &&
-        rect1.x + rect1.width > rect2.x &&
-        rect1.y < rect2.y + rect2.height &&
-        rect1.y + rect1.height > rect2.y
-    );
+    // For guitar pick, use a more precise collision detection
+    if (guitarPickImage) {
+        // Use the scaled dimensions of the guitar pick for collision
+        const scaleX = car.width / guitarPickImage.width;
+        const scale = scaleX * 2; // Double the size to match drawing
+        
+        const scaledWidth = guitarPickImage.width * scale;
+        const scaledHeight = guitarPickImage.height * scale;
+        
+        // Shrink the hitbox by 75% (25% of original size)
+        const hitboxWidth = scaledWidth * 0.25;
+        const hitboxHeight = scaledHeight * 0.25;
+        
+        const pickX = car.x + (car.width - scaledWidth) / 2;
+        const pickY = car.y + (car.height - scaledHeight) / 2;
+        
+        // Center the hitbox within the guitar pick
+        const hitboxX = pickX + (scaledWidth - hitboxWidth) / 2;
+        const hitboxY = pickY + (scaledHeight - hitboxHeight) / 2;
+        
+        // Check collision with the smaller hitbox
+        return (
+            hitboxX < rect2.x + rect2.width &&
+            hitboxX + hitboxWidth > rect2.x &&
+            hitboxY < rect2.y + rect2.height &&
+            hitboxY + hitboxHeight > rect2.y
+        );
+    } else {
+        // Fallback to original rectangle collision
+        return (
+            rect1.x < rect2.x + rect2.width &&
+            rect1.x + rect1.width > rect2.x &&
+            rect1.y < rect2.y + rect2.height &&
+            rect1.y + rect1.height > rect2.y
+        );
+    }
 }
 
 function drawCar() {
-    ctx.fillStyle = '#0f0';
-    ctx.fillRect(car.x, car.y, car.width, car.height);
+    if (guitarPickImage) {
+        // Draw guitar pick image
+        ctx.save();
+        // Scale the guitar pick to match the car's width, then make it 2x bigger
+        const scaleX = car.width / guitarPickImage.width;
+        const scale = scaleX * 2; // Double the size
+        
+        const scaledWidth = guitarPickImage.width * scale;
+        const scaledHeight = guitarPickImage.height * scale;
+        
+        // Center the image horizontally and vertically in the car's position
+        const x = car.x + (car.width - scaledWidth) / 2;
+        const y = car.y + (car.height - scaledHeight) / 2;
+        
+        ctx.drawImage(guitarPickImage, x, y, scaledWidth, scaledHeight);
+        ctx.restore();
+    } else {
+        // Fallback to green rectangle if image fails to load
+        ctx.fillStyle = '#0f0';
+        ctx.fillRect(car.x, car.y, car.width, car.height);
+    }
 }
 
 function drawObstacle(obstacle) {
@@ -211,6 +306,15 @@ function drawObstacle(obstacle) {
         ctx.lineWidth = 2;
         ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     }
+}
+
+function calculateSpawnInterval() {
+    // Calculate spawn interval based on BPM
+    // Spawn notes every beat for more intense rhythm gameplay
+    const beatsPerSpawn = 1; // Spawn every beat
+    const secondsPerBeat = 60 / bpm;
+    const secondsPerSpawn = secondsPerBeat * beatsPerSpawn;
+    return secondsPerSpawn * 1000; // Convert to milliseconds
 }
 
 function spawnObstacles() {
@@ -238,51 +342,50 @@ function spawnObstacles() {
             }
         }
     } else {
-        // Original random spawning
-        const noteLane = Math.floor(Math.random() * lanes);
-        obstacles.push({
-            type: 'note',
-            lane: noteLane,
-            x: noteLane * laneWidth,
-            y: -noteHeight,
-            width: noteWidth,
-            height: noteHeight,
-            color: noteColors[noteLane],
-            key: keyMap[noteLane],
-            hit: false
-        });
+        // BPM-based spawning - spawn notes at controlled intervals
+        const currentTime = Date.now();
         
-        const availableLanes = [];
-        for (let lane = 0; lane < lanes; lane++) {
-            if (lane === noteLane) continue;
-            const hasObstacleAtTop = obstacles.some(ob => ob.lane === lane && ob.y < noteHeight);
-            if (!hasObstacleAtTop) availableLanes.push(lane);
-        }
-        if (availableLanes.length > 0) {
-            const blackLane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+        if (currentTime - lastSpawnTime >= spawnInterval) {
+            const noteLane = Math.floor(Math.random() * lanes);
             obstacles.push({
-                type: 'indestructible',
-                lane: blackLane,
-                x: blackLane * laneWidth,
+                type: 'note',
+                lane: noteLane,
+                x: noteLane * laneWidth,
                 y: -noteHeight,
                 width: noteWidth,
                 height: noteHeight,
-                color: '#000',
+                color: noteColors[noteLane],
+                key: keyMap[noteLane],
+                hit: false
             });
+            
+            // Occasionally spawn black obstacle in a different lane
+            if (Math.random() < 0.3) { // 30% chance
+                const availableLanes = [];
+                for (let lane = 0; lane < lanes; lane++) {
+                    if (lane === noteLane) continue;
+                    const hasObstacleAtTop = obstacles.some(ob => ob.lane === lane && ob.y < noteHeight);
+                    if (!hasObstacleAtTop) availableLanes.push(lane);
+                }
+                if (availableLanes.length > 0) {
+                    const blackLane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+                    obstacles.push({
+                        type: 'indestructible',
+                        lane: blackLane,
+                        x: blackLane * laneWidth,
+                        y: -noteHeight,
+                        width: noteWidth,
+                        height: noteHeight,
+                        color: '#000',
+                    });
+                }
+            }
+            
+            lastSpawnTime = currentTime;
         }
     }
 }
 
-function calculateObstacleSpeed() {
-    // Distance from spawn (y = -noteHeight) to baseline
-    const distance = (car.y - baselineOffset) + noteHeight;
-    // Time for note to reach baseline in seconds: (noteFallBeats * 60) / bpm
-    const timeSeconds = (noteFallBeats * 60) / bpm;
-    // Speed in px per frame (assuming 60fps): distance / (timeSeconds * 60)
-    obstacleSpeed = distance / (timeSeconds * 60);
-}
-
-// Make the baseline 50px wider (25px on each side)
 function drawBaseline() {
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 3;
@@ -301,7 +404,9 @@ function resetGame() {
     notePattern = null;
     lastNoteIndex = 0;
     baselineOffset = defaultBaselineOffset;
+    lastSpawnTime = 0;
     stopAudio();
+    loadGuitarPick(); // Load guitar pick image
     promptForBpm();
 }
 
@@ -316,20 +421,10 @@ function update() {
         car.x += car.speed;
     }
     
-    // Spawn obstacles
-    if (notePattern && notePattern.notes) {
-        // Pattern-based spawning
-        spawnObstacles();
-    } else {
-        // Original timer-based spawning
-        obstacleTimer++;
-        if (obstacleTimer > noteSpawnInterval) {
-            spawnObstacles();
-            obstacleTimer = 0;
-        }
-    }
+    // Spawn obstacles based on BPM or pattern
+    spawnObstacles();
     
-    // Move obstacles
+    // Move obstacles at consistent speed
     for (let i = 0; i < obstacles.length; i++) {
         obstacles[i].y += obstacleSpeed;
     }
@@ -359,7 +454,6 @@ function update() {
             ob.hit = true; // Mark as processed
             baselineOffset -= 10;
             if (baselineOffset < 0) baselineOffset = 0;
-            calculateObstacleSpeed();
         }
     }
     
@@ -368,6 +462,7 @@ function update() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
     drawCar();
     drawBaseline();
     obstacles.forEach(drawObstacle);
@@ -395,7 +490,8 @@ function gameLoop() {
     }
 }
 
-// On initial load, prompt for BPM and start game
+// On initial load, load guitar pick and prompt for BPM
+loadGuitarPick();
 promptForBpm();
 if (!waitingForBpm) gameLoop();
 
