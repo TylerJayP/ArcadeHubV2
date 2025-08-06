@@ -47,17 +47,6 @@ class GeometryDash {
         this.unlockedLevels = JSON.parse(localStorage.getItem('unlockedLevels')) || [1];
         this.completedLevels = JSON.parse(localStorage.getItem('completedLevels')) || [];
         
-        // Editor properties
-        this.editorMode = false;
-        this.editorObstacles = [];
-        this.selectedTool = 'spike';
-        this.selectedObstacle = null;
-        this.isDragging = false;
-        this.draggedObstacle = null;
-        this.dragOffset = { x: 0, y: 0 };
-        this.customLevels = JSON.parse(localStorage.getItem('customLevels')) || [];
-        this.currentCustomLevel = null;
-        
         // Dev mode properties
         this.devMode = false;
         
@@ -68,117 +57,243 @@ class GeometryDash {
     createLevels() {
         return {
             1: {
-                name: "Spike Gauntlet",
+                name: "First Steps",
                 length: 2000,
                 obstacles: [
-                    {x: 200, type: 'spike'},
-                    {x: 320, type: 'spike'},
-                    {x: 480, type: 'platform', width: 60, height: 40},
-                    {x: 620, type: 'spike'},
-                    {x: 740, type: 'spike'},
-                    {x: 880, type: 'block'},
-                    {x: 1020, type: 'spike'},
-                    {x: 1180, type: 'platform', width: 50, height: 60},
-                    {x: 1320, type: 'spike'},
-                    {x: 1460, type: 'spike'},
-                    {x: 1600, type: 'platform', width: 70, height: 30},
-                    {x: 1760, type: 'spike'},
-                    {x: 1900, type: 'spike'}
+                    {x: 300, type: 'spike'},
+                    {x: 450, type: 'spike'},
+                    {x: 600, type: 'platform', width: 60, height: 40},
+                    {x: 800, type: 'spike'},
+                    {x: 950, type: 'block'},
+                    {x: 1100, type: 'spike'},
+                    {x: 1300, type: 'platform', width: 50, height: 60},
+                    {x: 1500, type: 'spike'},
+                    {x: 1650, type: 'platform', width: 70, height: 30},
+                    {x: 1850, type: 'spike'}
                 ]
             },
             2: {
-                name: "Block Fortress",
+                name: "Block Runner",
                 length: 2200,
                 obstacles: [
-                    {x: 180, type: 'block'},
-                    {x: 320, type: 'platform', width: 50, height: 70},
-                    {x: 480, type: 'block'},
-                    {x: 620, type: 'spike'},
-                    {x: 760, type: 'block'},
-                    {x: 920, type: 'platform', width: 60, height: 40},
-                    {x: 1080, type: 'block'},
-                    {x: 1220, type: 'spike'},
-                    {x: 1360, type: 'block'},
-                    {x: 1520, type: 'platform', width: 45, height: 80},
-                    {x: 1680, type: 'spike'},
-                    {x: 1820, type: 'block'},
-                    {x: 1980, type: 'spike'},
-                    {x: 2120, type: 'block'}
+                    {x: 250, type: 'block'},
+                    {x: 400, type: 'platform', width: 50, height: 70},
+                    {x: 550, type: 'spike'},
+                    {x: 700, type: 'block'},
+                    {x: 880, type: 'platform', width: 60, height: 40},
+                    {x: 1050, type: 'spike'},
+                    {x: 1200, type: 'block'},
+                    {x: 1380, type: 'platform', width: 45, height: 80},
+                    {x: 1550, type: 'spike'},
+                    {x: 1720, type: 'block'},
+                    {x: 1900, type: 'spike'},
+                    {x: 2050, type: 'platform', width: 55, height: 35}
                 ]
             },
             3: {
-                name: "Platform Nightmare",
+                name: "Platform Paradise",
                 length: 2400,
                 obstacles: [
-                    {x: 160, type: 'platform', width: 50, height: 50},
-                    {x: 300, type: 'spike'},
-                    {x: 440, type: 'platform', width: 40, height: 70},
-                    {x: 580, type: 'spike'},
-                    {x: 720, type: 'platform', width: 55, height: 30},
-                    {x: 860, type: 'block'},
-                    {x: 1000, type: 'platform', width: 45, height: 60},
-                    {x: 1140, type: 'spike'},
-                    {x: 1280, type: 'platform', width: 60, height: 40},
-                    {x: 1420, type: 'spike'},
-                    {x: 1560, type: 'platform', width: 40, height: 80},
-                    {x: 1700, type: 'spike'},
-                    {x: 1840, type: 'platform', width: 50, height: 25},
-                    {x: 1980, type: 'block'},
-                    {x: 2120, type: 'platform', width: 45, height: 55},
-                    {x: 2260, type: 'spike'}
+                    {x: 200, type: 'platform', width: 50, height: 50},
+                    {x: 350, type: 'spike'},
+                    {x: 500, type: 'platform', width: 40, height: 70},
+                    {x: 650, type: 'spike'},
+                    {x: 800, type: 'platform', width: 55, height: 30},
+                    {x: 950, type: 'block'},
+                    {x: 1120, type: 'platform', width: 45, height: 60},
+                    {x: 1280, type: 'spike'},
+                    {x: 1450, type: 'platform', width: 60, height: 40},
+                    {x: 1620, type: 'spike'},
+                    {x: 1780, type: 'platform', width: 40, height: 80},
+                    {x: 1950, type: 'spike'},
+                    {x: 2100, type: 'platform', width: 50, height: 25},
+                    {x: 2280, type: 'spike'}
                 ]
             },
             4: {
-                name: "Chaos Theory",
+                name: "Mixed Mayhem",
                 length: 2600,
                 obstacles: [
-                    {x: 140, type: 'spike'},
-                    {x: 260, type: 'platform', width: 40, height: 45},
-                    {x: 380, type: 'spike'},
-                    {x: 500, type: 'block'},
-                    {x: 620, type: 'spike'},
-                    {x: 760, type: 'platform', width: 50, height: 70},
-                    {x: 900, type: 'spike'},
-                    {x: 1020, type: 'spike'},
-                    {x: 1160, type: 'block'},
-                    {x: 1300, type: 'platform', width: 45, height: 30},
-                    {x: 1440, type: 'spike'},
-                    {x: 1580, type: 'block'},
-                    {x: 1720, type: 'spike'},
-                    {x: 1860, type: 'platform', width: 40, height: 60},
-                    {x: 2000, type: 'spike'},
-                    {x: 2140, type: 'spike'},
-                    {x: 2280, type: 'block'},
-                    {x: 2420, type: 'platform', width: 55, height: 40},
-                    {x: 2560, type: 'spike'}
+                    {x: 180, type: 'spike'},
+                    {x: 320, type: 'platform', width: 40, height: 45},
+                    {x: 480, type: 'spike'},
+                    {x: 620, type: 'block'},
+                    {x: 780, type: 'spike'},
+                    {x: 940, type: 'platform', width: 50, height: 70},
+                    {x: 1100, type: 'spike'},
+                    {x: 1260, type: 'block'},
+                    {x: 1420, type: 'platform', width: 45, height: 30},
+                    {x: 1580, type: 'spike'},
+                    {x: 1740, type: 'block'},
+                    {x: 1900, type: 'spike'},
+                    {x: 2060, type: 'platform', width: 40, height: 60},
+                    {x: 2220, type: 'spike'},
+                    {x: 2380, type: 'platform', width: 55, height: 40},
+                    {x: 2520, type: 'spike'}
                 ]
             },
             5: {
-                name: "The Crucible",
+                name: "The Gauntlet",
+                length: 2800,
+                obstacles: [
+                    {x: 160, type: 'spike'},
+                    {x: 300, type: 'platform', width: 40, height: 50},
+                    {x: 460, type: 'spike'},
+                    {x: 600, type: 'spike'},
+                    {x: 760, type: 'block'},
+                    {x: 920, type: 'platform', width: 45, height: 70},
+                    {x: 1080, type: 'spike'},
+                    {x: 1240, type: 'platform', width: 50, height: 30},
+                    {x: 1400, type: 'spike'},
+                    {x: 1560, type: 'block'},
+                    {x: 1720, type: 'spike'},
+                    {x: 1880, type: 'platform', width: 40, height: 60},
+                    {x: 2040, type: 'spike'},
+                    {x: 2200, type: 'block'},
+                    {x: 2360, type: 'platform', width: 55, height: 40},
+                    {x: 2520, type: 'spike'},
+                    {x: 2680, type: 'spike'}
+                ]
+            },
+            6: {
+                name: "Speed Demon",
                 length: 3000,
+                obstacles: [
+                    {x: 200, type: 'spike'},
+                    {x: 320, type: 'spike'},
+                    {x: 480, type: 'platform', width: 45, height: 40},
+                    {x: 640, type: 'spike'},
+                    {x: 780, type: 'spike'},
+                    {x: 920, type: 'block'},
+                    {x: 1080, type: 'platform', width: 50, height: 30},
+                    {x: 1220, type: 'spike'},
+                    {x: 1360, type: 'spike'},
+                    {x: 1520, type: 'platform', width: 40, height: 50},
+                    {x: 1680, type: 'spike'},
+                    {x: 1820, type: 'block'},
+                    {x: 1980, type: 'spike'},
+                    {x: 2140, type: 'platform', width: 60, height: 35},
+                    {x: 2300, type: 'spike'},
+                    {x: 2460, type: 'spike'},
+                    {x: 2620, type: 'block'},
+                    {x: 2780, type: 'spike'},
+                    {x: 2920, type: 'platform', width: 55, height: 45}
+                ]
+            },
+            7: {
+                name: "Sky Highway",
+                length: 3200,
+                obstacles: [
+                    {x: 180, type: 'platform', width: 50, height: 60},
+                    {x: 340, type: 'spike'},
+                    {x: 500, type: 'platform', width: 45, height: 80},
+                    {x: 660, type: 'platform', width: 40, height: 40},
+                    {x: 820, type: 'spike'},
+                    {x: 980, type: 'platform', width: 60, height: 50},
+                    {x: 1160, type: 'spike'},
+                    {x: 1320, type: 'platform', width: 35, height: 90},
+                    {x: 1480, type: 'block'},
+                    {x: 1640, type: 'platform', width: 55, height: 35},
+                    {x: 1800, type: 'spike'},
+                    {x: 1960, type: 'platform', width: 40, height: 70},
+                    {x: 2140, type: 'platform', width: 50, height: 45},
+                    {x: 2300, type: 'spike'},
+                    {x: 2460, type: 'platform', width: 45, height: 55},
+                    {x: 2620, type: 'spike'},
+                    {x: 2780, type: 'platform', width: 60, height: 30},
+                    {x: 2940, type: 'spike'},
+                    {x: 3100, type: 'platform', width: 50, height: 65}
+                ]
+            },
+            8: {
+                name: "Obstacle Course",
+                length: 3400,
+                obstacles: [
+                    {x: 160, type: 'spike'},
+                    {x: 280, type: 'block'},
+                    {x: 420, type: 'platform', width: 45, height: 50},
+                    {x: 580, type: 'spike'},
+                    {x: 720, type: 'platform', width: 40, height: 70},
+                    {x: 880, type: 'spike'},
+                    {x: 1020, type: 'block'},
+                    {x: 1180, type: 'platform', width: 50, height: 40},
+                    {x: 1340, type: 'spike'},
+                    {x: 1480, type: 'platform', width: 35, height: 60},
+                    {x: 1640, type: 'spike'},
+                    {x: 1800, type: 'block'},
+                    {x: 1960, type: 'spike'},
+                    {x: 2120, type: 'platform', width: 60, height: 35},
+                    {x: 2280, type: 'spike'},
+                    {x: 2440, type: 'platform', width: 40, height: 80},
+                    {x: 2600, type: 'block'},
+                    {x: 2760, type: 'spike'},
+                    {x: 2920, type: 'platform', width: 45, height: 45},
+                    {x: 3080, type: 'spike'},
+                    {x: 3240, type: 'platform', width: 55, height: 55}
+                ]
+            },
+            9: {
+                name: "Expert Challenge",
+                length: 3600,
+                obstacles: [
+                    {x: 140, type: 'spike'},
+                    {x: 260, type: 'platform', width: 40, height: 60},
+                    {x: 400, type: 'spike'},
+                    {x: 520, type: 'spike'},
+                    {x: 660, type: 'block'},
+                    {x: 800, type: 'platform', width: 35, height: 75},
+                    {x: 940, type: 'spike'},
+                    {x: 1080, type: 'platform', width: 45, height: 40},
+                    {x: 1220, type: 'spike'},
+                    {x: 1360, type: 'block'},
+                    {x: 1500, type: 'platform', width: 50, height: 55},
+                    {x: 1660, type: 'spike'},
+                    {x: 1800, type: 'spike'},
+                    {x: 1940, type: 'platform', width: 40, height: 70},
+                    {x: 2100, type: 'spike'},
+                    {x: 2240, type: 'block'},
+                    {x: 2380, type: 'platform', width: 45, height: 35},
+                    {x: 2540, type: 'spike'},
+                    {x: 2680, type: 'platform', width: 60, height: 50},
+                    {x: 2840, type: 'spike'},
+                    {x: 2980, type: 'block'},
+                    {x: 3140, type: 'spike'},
+                    {x: 3280, type: 'platform', width: 50, height: 65},
+                    {x: 3440, type: 'spike'}
+                ]
+            },
+            10: {
+                name: "Master's Trial",
+                length: 4000,
                 obstacles: [
                     {x: 120, type: 'spike'},
                     {x: 240, type: 'platform', width: 40, height: 50},
                     {x: 360, type: 'spike'},
-                    {x: 480, type: 'spike'},
-                    {x: 620, type: 'block'},
-                    {x: 760, type: 'platform', width: 45, height: 70},
-                    {x: 900, type: 'spike'},
-                    {x: 1020, type: 'spike'},
-                    {x: 1160, type: 'platform', width: 50, height: 30},
-                    {x: 1300, type: 'spike'},
-                    {x: 1440, type: 'block'},
-                    {x: 1580, type: 'spike'},
-                    {x: 1720, type: 'platform', width: 40, height: 60},
-                    {x: 1860, type: 'spike'},
-                    {x: 1980, type: 'spike'},
-                    {x: 2120, type: 'block'},
-                    {x: 2260, type: 'platform', width: 55, height: 40},
-                    {x: 2400, type: 'spike'},
-                    {x: 2520, type: 'spike'},
-                    {x: 2660, type: 'platform', width: 45, height: 80},
-                    {x: 2800, type: 'spike'},
-                    {x: 2940, type: 'spike'}
+                    {x: 480, type: 'block'},
+                    {x: 620, type: 'platform', width: 45, height: 70},
+                    {x: 760, type: 'spike'},
+                    {x: 880, type: 'spike'},
+                    {x: 1020, type: 'platform', width: 35, height: 80},
+                    {x: 1160, type: 'spike'},
+                    {x: 1300, type: 'block'},
+                    {x: 1440, type: 'platform', width: 50, height: 40},
+                    {x: 1600, type: 'spike'},
+                    {x: 1740, type: 'platform', width: 40, height: 60},
+                    {x: 1880, type: 'spike'},
+                    {x: 2020, type: 'block'},
+                    {x: 2160, type: 'spike'},
+                    {x: 2300, type: 'platform', width: 55, height: 35},
+                    {x: 2460, type: 'spike'},
+                    {x: 2600, type: 'platform', width: 40, height: 75},
+                    {x: 2760, type: 'spike'},
+                    {x: 2900, type: 'block'},
+                    {x: 3040, type: 'platform', width: 45, height: 45},
+                    {x: 3200, type: 'spike'},
+                    {x: 3340, type: 'spike'},
+                    {x: 3480, type: 'platform', width: 60, height: 50},
+                    {x: 3640, type: 'spike'},
+                    {x: 3780, type: 'block'},
+                    {x: 3920, type: 'spike'}
                 ]
             }
         };
@@ -328,401 +443,6 @@ class GeometryDash {
         this.progressContainer.style.display = 'none';
         this.modeInfo.textContent = 'Endless Mode';
         this.startGame();
-    }
-    
-    startCustomLevel(levelData) {
-        this.gameMode = 'custom';
-        this.currentCustomLevel = levelData;
-        this.levelLength = levelData.length;
-        this.levelObstacles = [...levelData.obstacles];
-        this.obstacleIndex = 0;
-        this.levelProgress = 0;
-        
-        this.progressContainer.style.display = 'block';
-        this.levelInfo.textContent = `Custom: ${levelData.name}`;
-        this.modeInfo.textContent = 'Custom Level';
-        this.updateProgress();
-        this.startGame();
-    }
-    
-    openLevelEditor() {
-        this.editorMode = true;
-        this.clearSelection();
-        document.getElementById('customLevelSelector').style.display = 'none';
-        document.getElementById('levelEditor').style.display = 'block';
-        this.editorObstacles = [];
-        this.setupEditorCanvas();
-    }
-    
-    setupEditorCanvas() {
-        const canvas = document.getElementById('editorCanvas');
-        canvas.style.width = '3000px';
-        
-        canvas.onclick = (e) => this.handleCanvasClick(e);
-        canvas.onmousedown = (e) => this.handleMouseDown(e);
-        canvas.onmousemove = (e) => this.handleMouseMove(e);
-        canvas.onmouseup = (e) => this.handleMouseUp(e);
-        
-        canvas.ondragstart = () => false;
-        
-        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
-        
-        this.updateSizeControls();
-    }
-    
-    handleCanvasClick(e) {
-        if (this.isDragging) return;
-        
-        const canvas = document.getElementById('editorCanvas');
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left + canvas.scrollLeft;
-        const y = e.clientY - rect.top;
-        
-        this.clearSelection();
-        
-        if (this.selectedTool === 'delete') {
-            this.deleteObstacleAt(x, y);
-        } else {
-            this.placeObstacle(x, y);
-        }
-    }
-    
-    clearSelection() {
-        if (this.selectedObstacle) {
-            const element = document.getElementById('editor-' + this.selectedObstacle.id);
-            if (element) {
-                element.classList.remove('selected');
-            }
-            this.selectedObstacle = null;
-        }
-    }
-    
-    selectObstacle(obstacle) {
-        this.clearSelection();
-        this.selectedObstacle = obstacle;
-        const element = document.getElementById('editor-' + obstacle.id);
-        if (element) {
-            element.classList.add('selected');
-        }
-    }
-    
-    handleMouseDown(e) {
-        const canvas = document.getElementById('editorCanvas');
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left + canvas.scrollLeft;
-        const y = e.clientY - rect.top;
-        
-        const clickedObstacle = this.getObstacleAt(x, y);
-        if (clickedObstacle && this.selectedTool !== 'delete') {
-            this.isDragging = true;
-            this.draggedObstacle = clickedObstacle;
-            this.selectObstacle(clickedObstacle);
-            
-            this.dragOffset.x = x - clickedObstacle.x;
-            this.dragOffset.y = y - clickedObstacle.y;
-            
-            const element = document.getElementById('editor-' + clickedObstacle.id);
-            if (element) {
-                element.style.opacity = '0.7';
-                element.style.zIndex = '1000';
-            }
-            
-            e.preventDefault();
-        }
-    }
-    
-    handleMouseMove(e) {
-        if (!this.isDragging || !this.draggedObstacle) return;
-        
-        const canvas = document.getElementById('editorCanvas');
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left + canvas.scrollLeft;
-        const y = e.clientY - rect.top;
-        
-        const newX = Math.round((x - this.dragOffset.x) / 20) * 20;
-        const newY = Math.round((y - this.dragOffset.y) / 20) * 20;
-        
-        const canvasHeight = 340;
-        this.draggedObstacle.x = Math.max(0, newX);
-        this.draggedObstacle.y = Math.max(this.draggedObstacle.height, Math.min(canvasHeight - 20, newY));
-        
-        this.updateObstaclePosition(this.draggedObstacle);
-    }
-    
-    updateObstaclePosition(obstacle) {
-        const element = document.getElementById('editor-' + obstacle.id);
-        if (element) {
-            if (obstacle.type === 'spike') {
-                element.style.left = (obstacle.x - 15) + 'px';
-                element.style.top = (obstacle.y - obstacle.height) + 'px';
-            } else {
-                element.style.left = obstacle.x + 'px';
-                element.style.top = (obstacle.y - obstacle.height) + 'px';
-            }
-        }
-    }
-    
-    handleMouseUp(e) {
-        if (this.isDragging && this.draggedObstacle) {
-            const element = document.getElementById('editor-' + this.draggedObstacle.id);
-            if (element) {
-                element.style.opacity = '1';
-                element.style.zIndex = 'auto';
-            }
-            
-            this.isDragging = false;
-            this.draggedObstacle = null;
-        }
-    }
-    
-    getObstacleAt(x, y) {
-        return this.editorObstacles.find(obs => {
-            const obsLeft = obs.type === 'spike' ? obs.x - 15 : obs.x;
-            const obsRight = obs.type === 'spike' ? obs.x + 15 : obs.x + obs.width;
-            const obsTop = obs.y - obs.height;
-            const obsBottom = obs.y;
-            
-            return x >= obsLeft && x <= obsRight && y >= obsTop && y <= obsBottom;
-        });
-    }
-    
-    handleKeyDown(e) {
-        if (!this.editorMode || !this.selectedObstacle) return;
-        
-        const moveAmount = e.shiftKey ? 20 : 5;
-        let moved = false;
-        
-        switch(e.key) {
-            case 'ArrowLeft':
-                this.selectedObstacle.x = Math.max(0, this.selectedObstacle.x - moveAmount);
-                moved = true;
-                break;
-            case 'ArrowRight':
-                this.selectedObstacle.x += moveAmount;
-                moved = true;
-                break;
-            case 'ArrowUp':
-                this.selectedObstacle.y = Math.max(this.selectedObstacle.height, this.selectedObstacle.y - moveAmount);
-                moved = true;
-                break;
-            case 'ArrowDown':
-                this.selectedObstacle.y = Math.min(340 - 20, this.selectedObstacle.y + moveAmount);
-                moved = true;
-                break;
-            case 'Delete':
-            case 'Backspace':
-                this.deleteObstacle(this.selectedObstacle.id);
-                moved = true;
-                break;
-        }
-        
-        if (moved) {
-            e.preventDefault();
-            if (this.selectedObstacle) {
-                this.updateObstaclePosition(this.selectedObstacle);
-            }
-        }
-    }
-    
-    placeObstacle(x, y) {
-        if (this.selectedTool === 'delete') return;
-        
-        const canvasHeight = 340;
-        
-        let width, height;
-        if (this.selectedTool === 'spike') {
-            width = 30;
-            height = 40;
-        } else {
-            width = parseInt(document.getElementById('widthInput').value) || 60;
-            height = parseInt(document.getElementById('heightInput').value) || 40;
-        }
-        
-        const snappedX = Math.round(x / 20) * 20;
-        const snappedY = Math.max(height, Math.min(canvasHeight - 20, Math.round(y / 20) * 20));
-        
-        const obstacle = {
-            x: snappedX,
-            y: snappedY,
-            width: width,
-            height: height,
-            type: this.selectedTool,
-            id: Date.now() + Math.random()
-        };
-        
-        this.editorObstacles.push(obstacle);
-        this.renderEditorObstacle(obstacle);
-        this.selectObstacle(obstacle);
-    }
-    
-    renderEditorObstacle(obstacle) {
-        const element = document.createElement('div');
-        element.className = `editor-obstacle ${obstacle.type}`;
-        element.id = 'editor-' + obstacle.id;
-        
-        if (obstacle.type === 'spike') {
-            element.style.left = (obstacle.x - 15) + 'px';
-            element.style.top = (obstacle.y - obstacle.height) + 'px';
-        } else {
-            element.style.width = obstacle.width + 'px';
-            element.style.height = obstacle.height + 'px';
-            element.style.left = obstacle.x + 'px';
-            element.style.top = (obstacle.y - obstacle.height) + 'px';
-        }
-        
-        element.style.cursor = this.selectedTool === 'delete' ? 'pointer' : 'move';
-        
-        element.onclick = (e) => {
-            e.stopPropagation();
-            if (this.selectedTool === 'delete') {
-                this.deleteObstacle(obstacle.id);
-            } else {
-                this.selectObstacle(obstacle);
-            }
-        };
-        
-        document.getElementById('editorCanvas').appendChild(element);
-    }
-    
-    deleteObstacleAt(x, y) {
-        const obstacle = this.getObstacleAt(x, y);
-        if (obstacle) {
-            this.deleteObstacle(obstacle.id);
-        }
-    }
-    
-    deleteObstacle(id) {
-        if (this.selectedObstacle && this.selectedObstacle.id === id) {
-            this.clearSelection();
-        }
-        
-        this.editorObstacles = this.editorObstacles.filter(obs => obs.id !== id);
-        const element = document.getElementById('editor-' + id);
-        if (element) element.remove();
-    }
-    
-    updateSizeControls() {
-        const sizeControls = document.getElementById('sizeControls');
-        if (this.selectedTool === 'platform' || this.selectedTool === 'block') {
-            sizeControls.style.display = 'flex';
-        } else {
-            sizeControls.style.display = 'none';
-        }
-        
-        const deleteBtn = document.getElementById('deleteToggle');
-        if (this.selectedTool === 'delete') {
-            deleteBtn.style.background = '#FF6666';
-            deleteBtn.textContent = '✅ Delete Mode ON';
-        } else {
-            deleteBtn.style.background = '#FF4444';
-            deleteBtn.textContent = '🗑️ Delete Mode';
-        }
-        
-        document.querySelectorAll('.editor-obstacle').forEach(element => {
-            element.style.cursor = this.selectedTool === 'delete' ? 'pointer' : 'move';
-        });
-    }
-    
-    clearEditorLevel() {
-        this.clearSelection();
-        this.editorObstacles = [];
-        document.querySelectorAll('.editor-obstacle').forEach(el => el.remove());
-    }
-    
-    saveEditorLevel() {
-        const nameInput = document.getElementById('levelNameInput');
-        const levelName = nameInput.value.trim() || 'Custom Level ' + (this.customLevels.length + 1);
-        
-        if (this.editorObstacles.length === 0) {
-            alert('Add some obstacles before saving!');
-            return;
-        }
-        
-        const maxX = Math.max(...this.editorObstacles.map(obs => obs.x));
-        const levelLength = maxX + 500;
-        
-        const level = {
-            name: levelName,
-            length: levelLength,
-            obstacles: this.editorObstacles.map(obs => ({
-                x: obs.x,
-                type: obs.type,
-                width: obs.width,
-                height: obs.height,
-                y: 350 + ((340 - obs.y) / 340) * 50
-            })),
-            created: Date.now()
-        };
-        
-        this.customLevels.push(level);
-        localStorage.setItem('customLevels', JSON.stringify(this.customLevels));
-        
-        alert('Level saved successfully!');
-        nameInput.value = '';
-        this.updateCustomLevelList();
-    }
-    
-    testEditorLevel() {
-        if (this.editorObstacles.length === 0) {
-            alert('Add some obstacles before testing!');
-            return;
-        }
-        
-        const maxX = Math.max(...this.editorObstacles.map(obs => obs.x));
-        const testLevel = {
-            name: 'Test Level',
-            length: maxX + 500,
-            obstacles: this.editorObstacles.map(obs => ({
-                x: obs.x,
-                type: obs.type,
-                width: obs.width,
-                height: obs.height,
-                y: 350 + ((340 - obs.y) / 340) * 50
-            }))
-        };
-        
-        document.getElementById('levelEditor').style.display = 'none';
-        this.startCustomLevel(testLevel);
-    }
-    
-    updateCustomLevelList() {
-        const list = document.getElementById('customLevelList');
-        list.innerHTML = '';
-        
-        if (this.customLevels.length === 0) {
-            list.innerHTML = '<p style="color: #888;">No custom levels yet. Create your first level!</p>';
-            return;
-        }
-        
-        this.customLevels.forEach((level, index) => {
-            const item = document.createElement('div');
-            item.className = 'custom-level-item';
-            item.innerHTML = `
-                <div>
-                    <strong>${level.name}</strong>
-                    <br><small>${level.obstacles.length} obstacles</small>
-                </div>
-                <div>
-                    <button onclick="game.playCustomLevel(${index})" style="margin-right: 10px;">Play</button>
-                    <button class="delete-level-btn" onclick="game.deleteCustomLevel(${index})">Delete</button>
-                </div>
-            `;
-            list.appendChild(item);
-        });
-    }
-    
-    playCustomLevel(index) {
-        const level = this.customLevels[index];
-        document.getElementById('customLevelSelector').style.display = 'none';
-        this.startCustomLevel(level);
-    }
-    
-    deleteCustomLevel(index) {
-        if (confirm('Delete this custom level?')) {
-            this.customLevels.splice(index, 1);
-            localStorage.setItem('customLevels', JSON.stringify(this.customLevels));
-            this.updateCustomLevelList();
-        }
     }
     
     setupLevel() {
@@ -983,39 +703,39 @@ class GeometryDash {
             }
         }
     }
-    
-completeLevel() {
-    this.gameRunning = false;
-    
-    if (!this.completedLevels.includes(this.currentLevel)) {
-        this.completedLevels.push(this.currentLevel);
-        localStorage.setItem('completedLevels', JSON.stringify(this.completedLevels));
+
+    completeLevel() {
+        this.gameRunning = false;
+        
+        if (!this.completedLevels.includes(this.currentLevel)) {
+            this.completedLevels.push(this.currentLevel);
+            localStorage.setItem('completedLevels', JSON.stringify(this.completedLevels));
+        }
+        
+        const nextLevel = this.currentLevel + 1;
+        if (this.levels[nextLevel] && !this.unlockedLevels.includes(nextLevel)) {
+            this.unlockedLevels.push(nextLevel);
+            localStorage.setItem('unlockedLevels', JSON.stringify(this.unlockedLevels));
+        }
+        
+        // Submit level completion score to leaderboard (bonus for completing levels)
+        if (window.parent && window.parent !== window) {
+            const completionBonus = this.score + (this.currentLevel * 1000); // Bonus points for completing levels
+            window.parent.postMessage({
+                type: 'game_end',
+                score: completionBonus,
+                gameId: 'geo-dash'
+            }, '*');
+        }
+        
+        this.levelStats.innerHTML = `
+            <p>Score: ${this.score}</p>
+            <p>Time: ${(this.frameCount / 60).toFixed(1)}s</p>
+        `;
+        this.levelCompleteScreen.style.display = 'block';
+        
+        this.createLevelGrid();
     }
-    
-    const nextLevel = this.currentLevel + 1;
-    if (this.levels[nextLevel] && !this.unlockedLevels.includes(nextLevel)) {
-        this.unlockedLevels.push(nextLevel);
-        localStorage.setItem('unlockedLevels', JSON.stringify(this.unlockedLevels));
-    }
-    
-    // Submit level completion score to leaderboard (bonus for completing levels)
-    if (window.parent && window.parent !== window) {
-        const completionBonus = this.score + (this.currentLevel * 1000); // Bonus points for completing levels
-        window.parent.postMessage({
-            type: 'game_end',
-            score: completionBonus,
-            gameId: 'geo-dash'
-        }, '*');
-    }
-    
-    this.levelStats.innerHTML = `
-        <p>Score: ${this.score}</p>
-        <p>Time: ${(this.frameCount / 60).toFixed(1)}s</p>
-    `;
-    this.levelCompleteScreen.style.display = 'block';
-    
-    this.createLevelGrid();
-}
     
     checkCollisions() {
         const playerLeft = this.playerX;
@@ -1055,28 +775,28 @@ completeLevel() {
             }
         }
     }
-    
-gameOver() {
-    this.gameRunning = false;
-    this.finalScoreElement.textContent = this.score;
-    
-    // Submit score to ArcadeHub leaderboard system
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-            type: 'game_end',
-            score: this.score,
-            gameId: 'geo-dash'
-        }, '*');
+
+    gameOver() {
+        this.gameRunning = false;
+        this.finalScoreElement.textContent = this.score;
+        
+        // Submit score to ArcadeHub leaderboard system
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'game_end',
+                score: this.score,
+                gameId: 'geo-dash'
+            }, '*');
+        }
+        
+        if (this.gameMode === 'endless' && this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem('geometryDashBest', this.bestScore);
+            this.bestScoreElement.textContent = this.bestScore;
+        }
+        
+        this.gameOverScreen.style.display = 'block';
     }
-    
-    if (this.gameMode === 'endless' && this.score > this.bestScore) {
-        this.bestScore = this.score;
-        localStorage.setItem('geometryDashBest', this.bestScore);
-        this.bestScoreElement.textContent = this.bestScore;
-    }
-    
-    this.gameOverScreen.style.display = 'block';
-}
     
     gameLoop() {
         if (!this.gameRunning) return;
@@ -1092,6 +812,7 @@ gameOver() {
         if (this.gameMode === 'levels') {
             this.spawnLevelObstacles();
         } else {
+            // Only use random generation for endless mode
             if (this.frameCount % 120 === 0) {
                 const rand = Math.random();
                 if (rand < 0.4) {
@@ -1112,12 +833,12 @@ gameOver() {
         }
 
         // Send live score updates to ArcadeHub
-if (this.gameRunning && window.parent && window.parent !== window) {
-    window.parent.postMessage({
-        type: 'score_update',
-        score: this.score
-    }, '*');
-}
+        if (this.gameRunning && window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'score_update',
+                score: this.score
+            }, '*');
+        }
         
         requestAnimationFrame(() => this.gameLoop());
     }
@@ -1132,63 +853,7 @@ function selectMode(mode) {
         document.getElementById('levelSelector').style.display = 'block';
     } else if (mode === 'endless') {
         game.startEndless();
-    } else if (mode === 'creator') {
-        document.getElementById('modeSelector').style.display = 'none';
-        document.getElementById('customLevelSelector').style.display = 'block';
-        game.updateCustomLevelList();
     }
-}
-
-function selectObjectType() {
-    const dropdown = document.getElementById('objectSelect');
-    const selectedValue = dropdown.value;
-    game.selectedTool = selectedValue;
-    game.updateSizeControls();
-    
-    if (game.selectedTool !== 'delete') {
-        game.updateSizeControls();
-    }
-}
-
-function selectTool(tool) {
-    if (tool === 'delete') {
-        if (game.selectedTool === 'delete') {
-            const dropdown = document.getElementById('objectSelect');
-            game.selectedTool = dropdown.value;
-        } else {
-            game.selectedTool = 'delete';
-        }
-    } else {
-        game.selectedTool = tool;
-        document.getElementById('objectSelect').value = tool;
-    }
-    
-    game.updateSizeControls();
-}
-
-function openLevelEditor() {
-    game.openLevelEditor();
-}
-
-function testLevel() {
-    game.testEditorLevel();
-}
-
-function saveLevel() {
-    game.saveEditorLevel();
-}
-
-function clearLevel() {
-    if (confirm('Clear all obstacles?')) {
-        game.clearEditorLevel();
-    }
-}
-
-function exitEditor() {
-    game.editorMode = false;
-    game.clearSelection();
-    document.getElementById('levelEditor').style.display = 'none';
-    document.getElementById('customLevelSelector').style.display = 'block';
 }
 
 function showModeSelector() {
@@ -1215,8 +880,6 @@ function nextLevel() {
 function restartGame() {
     if (game.gameMode === 'levels') {
         game.startLevel(game.currentLevel);
-    } else if (game.gameMode === 'custom') {
-        game.startCustomLevel(game.currentCustomLevel);
     } else {
         game.startEndless();
     }

@@ -1,9 +1,11 @@
-// Leaderboard Management System
+// Enhanced Leaderboard Manager with Collapsible Functionality
 class LeaderboardManager {
     constructor() {
         this.storageKey = 'arcadehub_leaderboards';
         this.leaderboards = this.loadLeaderboards();
         this.maxEntries = 10;
+        this.isExpanded = false; // Track collapse state
+        this.currentActiveGame = 'rock-and-roll'; // Default active game
     }
 
     loadLeaderboards() {
@@ -61,7 +63,11 @@ class LeaderboardManager {
         this.leaderboards[gameId] = this.leaderboards[gameId].slice(0, this.maxEntries);
         
         this.saveLeaderboards();
-        this.updateLeaderboardDisplay(gameId);
+        
+        // Only update display if expanded
+        if (this.isExpanded) {
+            this.updateLeaderboardDisplay(gameId);
+        }
         
         return this.getPlayerRank(gameId, playerName, score);
     }
@@ -77,6 +83,114 @@ class LeaderboardManager {
         return this.leaderboards[gameId] || [];
     }
 
+    // Initialize the collapsible leaderboard system
+    initializeCollapsibleLeaderboard() {
+        const panel = document.getElementById('leaderboard-panel');
+        if (!panel) return;
+
+        // Start in collapsed state
+        panel.classList.add('collapsed');
+        this.isExpanded = false;
+
+        // Update the HTML structure to support collapsible functionality
+        this.updateLeaderboardHTML();
+        this.setupEventListeners();
+        this.updateLeaderboardDisplay();
+    }
+
+    updateLeaderboardHTML() {
+        const panel = document.getElementById('leaderboard-panel');
+        if (!panel) return;
+
+        // Wrap the title in a clickable header with collapse indicator
+        const existingTitle = panel.querySelector('h3');
+        if (existingTitle && !existingTitle.closest('.leaderboard-header')) {
+            const header = document.createElement('div');
+            header.className = 'leaderboard-header';
+            header.innerHTML = `
+                <h3>🏆 LEADERBOARDS 🏆</h3>
+                <span class="collapse-indicator">▼</span>
+            `;
+            
+            // Replace existing title with new header
+            existingTitle.replaceWith(header);
+        }
+    }
+
+    setupEventListeners() {
+        const header = document.querySelector('.leaderboard-header');
+        const tabs = document.querySelectorAll('.tab-btn');
+        
+        // Header click to toggle expand/collapse
+        if (header) {
+            header.addEventListener('click', () => {
+                this.toggleLeaderboard();
+            });
+        }
+
+        // Tab clicks
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent header toggle when clicking tabs
+                const gameId = tab.dataset.game;
+                this.handleTabClick(gameId);
+            });
+        });
+    }
+
+    handleTabClick(gameId) {
+        if (!this.isExpanded) {
+            // If collapsed, expand and show the clicked game
+            this.expandLeaderboard();
+            this.currentActiveGame = gameId;
+            this.updateLeaderboardDisplay(gameId);
+        } else {
+            // If expanded, just switch games
+            this.updateLeaderboardDisplay(gameId);
+        }
+    }
+
+    toggleLeaderboard() {
+        if (this.isExpanded) {
+            this.collapseLeaderboard();
+        } else {
+            this.expandLeaderboard();
+        }
+    }
+
+    expandLeaderboard() {
+        const panel = document.getElementById('leaderboard-panel');
+        if (!panel) return;
+
+        panel.classList.remove('collapsed');
+        panel.classList.add('expanded');
+        this.isExpanded = true;
+
+        // Show the content for the currently active game
+        this.updateLeaderboardDisplay(this.currentActiveGame);
+
+        // Add expanded class to trigger animations
+        setTimeout(() => {
+            const entries = panel.querySelectorAll('.leaderboard-entry');
+            entries.forEach((entry, index) => {
+                entry.style.animationDelay = `${(index + 1) * 0.1}s`;
+                entry.style.animation = 'none';
+                // Force reflow
+                entry.offsetHeight;
+                entry.style.animation = 'entrySlideIn 0.6s ease-out forwards';
+            });
+        }, 100);
+    }
+
+    collapseLeaderboard() {
+        const panel = document.getElementById('leaderboard-panel');
+        if (!panel) return;
+
+        panel.classList.remove('expanded');
+        panel.classList.add('collapsed');
+        this.isExpanded = false;
+    }
+
     updateLeaderboardDisplay(activeGameId = null) {
         const content = document.getElementById('leaderboard-content');
         const tabs = document.querySelectorAll('.tab-btn');
@@ -84,18 +198,21 @@ class LeaderboardManager {
         if (!content) return;
 
         // Determine which game to show
-        let gameToShow = activeGameId;
-        if (!gameToShow) {
-            const activeTab = document.querySelector('.tab-btn.active');
-            gameToShow = activeTab ? activeTab.dataset.game : 'rock-and-roll';
-        }
+        let gameToShow = activeGameId || this.currentActiveGame;
+        this.currentActiveGame = gameToShow;
 
         // Update active tab
         tabs.forEach(tab => {
             tab.classList.toggle('active', tab.dataset.game === gameToShow);
         });
 
-        const game = window.gameRegistry.getGame(gameToShow);
+        // If collapsed, don't show content
+        if (!this.isExpanded) {
+            content.innerHTML = '';
+            return;
+        }
+
+        const game = window.gameRegistry?.getGame(gameToShow);
         const leaderboard = this.getLeaderboard(gameToShow);
 
         content.innerHTML = `
@@ -111,6 +228,16 @@ class LeaderboardManager {
                 `).join('')
             }
         `;
+
+        // Trigger staggered animations for new entries
+        setTimeout(() => {
+            const entries = content.querySelectorAll('.leaderboard-entry');
+            entries.forEach((entry, index) => {
+                entry.style.opacity = '0';
+                entry.style.transform = 'translateX(-50px)';
+                entry.style.animation = `entrySlideIn 0.6s ease-out ${(index * 0.1)}s forwards`;
+            });
+        }, 50);
     }
 
     formatScore(score, scoreType) {
@@ -133,7 +260,9 @@ class LeaderboardManager {
         if (this.leaderboards[gameId]) {
             this.leaderboards[gameId] = [];
             this.saveLeaderboards();
-            this.updateLeaderboardDisplay(gameId);
+            if (this.isExpanded) {
+                this.updateLeaderboardDisplay(gameId);
+            }
         }
     }
 
@@ -145,14 +274,33 @@ class LeaderboardManager {
         try {
             this.leaderboards = JSON.parse(jsonData);
             this.saveLeaderboards();
-            this.updateLeaderboardDisplay();
+            if (this.isExpanded) {
+                this.updateLeaderboardDisplay();
+            }
             return true;
         } catch (e) {
             console.error('Error importing leaderboards:', e);
             return false;
         }
     }
+
+    // Method to expand and show specific game (useful for external calls)
+    showGameLeaderboard(gameId) {
+        this.currentActiveGame = gameId;
+        if (!this.isExpanded) {
+            this.expandLeaderboard();
+        } else {
+            this.updateLeaderboardDisplay(gameId);
+        }
+    }
 }
 
 // Create global instance
 window.leaderboardManager = new LeaderboardManager();
+
+// Auto-initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.leaderboardManager) {
+        window.leaderboardManager.initializeCollapsibleLeaderboard();
+    }
+});

@@ -30,7 +30,6 @@
             <h2>Select Game Mode</h2>
             <button onclick="selectMode('levels')">Level Mode</button>
             <button onclick="selectMode('endless')">Endless Mode</button>
-            <button onclick="selectMode('creator')">Level Creator</button>
         </div>
         <div id="levelSelector">
             <h2>Select Level</h2>
@@ -49,34 +48,6 @@
             <div id="levelStats"></div>
             <button onclick="nextLevel()">Next Level</button>
             <button onclick="showLevelSelector()">Level Select</button>
-        </div>
-        <div id="customLevelSelector">
-            <h2>Level Creator</h2>
-            <div id="customLevelList"></div>
-            <button onclick="openLevelEditor()">Create New Level</button>
-            <button onclick="showModeSelector()" style="margin-top: 20px;">Back to Mode Selection</button>
-        </div>
-        <div id="levelEditor">
-            <div id="editorToolbar">
-                <select id="objectSelect" onchange="selectObjectType()" class="tool-button">
-                    <option value="spike">Spike</option>
-                    <option value="block">Block</option>
-                    <option value="platform">Platform</option>
-                </select>
-                <button id="deleteToggle" class="tool-button" onclick="selectTool('delete')">🗑️ Delete Mode</button>
-                <div id="sizeControls" class="size-control">
-                    Width: <input type="number" id="widthInput" value="60" min="20" max="120">
-                    Height: <input type="number" id="heightInput" value="40" min="20" max="100">
-                </div>
-                <input type="text" id="levelNameInput" placeholder="Level Name" class="tool-button" style="width: 150px;">
-                <button onclick="testLevel()" class="tool-button">🎮 Test</button>
-                <button onclick="saveLevel()" class="tool-button">💾 Save</button>
-                <button onclick="clearLevel()" class="tool-button">🗑️ Clear</button>
-                <button onclick="exitEditor()" class="tool-button">❌ Exit</button>
-            </div>
-            <div id="editorCanvas">
-                <div id="editorGround"></div>
-            </div>
         </div>
     </div>
 

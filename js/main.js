@@ -9,19 +9,21 @@ class ArcadeHub {
         this.init();
     }
 
-    init() {
-        this.loadUserData();
-        this.setupEventListeners();
-        this.setupLeaderboardTabs();
-        
-        if (!this.currentUser) {
-            this.showLoginModal();
-        } else {
-            this.hideLoginModal();
-            this.updateDisplay();
-            this.renderGameLibrary();
-        }
+// Updated init method - remove the old setupLeaderboardTabs call since it's handled automatically
+init() {
+    this.loadUserData();
+    this.setupEventListeners();
+    // Remove this line: this.setupLeaderboardTabs(); 
+    // The new system handles it automatically
+    
+    if (!this.currentUser) {
+        this.showLoginModal();
+    } else {
+        this.hideLoginModal();
+        this.updateDisplay();
+        this.renderGameLibrary();
     }
+}
 
     loadUserData() {
         this.currentUser = localStorage.getItem('arcadehub_username') || '';
@@ -132,43 +134,45 @@ class ArcadeHub {
         this.setupGameResultsPopup();
     }
 
-    setupGameResultsPopup() {
-        const playAgainBtn = document.getElementById('play-again-btn');
-        const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
-        const backToHubBtn = document.getElementById('back-to-hub-btn');
-        
-        if (playAgainBtn) {
-            playAgainBtn.addEventListener('click', () => {
-                this.hideGameResultsPopup();
-                // Reload the current game
-                if (this.currentGame && this.gameIframe) {
-                    this.gameIframe.src = window.gameLoader.getGameUrl(this.currentGame.id);
-                }
-            });
-        }
-        
-        if (viewLeaderboardBtn) {
-            viewLeaderboardBtn.addEventListener('click', () => {
-                this.hideGameResultsPopup();
-                this.backToLibrary();
-                // Scroll to leaderboard and switch to current game's tab
-                setTimeout(() => {
-                    const leaderboard = document.getElementById('leaderboard-panel');
-                    if (leaderboard) {
-                        leaderboard.scrollIntoView({ behavior: 'smooth' });
-                        window.leaderboardManager.updateLeaderboardDisplay(this.currentGame?.id);
-                    }
-                }, 300);
-            });
-        }
-        
-        if (backToHubBtn) {
-            backToHubBtn.addEventListener('click', () => {
-                this.hideGameResultsPopup();
-                this.backToLibrary();
-            });
-        }
+// Updated setupGameResultsPopup method to work with collapsible leaderboard
+setupGameResultsPopup() {
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
+    const backToHubBtn = document.getElementById('back-to-hub-btn');
+    
+    if (playAgainBtn) {
+        playAgainBtn.addEventListener('click', () => {
+            this.hideGameResultsPopup();
+            // Reload the current game
+            if (this.currentGame && this.gameIframe) {
+                this.gameIframe.src = window.gameLoader.getGameUrl(this.currentGame.id);
+            }
+        });
     }
+    
+    if (viewLeaderboardBtn) {
+        viewLeaderboardBtn.addEventListener('click', () => {
+            this.hideGameResultsPopup();
+            this.backToLibrary();
+            // Expand leaderboard and switch to current game's tab
+            setTimeout(() => {
+                const leaderboard = document.getElementById('leaderboard-panel');
+                if (leaderboard && window.leaderboardManager) {
+                    leaderboard.scrollIntoView({ behavior: 'smooth' });
+                    // Use the new showGameLeaderboard method
+                    window.leaderboardManager.showGameLeaderboard(this.currentGame?.id);
+                }
+            }, 300);
+        });
+    }
+    
+    if (backToHubBtn) {
+        backToHubBtn.addEventListener('click', () => {
+            this.hideGameResultsPopup();
+            this.backToLibrary();
+        });
+    }
+}
 
     setupFullscreenOverlay() {
         let hideTimeout;
@@ -271,17 +275,19 @@ class ArcadeHub {
         }
     }
 
-    setupLeaderboardTabs() {
-        const tabs = document.querySelectorAll('.tab-btn');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                window.leaderboardManager.updateLeaderboardDisplay(tab.dataset.game);
-            });
-        });
-        
-        // Initialize leaderboard display
-        window.leaderboardManager.updateLeaderboardDisplay();
+// Updated setupLeaderboardTabs method for main.js
+setupLeaderboardTabs() {
+    // The new leaderboard manager handles its own event listeners
+    // Just make sure it's initialized
+    if (window.leaderboardManager && window.leaderboardManager.initializeCollapsibleLeaderboard) {
+        // This will be called automatically via DOMContentLoaded, but ensure it's ready
+        setTimeout(() => {
+            if (!window.leaderboardManager.isInitialized) {
+                window.leaderboardManager.initializeCollapsibleLeaderboard();
+            }
+        }, 100);
     }
+}
 
     toggleDropdown() {
         const dropdownMenu = document.getElementById('dropdown-menu');
@@ -344,6 +350,17 @@ class ArcadeHub {
             }
         }
     }
+
+    // Add this method to your ArcadeHub class to manually expand leaderboard for a specific game
+showLeaderboard(gameId) {
+    if (window.leaderboardManager) {
+        const leaderboardPanel = document.getElementById('leaderboard-panel');
+        if (leaderboardPanel) {
+            leaderboardPanel.scrollIntoView({ behavior: 'smooth' });
+            window.leaderboardManager.showGameLeaderboard(gameId);
+        }
+    }
+}
 
     hideLoginModal() {
         const modal = document.getElementById('login-modal');
