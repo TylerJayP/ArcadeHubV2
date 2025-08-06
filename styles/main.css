@@ -315,7 +315,8 @@ body {
     align-items: center;
 }
 
-.zoom-btn, .fullscreen-btn {
+/* REMOVED: .zoom-btn and .score-display styles */
+.fullscreen-btn {
     background: rgba(0, 255, 0, 0.2);
     border: 1px solid #00ff00;
     color: #00ff00;
@@ -328,15 +329,9 @@ body {
     transition: all 0.3s ease;
 }
 
-.zoom-btn:hover, .fullscreen-btn:hover {
+.fullscreen-btn:hover {
     background: rgba(0, 255, 0, 0.4);
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-}
-
-.score-display {
-    color: #ffff00;
-    font-weight: bold;
-    font-size: 0.9rem;
 }
 
 .game-container {
@@ -354,17 +349,9 @@ body {
     transition: transform 0.3s ease;
 }
 
-.game-container.zoomed {
-    overflow: auto;
-}
+/* REMOVED: .game-container.zoomed styles */
 
-.game-container.zoomed #game-iframe {
-    transform: scale(1.5);
-    width: 66.67%;
-    height: 66.67%;
-}
-
-/* Improved CSS-only fullscreen */
+/* Enhanced CSS-only fullscreen - UPDATED */
 .game-container.fullscreen {
     position: fixed;
     top: 0;
@@ -373,38 +360,29 @@ body {
     height: 100vh;
     z-index: 2000;
     background: linear-gradient(135deg, #001122 0%, #000000 50%, #110022 100%);
-    padding: 20px;
+    padding: 0; /* Remove padding in fullscreen */
     box-sizing: border-box;
 }
 
 .game-container.fullscreen #game-iframe {
     transform: none;
     width: 100%;
-    height: calc(100% - 60px);
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
-    border: 2px solid #00ff00;
+    height: 100%; /* Full height in fullscreen */
+    border-radius: 0; /* Remove border radius */
+    box-shadow: none; /* Remove shadow */
+    border: none; /* Remove border */
 }
 
-/* Enhanced fullscreen header */
+/* HIDE the header completely in fullscreen */
 .game-frame.fullscreen-active .game-header {
+    display: none !important; /* Completely hide the header */
+}
+
+/* Enhanced fullscreen back button overlay - UPDATED */
+.fullscreen-overlay {
     position: fixed;
     top: 20px;
     left: 20px;
-    right: 20px;
-    z-index: 2001;
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid #00ff00;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-}
-
-/* Floating back button for fullscreen */
-.fullscreen-overlay {
-    position: fixed;
-    top: 30px;
-    left: 30px;
     z-index: 2002;
     background: rgba(0, 0, 0, 0.9);
     border: 2px solid #ff0000;
@@ -413,11 +391,13 @@ body {
     opacity: 0;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+    pointer-events: none; /* Don't interfere with game when hidden */
 }
 
 .fullscreen-overlay.visible {
     opacity: 1;
     transform: scale(1.05);
+    pointer-events: auto; /* Enable clicks when visible */
 }
 
 .fullscreen-back-btn {
@@ -789,7 +769,7 @@ body {
         gap: 5px;
     }
     
-    .zoom-btn, .fullscreen-btn {
+    .fullscreen-btn {
         font-size: 0.7rem;
         padding: 4px 8px;
     }
@@ -813,13 +793,7 @@ body {
     }
     
     .game-container.fullscreen {
-        padding: 15px;
-    }
-    
-    .game-frame.fullscreen-active .game-header {
-        top: 15px;
-        left: 15px;
-        right: 15px;
+        padding: 0; /* No padding on mobile fullscreen */
     }
     
     .dropdown-menu {

@@ -984,28 +984,38 @@ class GeometryDash {
         }
     }
     
-    completeLevel() {
-        this.gameRunning = false;
-        
-        if (!this.completedLevels.includes(this.currentLevel)) {
-            this.completedLevels.push(this.currentLevel);
-            localStorage.setItem('completedLevels', JSON.stringify(this.completedLevels));
-        }
-        
-        const nextLevel = this.currentLevel + 1;
-        if (this.levels[nextLevel] && !this.unlockedLevels.includes(nextLevel)) {
-            this.unlockedLevels.push(nextLevel);
-            localStorage.setItem('unlockedLevels', JSON.stringify(this.unlockedLevels));
-        }
-        
-        this.levelStats.innerHTML = `
-            <p>Score: ${this.score}</p>
-            <p>Time: ${(this.frameCount / 60).toFixed(1)}s</p>
-        `;
-        this.levelCompleteScreen.style.display = 'block';
-        
-        this.createLevelGrid();
+completeLevel() {
+    this.gameRunning = false;
+    
+    if (!this.completedLevels.includes(this.currentLevel)) {
+        this.completedLevels.push(this.currentLevel);
+        localStorage.setItem('completedLevels', JSON.stringify(this.completedLevels));
     }
+    
+    const nextLevel = this.currentLevel + 1;
+    if (this.levels[nextLevel] && !this.unlockedLevels.includes(nextLevel)) {
+        this.unlockedLevels.push(nextLevel);
+        localStorage.setItem('unlockedLevels', JSON.stringify(this.unlockedLevels));
+    }
+    
+    // Submit level completion score to leaderboard (bonus for completing levels)
+    if (window.parent && window.parent !== window) {
+        const completionBonus = this.score + (this.currentLevel * 1000); // Bonus points for completing levels
+        window.parent.postMessage({
+            type: 'game_end',
+            score: completionBonus,
+            gameId: 'geo-dash'
+        }, '*');
+    }
+    
+    this.levelStats.innerHTML = `
+        <p>Score: ${this.score}</p>
+        <p>Time: ${(this.frameCount / 60).toFixed(1)}s</p>
+    `;
+    this.levelCompleteScreen.style.display = 'block';
+    
+    this.createLevelGrid();
+}
     
     checkCollisions() {
         const playerLeft = this.playerX;
@@ -1046,18 +1056,27 @@ class GeometryDash {
         }
     }
     
-    gameOver() {
-        this.gameRunning = false;
-        this.finalScoreElement.textContent = this.score;
-        
-        if (this.gameMode === 'endless' && this.score > this.bestScore) {
-            this.bestScore = this.score;
-            localStorage.setItem('geometryDashBest', this.bestScore);
-            this.bestScoreElement.textContent = this.bestScore;
-        }
-        
-        this.gameOverScreen.style.display = 'block';
+gameOver() {
+    this.gameRunning = false;
+    this.finalScoreElement.textContent = this.score;
+    
+    // Submit score to ArcadeHub leaderboard system
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: 'game_end',
+            score: this.score,
+            gameId: 'geo-dash'
+        }, '*');
     }
+    
+    if (this.gameMode === 'endless' && this.score > this.bestScore) {
+        this.bestScore = this.score;
+        localStorage.setItem('geometryDashBest', this.bestScore);
+        this.bestScoreElement.textContent = this.bestScore;
+    }
+    
+    this.gameOverScreen.style.display = 'block';
+}
     
     gameLoop() {
         if (!this.gameRunning) return;
@@ -1091,6 +1110,14 @@ class GeometryDash {
                 this.gameSpeed += 0.2;
             }
         }
+
+        // Send live score updates to ArcadeHub
+if (this.gameRunning && window.parent && window.parent !== window) {
+    window.parent.postMessage({
+        type: 'score_update',
+        score: this.score
+    }, '*');
+}
         
         requestAnimationFrame(() => this.gameLoop());
     }

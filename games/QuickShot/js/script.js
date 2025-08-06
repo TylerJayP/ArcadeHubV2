@@ -45,6 +45,7 @@ function showMenu() {
     tournamentScore.style.display = 'none';
     tournamentSetup.style.display = 'none';
 }
+
 function showGame(mode) {
     gameMode = mode;
     mainMenu.style.display = 'none';
@@ -151,6 +152,36 @@ function startGame() {
     }, goDelay);
 }
 
+// NEW: Function to submit score to leaderboard
+function submitScoreToLeaderboard(tooEarly, earlyPlayer) {
+    // Only submit scores for practice mode and valid versus games
+    if (gameMode === 'practice' && !tooEarly && typeof player1ReactionTime === 'number') {
+        // For practice mode, submit the player's reaction time
+        // Send score to ArcadeHub leaderboard system
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'game_end',
+                score: player1ReactionTime,
+                gameId: 'quickshot'
+            }, '*');
+        }
+        console.log(`QuickShot: Submitted practice score: ${player1ReactionTime}ms`);
+        
+    } else if (gameMode === 'versus' && !tooEarly && typeof player1ReactionTime === 'number' && typeof player2ReactionTime === 'number') {
+        // For versus mode, submit the better (lower) reaction time
+        const bestTime = Math.min(player1ReactionTime, player2ReactionTime);
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'game_end',
+                score: bestTime,
+                gameId: 'quickshot'
+            }, '*');
+        }
+        console.log(`QuickShot: Submitted versus score: ${bestTime}ms (best of ${player1ReactionTime}ms vs ${player2ReactionTime}ms)`);
+    }
+    // Tournament mode scores are not submitted to global leaderboard since it's a multi-round competition
+}
+
 function endGame(tooEarly = false, earlyPlayer = null) {
     if (endGameCalled) return;
     endGameCalled = true;
@@ -221,7 +252,10 @@ function endGame(tooEarly = false, earlyPlayer = null) {
     startBtn.textContent = 'Play Again';
     backMenuBtn.style.display = 'inline-block';
 
-    // Patch endGame to handle tournament scoring
+    // Submit score to leaderboard system (NEW!)
+    submitScoreToLeaderboard(tooEarly, earlyPlayer);
+
+    // Tournament scoring
     if (tournamentActive && gameMode === 'tournament') {
         let roundWinner = null;
         if (tooEarly && earlyPlayer) {

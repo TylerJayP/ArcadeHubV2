@@ -107,13 +107,7 @@ class ArcadeHub {
             fullscreenBackBtn.addEventListener('click', () => this.backToLibrary());
         }
 
-        // Zoom button
-        const zoomBtn = document.getElementById('zoom-btn');
-        if (zoomBtn) {
-            zoomBtn.addEventListener('click', () => this.toggleZoom());
-        }
-
-        // Fullscreen button
+        // Fullscreen button (removed zoom button)
         const fullscreenBtn = document.getElementById('fullscreen-btn');
         if (fullscreenBtn) {
             fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
@@ -131,41 +125,73 @@ class ArcadeHub {
             }
         });
 
-        // Show/hide fullscreen controls on mouse movement
+        // UPDATED: Better fullscreen overlay logic
+        this.setupFullscreenOverlay();
+    }
+
+    setupFullscreenOverlay() {
         let fullscreenTimeout;
+        let isMouseOverGame = false;
+        
+        // Track mouse position globally
         document.addEventListener('mousemove', (e) => {
             const overlay = document.getElementById('fullscreen-overlay');
             const hint = document.getElementById('fullscreen-hint');
             const gameContainer = document.getElementById('game-container');
-            const gameHeader = document.getElementById('game-frame')?.querySelector('.game-header');
+            const gameIframe = document.getElementById('game-iframe');
             
             if (gameContainer && gameContainer.classList.contains('fullscreen')) {
-                // Check if mouse is over the regular game header (avoid double buttons)
-                let isOverHeader = false;
-                if (gameHeader) {
-                    const headerRect = gameHeader.getBoundingClientRect();
-                    isOverHeader = e.clientX >= headerRect.left && 
-                                  e.clientX <= headerRect.right && 
-                                  e.clientY >= headerRect.top && 
-                                  e.clientY <= headerRect.bottom;
+                // Check if mouse is over the game iframe
+                if (gameIframe) {
+                    const iframeRect = gameIframe.getBoundingClientRect();
+                    isMouseOverGame = e.clientX >= iframeRect.left && 
+                                     e.clientX <= iframeRect.right && 
+                                     e.clientY >= iframeRect.top && 
+                                     e.clientY <= iframeRect.bottom;
                 }
                 
-                // Only show floating controls when NOT over the regular header
-                // and when mouse is in far top-left corner
-                const showControls = !isOverHeader && e.clientX < 120 && e.clientY < 80;
+                // Show overlay when mouse is NOT over the game
+                const showOverlay = !isMouseOverGame;
                 
-                // Show hint when mouse is near bottom-right
-                const showHint = e.clientX > window.innerWidth - 400 && e.clientY > window.innerHeight - 150;
+                // Show hint when mouse is near bottom-right (only when not over game)
+                const showHint = !isMouseOverGame && 
+                               e.clientX > window.innerWidth - 400 && 
+                               e.clientY > window.innerHeight - 150;
                 
-                if (overlay) overlay.classList.toggle('visible', showControls);
-                if (hint) hint.classList.toggle('visible', showHint);
+                if (overlay) {
+                    if (showOverlay) {
+                        overlay.classList.add('visible');
+                    } else {
+                        overlay.classList.remove('visible');
+                    }
+                }
                 
-                // Auto-hide after 4 seconds of no movement
-                clearTimeout(fullscreenTimeout);
-                fullscreenTimeout = setTimeout(() => {
-                    if (overlay) overlay.classList.remove('visible');
-                    if (hint) hint.classList.remove('visible');
-                }, 4000);
+                if (hint) {
+                    if (showHint) {
+                        hint.classList.add('visible');
+                    } else {
+                        hint.classList.remove('visible');
+                    }
+                }
+                
+                // Auto-hide after 3 seconds if mouse goes back to game
+                if (isMouseOverGame) {
+                    clearTimeout(fullscreenTimeout);
+                    fullscreenTimeout = setTimeout(() => {
+                        if (overlay) overlay.classList.remove('visible');
+                        if (hint) hint.classList.remove('visible');
+                    }, 3000);
+                }
+            }
+        });
+
+        // Also show overlay when mouse leaves the window entirely in fullscreen
+        document.addEventListener('mouseleave', () => {
+            const overlay = document.getElementById('fullscreen-overlay');
+            const gameContainer = document.getElementById('game-container');
+            
+            if (gameContainer && gameContainer.classList.contains('fullscreen') && overlay) {
+                overlay.classList.add('visible');
             }
         });
     }
@@ -368,20 +394,7 @@ class ArcadeHub {
         }
     }
 
-    toggleZoom() {
-        const gameContainer = document.getElementById('game-container');
-        const zoomBtn = document.getElementById('zoom-btn');
-        
-        if (gameContainer && zoomBtn) {
-            if (gameContainer.classList.contains('zoomed')) {
-                gameContainer.classList.remove('zoomed');
-                zoomBtn.textContent = '🔍 ZOOM';
-            } else {
-                gameContainer.classList.add('zoomed');
-                zoomBtn.textContent = '🔍 NORMAL';
-            }
-        }
-    }
+    // REMOVED: toggleZoom() function
 
     toggleFullscreen() {
         const gameContainer = document.getElementById('game-container');
@@ -429,12 +442,6 @@ class ArcadeHub {
         // Exit fullscreen when going back
         this.exitFullscreen();
         
-        // Reset zoom
-        const gameContainer = document.getElementById('game-container');
-        const zoomBtn = document.getElementById('zoom-btn');
-        if (gameContainer) gameContainer.classList.remove('zoomed');
-        if (zoomBtn) zoomBtn.textContent = '🔍 ZOOM';
-        
         // Clean up current game
         if (this.gameIframe) {
             this.gameIframe.src = '';
@@ -467,14 +474,13 @@ class ArcadeHub {
     }
 
     updateLiveScore(score) {
-        const scoreEl = document.getElementById('live-score');
-        if (scoreEl) {
-            scoreEl.textContent = score;
-        }
+        // Score display removed from UI, but keeping this for potential future use
+        console.log('Current score:', score);
     }
 
     resetLiveScore() {
-        this.updateLiveScore(0);
+        // Score display removed from UI, but keeping this for potential future use
+        console.log('Score reset');
     }
 
     handleGameEnd(finalScore, gameId) {

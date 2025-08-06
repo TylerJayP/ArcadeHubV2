@@ -12,14 +12,16 @@ class LeaderboardManager {
             return saved ? JSON.parse(saved) : {
                 'rock-and-roll': [],
                 'quickshot': [],
-                'zombie-shooter': []
+                'zombie-shooter': [],
+                'geo-dash': []
             };
         } catch (e) {
             console.error('Error loading leaderboards:', e);
             return {
                 'rock-and-roll': [],
                 'quickshot': [],
-                'zombie-shooter': []
+                'zombie-shooter': [],
+                'geo-dash': []
             };
         }
     }
