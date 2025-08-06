@@ -62,7 +62,7 @@ class GameRegistry {
             folder: 'GeoDash',
             entryFile: 'index.html',
             tokensOnWin: 4,
-            scoreType: 'points',
+            scoreType: 'score',
             controls: 'WASD + Spacebar'
         });
     }

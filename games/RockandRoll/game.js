@@ -305,6 +305,20 @@ function resetGame() {
     promptForBpm();
 }
 
+function endGame() {
+    gameOver = true;
+    stopAudio();
+    
+    // Send score to ArcadeHub leaderboard system
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: 'game_end',
+            score: score,
+            gameId: 'rock-and-roll'
+        }, '*');
+    }
+}
+
 function update() {
     if (gameOver || waitingForBpm) return;
     
@@ -341,10 +355,12 @@ function update() {
     for (let i = 0; i < obstacles.length; i++) {
         const ob = obstacles[i];
         if (ob.type === 'indestructible' && checkCollision(car, ob)) {
-            gameOver = true;
+            endGame();
+            return;
         }
         if (ob.type === 'note' && !ob.hit && checkCollision(car, ob)) {
-            gameOver = true;
+            endGame();
+            return;
         }
     }
     
@@ -364,6 +380,14 @@ function update() {
     }
     
     if (!gameOver) score++;
+    
+    // Send live score updates to ArcadeHub
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: 'score_update',
+            score: score
+        }, '*');
+    }
 }
 
 function draw() {
@@ -429,4 +453,4 @@ window.addEventListener('keydown', (e) => {
             }
         }
     }
-}); 
+});

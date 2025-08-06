@@ -44,7 +44,9 @@
             background: rgba(0,0,0,0.8);
             padding: 15px;
             border-radius: 10px;
-            max-width: 250px;
+            max-width: 320px;
+            max-height: 80vh;
+            overflow-y: auto;
             display: none;
         }
         
@@ -63,58 +65,8 @@
             z-index: 101;
         }
         
-        #build-button {
-            position: absolute;
-            top: 60px;
-            right: 10px;
-            background: #8BC34A;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 101;
-        }
-        
         #shop-button:hover {
             background: #FFA500;
-        }
-        
-        #build-button:hover {
-            background: #689F38;
-        }
-        
-        #build-menu {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: white;
-            font-size: 14px;
-            z-index: 100;
-            background: rgba(0,0,0,0.9);
-            padding: 15px;
-            border-radius: 10px;
-            max-width: 300px;
-            display: none;
-            border: 2px solid #8BC34A;
-        }
-        
-        #build-mode-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(139, 195, 74, 0.9);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 50;
-            display: none;
         }
         
         #close-shop {
@@ -145,19 +97,37 @@
         }
         .shop-item {
             margin: 5px 0;
-            padding: 5px;
+            padding: 8px;
             background: rgba(255,255,255,0.2);
             border-radius: 5px;
             cursor: pointer;
             border: 2px solid transparent;
+            transition: all 0.2s ease;
         }
         .shop-item:hover {
             background: rgba(255,255,255,0.3);
             border-color: #FFD700;
+            transform: scale(1.02);
         }
         .shop-item.owned {
             background: rgba(0,255,0,0.3);
             border-color: #00FF00;
+        }
+        .shop-item.maxed {
+            background: rgba(255,215,0,0.3);
+            border-color: #FFD700;
+        }
+        .shop-section {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.2);
+        }
+        .upgrade-level {
+            font-size: 12px;
+            color: #FFD700;
+            font-weight: bold;
         }
         #instructions {
             position: absolute;
@@ -170,6 +140,28 @@
             padding: 15px;
             border-radius: 10px;
             max-width: 300px;
+            transition: all 0.3s ease;
+        }
+        
+        #instructions.hidden {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        
+        #toggle-instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 101;
+            width: 40px;
+            height: 40px;
         }
         #wave-info {
             position: absolute;
@@ -191,127 +183,176 @@
     <div id="pause-overlay">⏸️ GAME PAUSED</div>
     
     <button id="shop-button" onclick="openShop()">🛒 SHOP</button>
-    <button id="build-button" onclick="openBuildMenu()">🔨 BUILD</button>
     
     <div id="ui">
         <div style="color: #FFD700; font-size: 20px; font-weight: bold;">🧟‍♂️ ZOMBIE DEFENSE</div>
         <div>💰 Points: <span id="points">0</span></div>
         <div>🪵 Wood: <span id="wood">0</span></div>
+        <div>🧱 Blocks: <span id="blocks">0</span></div>
         <div>⚙️ Iron: <span id="iron">0</span></div>
         <div>💧 Water: <span id="water">0</span></div>
         <div>❤️ Health: <span id="health">100</span></div>
         <div>🔫 Weapon: <span id="weapon">Pistol</span></div>
         <div>📦 Ammo: <span id="ammo">30</span></div>
-        <div>🏠 Buildings: <span id="buildings">0</span></div>
         <div>👥 Helpers: <span id="helpers">0</span></div>
     </div>
 
     <div id="shop">
-        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px; text-align: center;">🛒 GAME SHOP</div>
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px; text-align: center;">🛒 UPGRADED SHOP</div>
         
-        <div style="color: #87CEEB; font-weight: bold; margin: 10px 0;">🔫 WEAPONS</div>
-        <div class="shop-item" onclick="buyWeapon('rifle', 50)" id="rifle-shop">
-            🔫 Rifle - 50 pts<br>
-            <small>Faster firing, more damage</small>
+        <div class="shop-section">
+            <div style="color: #87CEEB; font-weight: bold; margin-bottom: 8px;">🔫 WEAPONS</div>
+            <div class="shop-item" onclick="buyWeapon('rifle', 50)" id="rifle-shop">
+                🔫 Rifle - 50 pts<br>
+                <small>Faster firing, more damage</small>
+            </div>
+            <div class="shop-item" onclick="buyWeapon('shotgun', 100)" id="shotgun-shop">
+                💥 Shotgun - 100 pts<br>
+                <small>Spread shot, high damage</small>
+            </div>
+            <div class="shop-item" onclick="buyWeapon('machinegun', 200)" id="machinegun-shop">
+                ⚡ Machine Gun - 200 pts<br>
+                <small>Rapid fire, unlimited ammo</small>
+            </div>
         </div>
-        <div class="shop-item" onclick="buyWeapon('shotgun', 100)" id="shotgun-shop">
-            💥 Shotgun - 100 pts<br>
-            <small>Spread shot, high damage</small>
+
+        <div class="shop-section">
+            <div style="color: #FF6B6B; font-weight: bold; margin-bottom: 8px;">⚡ WEAPON UPGRADES</div>
+            <div class="shop-item" onclick="upgradeWeaponDamage()" id="damage-upgrade">
+                💥 Damage Boost - <span id="damage-cost">75</span> pts<br>
+                <small>+25% damage for all weapons</small><br>
+                <span class="upgrade-level">Level: <span id="damage-level">0</span>/10</span>
+            </div>
+            <div class="shop-item" onclick="upgradeWeaponCapacity()" id="capacity-upgrade">
+                📦 Ammo Capacity - <span id="capacity-cost">60</span> pts<br>
+                <small>+50% max ammo for current weapon</small><br>
+                <span class="upgrade-level">Level: <span id="capacity-level">0</span>/15</span>
+            </div>
+            <div class="shop-item" onclick="upgradeFireRate()" id="firerate-upgrade">
+                🏃 Fire Rate - <span id="firerate-cost">80</span> pts<br>
+                <small>+20% faster shooting</small><br>
+                <span class="upgrade-level">Level: <span id="firerate-level">0</span>/8</span>
+            </div>
         </div>
-        <div class="shop-item" onclick="buyWeapon('machinegun', 200)" id="machinegun-shop">
-            ⚡ Machine Gun - 200 pts<br>
-            <small>Rapid fire, unlimited ammo</small>
+
+        <div class="shop-section">
+            <div style="color: #90EE90; font-weight: bold; margin-bottom: 8px;">👥 HELPERS</div>
+            <div class="shop-item" onclick="buyHelper('soldier', 80)" id="soldier-shop">
+                🎖️ Soldier - 80 pts<br>
+                <small>Auto-shoots zombies nearby</small>
+            </div>
+            <div class="shop-item" onclick="buyHelper('medic', 120)" id="medic-shop">
+                🏥 Medic - 120 pts<br>
+                <small>Slowly heals you over time</small>
+            </div>
+            <div class="shop-item" onclick="buyHelper('sniper', 150)" id="sniper-shop">
+                🎯 Sniper - 150 pts<br>
+                <small>Long-range high damage shots</small>
+            </div>
+            <div class="shop-item" onclick="buyHelper('heavy', 200)" id="heavy-shop">
+                💥 Heavy Gunner - 200 pts<br>
+                <small>Shotgun & machine gun mayhem</small>
+            </div>
+            <div class="shop-item" onclick="buyHelper('gatherer', 100)" id="gatherer-shop">
+                🪓 Resource Gatherer - 100 pts<br>
+                <small>Auto-cuts trees for blocks</small>
+            </div>
+            <div class="shop-item" onclick="buyHelper('engineer', 130)" id="engineer-shop">
+                🔧 Engineer - 130 pts<br>
+                <small>Repairs damaged blocks</small>
+            </div>
         </div>
-        
-        <div style="color: #90EE90; font-weight: bold; margin: 10px 0;">👥 HELPERS</div>
-        <div class="shop-item" onclick="buyHelper('soldier', 80)" id="soldier-shop">
-            🎖️ Soldier - 80 pts<br>
-            <small>Auto-shoots zombies nearby</small>
+
+        <div class="shop-section">
+            <div style="color: #9C27B0; font-weight: bold; margin-bottom: 8px;">🔧 HELPER UPGRADES</div>
+            <div class="shop-item" onclick="upgradeHelperDamage()" id="helper-damage-upgrade">
+                ⚔️ Helper Damage - <span id="helper-damage-cost">100</span> pts<br>
+                <small>+30% damage for all helpers</small><br>
+                <span class="upgrade-level">Level: <span id="helper-damage-level">0</span>/8</span>
+            </div>
+            <div class="shop-item" onclick="upgradeHelperHealth()" id="helper-health-upgrade">
+                🛡️ Helper Armor - <span id="helper-health-cost">85</span> pts<br>
+                <small>+25% health for all helpers</small><br>
+                <span class="upgrade-level">Level: <span id="helper-health-level">0</span>/10</span>
+            </div>
+            <div class="shop-item" onclick="upgradeHelperSpeed()" id="helper-speed-upgrade">
+                💨 Helper Speed - <span id="helper-speed-cost">70</span> pts<br>
+                <small>+15% action speed for helpers</small><br>
+                <span class="upgrade-level">Level: <span id="helper-speed-level">0</span>/12</span>
+            </div>
+            <div class="shop-item" onclick="upgradeHelperMovement()" id="helper-movement-upgrade">
+                🚶 Helper Movement - <span id="helper-movement-cost">90</span> pts<br>
+                <small>Helpers move around intelligently</small><br>
+                <span class="upgrade-level">Level: <span id="helper-movement-level">0</span>/10</span>
+            </div>
         </div>
-        <div class="shop-item" onclick="buyHelper('medic', 120)" id="medic-shop">
-            🏥 Medic - 120 pts<br>
-            <small>Slowly heals you over time</small>
-        </div>
-        <div class="shop-item" onclick="buyHelper('builder', 100)" id="builder-shop">
-            🔨 Builder - 100 pts<br>
-            <small>Auto-repairs damaged buildings</small>
-        </div>
-        
-        <div style="color: #FFB6C1; font-weight: bold; margin: 10px 0;">🎁 SUPPLIES</div>
-        <div class="shop-item" onclick="buyUpgrade('health', 30)" id="health-shop">
-            💊 Health Pack - 30 pts<br>
-            <small>Restore full health</small>
-        </div>
-        <div class="shop-item" onclick="buyUpgrade('ammo', 20)" id="ammo-shop">
-            📦 Ammo Pack - 20 pts<br>
-            <small>Add 50% ammo (can exceed max)</small>
+
+        <div class="shop-section">
+            <div style="color: #FFB6C1; font-weight: bold; margin-bottom: 8px;">🎁 SUPPLIES & AMMO</div>
+            <div class="shop-item" onclick="buyUpgrade('health', 30)" id="health-shop">
+                💊 Health Pack - 30 pts<br>
+                <small>Restore full health</small>
+            </div>
+            <div class="shop-item" onclick="buyAmmo(50)" id="ammo-50">
+                📦 50 Ammo - 25 pts<br>
+                <small>Add 50 rounds to current weapon</small>
+            </div>
+            <div class="shop-item" onclick="buyAmmo(100)" id="ammo-100">
+                📦 100 Ammo - 45 pts<br>
+                <small>Add 100 rounds to current weapon</small>
+            </div>
+            <div class="shop-item" onclick="buyAmmo(250)" id="ammo-250">
+                📦 250 Ammo - 100 pts<br>
+                <small>Add 250 rounds to current weapon</small>
+            </div>
+            <div class="shop-item" onclick="buyAmmo(500)" id="ammo-500">
+                📦 500 Ammo - 180 pts<br>
+                <small>Add 500 rounds to current weapon</small>
+            </div>
+            <div class="shop-item" onclick="buyAmmo(1000)" id="ammo-1000">
+                📦 1000 Ammo - 300 pts<br>
+                <small>Add 1000 rounds to current weapon</small>
+            </div>
         </div>
         
         <button id="close-shop" onclick="closeShop()">❌ Close Shop</button>
     </div>
 
-    <div id="build-menu">
-        <div style="color: #8BC34A; font-weight: bold; margin-bottom: 10px; text-align: center;">🔨 BUILD MENU</div>
-        
-        <div style="color: #FFD700; margin: 10px 0;">Current Materials:</div>
-        <div>🪵 Wood: <span id="build-wood">0</span></div>
-        <div>⚙️ Iron: <span id="build-iron">0</span></div>
-        <div>💧 Water: <span id="build-water">0</span></div>
-        
-        <div style="color: #87CEEB; font-weight: bold; margin: 15px 0 10px 0;">🏗️ BUILDINGS</div>
-        <div class="shop-item" onclick="selectBuildItem('wall', event)" id="wall-build">
-            🧱 Wall - 5 Wood<br>
-            <small>Basic defensive barrier</small>
-        </div>
-        <div class="shop-item" onclick="selectBuildItem('house', event)" id="house-build">
-            🏠 House - 15 Wood<br>
-            <small>Increases max health by 20</small>
-        </div>
-        <div class="shop-item" onclick="selectBuildItem('iron-wall', event)" id="iron-wall-build">
-            ⚙️ Iron Wall - 8 Iron<br>
-            <small>Stronger defensive barrier</small>
-        </div>
-        <div class="shop-item" onclick="selectBuildItem('water-tower', event)" id="water-tower-build">
-            💧 Water Tower - 10 Water + 5 Wood<br>
-            <small>Slowly regenerates health</small>
-        </div>
-        
-        <div style="margin: 15px 0; color: #90EE90;">
-            Selected: <span id="selected-build" style="color: #FFD700;">None</span>
-        </div>
-        <div style="font-size: 12px; color: #CCCCCC; margin: 10px 0;">
-            Click on ground to place selected building. Buildings won't stack!<br>
-            <span style="color: #FFD700;">💡 TIP:</span> Click and drag existing buildings or helpers to move them around!
-        </div>
-        
-        <button id="close-build" onclick="closeBuildMenu(event)" style="background: #FF4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-top: 10px; width: 100%;">❌ Close Build Menu</button>
-    </div>
-
-    <div id="build-mode-indicator">
-        🔨 BUILD MODE - Click to place buildings OR drag existing buildings/helpers to move them - Zombies paused
-    </div>
-
+    <button id="toggle-instructions" onclick="toggleInstructions()">ℹ️</button>
+    
     <div id="instructions">
         <div style="color: #FFD700; font-weight: bold;">🎮 CONTROLS:</div>
         <div><strong>WASD:</strong> Move around</div>
-        <div><strong>Mouse:</strong> Aim and shoot</div>
-        <div><strong>E:</strong> Cut down trees</div>
-        <div><strong>1:</strong> Build Wall (5 wood)</div>
-        <div><strong>2:</strong> Build House (15 wood)</div>
+        <div><strong>Mouse:</strong> Aim weapon</div>
+        <div><strong>SPACE:</strong> Shoot</div>
+        <div><strong>E:</strong> Cut trees / Destroy buildings</div>
         <div><strong>R:</strong> Reload weapon (restore to max)</div>
+        <div><strong>1:</strong> Place wood circle (costs 8 blocks)</div>
+        <div><strong>2:</strong> Place iron circle (costs 16 iron)</div>
         <div><strong>🛒 Shop:</strong> Buy helpers & upgrades</div>
-        <div><strong>🔨 Build:</strong> Build structures (pauses game)</div>
+        <div><strong>⚡ Start Wave:</strong> Click button to skip countdown</div>
         <div><strong>N:</strong> Force next wave (debug)</div>
         <div><strong>G:</strong> Show game state (debug)</div>
         <div><strong>F:</strong> Fix broken wave (debug)</div>
         <br>
         <div style="color: #8FBC8F; font-size: 12px;">
-            🌲 Trees give 5-8 wood each! Build walls to protect yourself!<br>
-            🏠 Houses give you more health! Buildings won't stack!<br>
-            ⏰ You get 60 seconds before first wave, 45 seconds between waves!<br>
-            🗺️ After wave 5: Map areas always visible on right side!<br>
-            🧟‍♂️ Each wave adds 5 more zombies than the previous!<br>
-            📦 Ammo packs add 50% more ammo (can carry 2x weapon capacity)!
+            🌲 Trees give 5 blocks each! Use blocks to build defenses!<br>
+            ⏰ 30s between waves 1-5, 45s after wave 5 (or click START WAVE NOW)!<br>
+            🧱 Brick wall blocks access to city until wave 5 - use the door!<br>
+            🏙️ City preview: 3x3 grid with organized blocks and roads!<br>
+            🧟‍♂️ Zombies start slow in Wave 1, then get faster each wave!<br>
+            ⚙️ Press E near city buildings to destroy them for 3-6 iron each!<br>
+            🔄 City buildings respawn after 60 seconds when destroyed!<br>
+            🧱 Build circular fortresses! YOU can walk through blocks, but zombies must destroy them!<br>
+            ⭕ Circles replace old blocks in the area - perfect for mobile defense!<br>
+            💪 Wood blocks now much stronger - zombies take 15+ seconds to break through!<br>
+            🎯 Bullets pass through YOUR blocks - shoot zombies from inside your fortress!<br>
+            🤖 New helpers: Heavy Gunners, Resource Gatherers, and Block Engineers!<br>
+            ⚡ After Wave 8: Zombies attack in coordinated groups for intense action!<br>
+            📊 Iron count is shown in top-left UI panel (⚙️ Iron: X)!<br>
+            💰 Shop now has weapon upgrades and unlimited ammo!<br>
+            🎯 Upgrade your helpers to make them more powerful!<br>
+            🚶 Helper movement upgrade makes them move intelligently!
         </div>
     </div>
 
@@ -319,6 +360,18 @@
         <div style="font-size: 18px; font-weight: bold;">WAVE <span id="wave">1</span></div>
         <div>Zombies: <span id="zombies-left">5</span> left</div>
         <div id="wave-timer" style="color: #FFD700;"></div>
+        <button id="start-wave-button" onclick="startWaveEarly()" style="
+            background: #FF6B6B; 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 5px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 8px;
+            display: none;
+        ">⚡ START WAVE NOW</button>
         <div id="area-info" style="margin-top: 10px; color: #87CEEB;">
             Area: <span id="current-area">Base Camp</span>
         </div>
@@ -351,7 +404,7 @@
 
         const gameState = {
             player: {
-                x: canvas.width / 2,
+                x: canvas.width * 0.75, // Spawn on right side (forest side)
                 y: canvas.height / 2,
                 size: 20,
                 health: 100,
@@ -368,17 +421,20 @@
             },
             points: 0,
             wood: 0,
+            blocks: 0,
             iron: 0,
             water: 0,
             wave: 1,
             zombiesInWave: 5,
             zombiesLeft: 5,
-            waveTimer: 60,
+            waveTimer: 30,
             betweenWaves: true,
             currentArea: 'base',
             areasUnlocked: false,
+            cityUnlocked: false,
+            cityBuildings: [],
             keys: {},
-            mouse: { x: 0, y: 0, down: false },
+            mouse: { x: 0, y: 0 },
             trees: [],
             zombies: [],
             bullets: [],
@@ -386,13 +442,14 @@
             particles: [],
             helpers: [],
             isPaused: false,
-            inBuildMode: false,
-            selectedBuildType: null,
-            lastBuildTime: 0,
-            selectedObject: null,
-            selectedObjectType: null, // 'building' or 'helper'
-            isDragging: false,
-            dragOffset: { x: 0, y: 0 }
+            // Upgrade levels
+            damageLevel: 0,
+            capacityLevel: 0,
+            fireRateLevel: 0,
+            helperDamageLevel: 0,
+            helperHealthLevel: 0,
+            helperSpeedLevel: 0,
+            helperMovementLevel: 0
         };
 
         const weapons = {
@@ -407,6 +464,7 @@
         // Initialize game
         function init() {
             generateTrees();
+            generateCityBuildings();
             // Don't start wave immediately - wait for timer
             console.log(`Game initialized! Starting between waves with ${gameState.waveTimer} seconds until wave ${gameState.wave}`);
             console.log(`betweenWaves: ${gameState.betweenWaves}, zombiesInWave: ${gameState.zombiesInWave}`);
@@ -416,10 +474,15 @@
             window.addEventListener('keydown', (e) => {
                 gameState.keys[e.code] = true;
                 
+                // Prevent spacebar from triggering button clicks or other default behaviors
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                }
+                
                 if (e.code === 'KeyE') cutNearestTree();
-                if (e.code === 'Digit1') buildWall();
-                if (e.code === 'Digit2') buildHouse();
                 if (e.code === 'KeyR') reload();
+                if (e.code === 'Digit1') placeBlock('wood');
+                if (e.code === 'Digit2') placeBlock('iron');
                 
                 // Debug: Force start next wave with 'N' key
                 if (e.code === 'KeyN' && gameState.betweenWaves) {
@@ -459,68 +522,6 @@
                 const rect = canvas.getBoundingClientRect();
                 gameState.mouse.x = e.clientX - rect.left;
                 gameState.mouse.y = e.clientY - rect.top;
-                
-                // Handle dragging objects in build mode
-                if (gameState.inBuildMode && gameState.isDragging && gameState.selectedObject) {
-                    const newX = gameState.mouse.x - gameState.dragOffset.x;
-                    const newY = gameState.mouse.y - gameState.dragOffset.y;
-                    
-                    // Validate new position
-                    if (canMoveObjectTo(gameState.selectedObject, newX, newY)) {
-                        gameState.selectedObject.x = newX;
-                        gameState.selectedObject.y = newY;
-                    }
-                }
-                
-                // Change cursor style when hovering over moveable objects in build mode
-                if (gameState.inBuildMode && !gameState.isDragging) {
-                    const hoverObject = getObjectAtMouse();
-                    if (hoverObject) {
-                        canvas.style.cursor = 'move';
-                    } else {
-                        canvas.style.cursor = 'crosshair';
-                    }
-                } else if (gameState.inBuildMode && gameState.isDragging) {
-                    canvas.style.cursor = 'grabbing';
-                } else {
-                    canvas.style.cursor = 'crosshair';
-                }
-            });
-            
-            canvas.addEventListener('mousedown', (e) => {
-                gameState.mouse.down = true;
-                
-                if (gameState.inBuildMode) {
-                    // Check if clicking on existing building or helper to select/move
-                    const clickedObject = getObjectAtMouse();
-                    
-                    if (clickedObject) {
-                        // Select object for moving
-                        gameState.selectedObject = clickedObject.object;
-                        gameState.selectedObjectType = clickedObject.type;
-                        gameState.isDragging = true;
-                        gameState.dragOffset = {
-                            x: gameState.mouse.x - clickedObject.object.x,
-                            y: gameState.mouse.y - clickedObject.object.y
-                        };
-                        console.log(`Selected ${clickedObject.type} for moving`);
-                    } else if (gameState.selectedBuildType) {
-                        // Place new building
-                        placeBuildingAtMouse();
-                    }
-                }
-            });
-            
-            canvas.addEventListener('mouseup', (e) => {
-                gameState.mouse.down = false;
-                
-                // Stop dragging in build mode
-                if (gameState.inBuildMode && gameState.isDragging) {
-                    gameState.isDragging = false;
-                    gameState.selectedObject = null;
-                    gameState.selectedObjectType = null;
-                    console.log("Stopped dragging object");
-                }
             });
 
             window.addEventListener('resize', () => {
@@ -528,74 +529,327 @@
                 canvas.height = window.innerHeight - 20;
             });
             
-            // Prevent build menu clicks from propagating to canvas
-            document.getElementById('build-menu').addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-            
             document.getElementById('shop').addEventListener('click', (e) => {
                 e.stopPropagation();
             });
+        }
+
+        // Weapon upgrade functions
+        function upgradeWeaponDamage() {
+            const cost = 75 + (gameState.damageLevel * 25);
+            if (gameState.points >= cost && gameState.damageLevel < 10) {
+                gameState.points -= cost;
+                gameState.damageLevel++;
+                
+                // Update all weapon damage
+                Object.keys(weapons).forEach(weaponType => {
+                    weapons[weaponType].damage = Math.floor(weapons[weaponType].damage * 1.25);
+                });
+                
+                updateShopUI();
+                console.log(`Weapon damage upgraded to level ${gameState.damageLevel}!`);
+            }
+        }
+
+        function upgradeWeaponCapacity() {
+            const cost = 60 + (gameState.capacityLevel * 20);
+            if (gameState.points >= cost && gameState.capacityLevel < 15) {
+                gameState.points -= cost;
+                gameState.capacityLevel++;
+                
+                // Increase current weapon capacity
+                const currentWeapon = weapons[gameState.player.weapon];
+                currentWeapon.maxAmmo = Math.floor(currentWeapon.maxAmmo * 1.5);
+                gameState.player.maxAmmo = currentWeapon.maxAmmo;
+                
+                updateShopUI();
+                console.log(`Weapon capacity upgraded to level ${gameState.capacityLevel}!`);
+            }
+        }
+
+        function upgradeFireRate() {
+            const cost = 80 + (gameState.fireRateLevel * 30);
+            if (gameState.points >= cost && gameState.fireRateLevel < 8) {
+                gameState.points -= cost;
+                gameState.fireRateLevel++;
+                
+                // Decrease fire rate (faster shooting)
+                Object.keys(weapons).forEach(weaponType => {
+                    weapons[weaponType].fireRate = Math.floor(weapons[weaponType].fireRate * 0.8);
+                });
+                
+                updateShopUI();
+                console.log(`Fire rate upgraded to level ${gameState.fireRateLevel}!`);
+            }
+        }
+
+        // Helper upgrade functions
+        function upgradeHelperDamage() {
+            const cost = 100 + (gameState.helperDamageLevel * 40);
+            if (gameState.points >= cost && gameState.helperDamageLevel < 8) {
+                gameState.points -= cost;
+                gameState.helperDamageLevel++;
+                updateShopUI();
+                console.log(`Helper damage upgraded to level ${gameState.helperDamageLevel}!`);
+            }
+        }
+
+        function upgradeHelperHealth() {
+            const cost = 85 + (gameState.helperHealthLevel * 30);
+            if (gameState.points >= cost && gameState.helperHealthLevel < 10) {
+                gameState.points -= cost;
+                gameState.helperHealthLevel++;
+                
+                // Upgrade existing helpers
+                gameState.helpers.forEach(helper => {
+                    const healthIncrease = helper.maxHealth * 0.25;
+                    helper.maxHealth += healthIncrease;
+                    helper.health = Math.min(helper.health + healthIncrease, helper.maxHealth);
+                });
+                
+                updateShopUI();
+                console.log(`Helper health upgraded to level ${gameState.helperHealthLevel}!`);
+            }
+        }
+
+        function upgradeHelperSpeed() {
+            const cost = 70 + (gameState.helperSpeedLevel * 25);
+            if (gameState.points >= cost && gameState.helperSpeedLevel < 12) {
+                gameState.points -= cost;
+                gameState.helperSpeedLevel++;
+                updateShopUI();
+                console.log(`Helper speed upgraded to level ${gameState.helperSpeedLevel}!`);
+            }
+        }
+
+        function upgradeHelperMovement() {
+            const cost = 90 + (gameState.helperMovementLevel * 35);
+            if (gameState.points >= cost && gameState.helperMovementLevel < 10) {
+                gameState.points -= cost;
+                gameState.helperMovementLevel++;
+                updateShopUI();
+                console.log(`Helper movement upgraded to level ${gameState.helperMovementLevel}!`);
+            }
+        }
+
+        // Unlimited ammo purchasing
+        function buyAmmo(amount) {
+            const costs = {
+                50: 25,
+                100: 45,
+                250: 100,
+                500: 180,
+                1000: 300
+            };
             
-            // Right-click to deselect objects in build mode
-            canvas.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                if (gameState.inBuildMode && gameState.selectedObject) {
-                    gameState.selectedObject = null;
-                    gameState.selectedObjectType = null;
-                    gameState.isDragging = false;
-                    console.log("Deselected object");
+            const cost = costs[amount];
+            if (gameState.points >= cost) {
+                gameState.points -= cost;
+                gameState.player.ammo += amount;
+                
+                // Particle effect for ammo purchase
+                for (let i = 0; i < 15; i++) {
+                    gameState.particles.push({
+                        x: gameState.player.x + (Math.random() - 0.5) * 40,
+                        y: gameState.player.y + (Math.random() - 0.5) * 40,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: (Math.random() - 0.5) * 4,
+                        life: 40,
+                        color: '#FFD700'
+                    });
                 }
-            });
+                
+                console.log(`Purchased ${amount} ammo! Current ammo: ${gameState.player.ammo}`);
+            }
+        }
+
+        function updateShopUI() {
+            // Update damage upgrade
+            document.getElementById('damage-cost').textContent = 75 + (gameState.damageLevel * 25);
+            document.getElementById('damage-level').textContent = gameState.damageLevel;
+            if (gameState.damageLevel >= 10) {
+                document.getElementById('damage-upgrade').classList.add('maxed');
+                document.getElementById('damage-upgrade').innerHTML = '💥 Damage Boost - MAXED<br><small>Maximum level reached!</small><br><span class="upgrade-level">Level: 10/10</span>';
+            }
+
+            // Update capacity upgrade
+            document.getElementById('capacity-cost').textContent = 60 + (gameState.capacityLevel * 20);
+            document.getElementById('capacity-level').textContent = gameState.capacityLevel;
+            if (gameState.capacityLevel >= 15) {
+                document.getElementById('capacity-upgrade').classList.add('maxed');
+                document.getElementById('capacity-upgrade').innerHTML = '📦 Ammo Capacity - MAXED<br><small>Maximum level reached!</small><br><span class="upgrade-level">Level: 15/15</span>';
+            }
+
+            // Update fire rate upgrade
+            document.getElementById('firerate-cost').textContent = 80 + (gameState.fireRateLevel * 30);
+            document.getElementById('firerate-level').textContent = gameState.fireRateLevel;
+            if (gameState.fireRateLevel >= 8) {
+                document.getElementById('firerate-upgrade').classList.add('maxed');
+                document.getElementById('firerate-upgrade').innerHTML = '🏃 Fire Rate - MAXED<br><small>Maximum level reached!</small><br><span class="upgrade-level">Level: 8/8</span>';
+            }
+
+            // Update helper upgrades
+            document.getElementById('helper-damage-cost').textContent = 100 + (gameState.helperDamageLevel * 40);
+            document.getElementById('helper-damage-level').textContent = gameState.helperDamageLevel;
+            if (gameState.helperDamageLevel >= 8) {
+                document.getElementById('helper-damage-upgrade').classList.add('maxed');
+                document.getElementById('helper-damage-upgrade').innerHTML = '⚔️ Helper Damage - MAXED<br><small>Maximum level reached!</small><br><span class="upgrade-level">Level: 8/8</span>';
+            }
+
+            document.getElementById('helper-health-cost').textContent = 85 + (gameState.helperHealthLevel * 30);
+            document.getElementById('helper-health-level').textContent = gameState.helperHealthLevel;
+            if (gameState.helperHealthLevel >= 10) {
+                document.getElementById('helper-health-upgrade').classList.add('maxed');
+                document.getElementById('helper-health-upgrade').innerHTML = '🛡️ Helper Armor - MAXED<br><small>Maximum level reached!</small><br><span class="upgrade-level">Level: 10/10</span>';
+            }
+
+            document.getElementById('helper-speed-cost').textContent = 70 + (gameState.helperSpeedLevel * 25);
+            document.getElementById('helper-speed-level').textContent = gameState.helperSpeedLevel;
+            if (gameState.helperSpeedLevel >= 12) {
+                document.getElementById('helper-speed-upgrade').classList.add('maxed');
+                document.getElementById('helper-speed-upgrade').innerHTML = '💨 Helper Speed - MAXED<br><small>Maximum level reached!</small><br><span class="upgrade-level">Level: 12/12</span>';
+            }
+
+            document.getElementById('helper-movement-cost').textContent = 90 + (gameState.helperMovementLevel * 35);
+            document.getElementById('helper-movement-level').textContent = gameState.helperMovementLevel;
+            if (gameState.helperMovementLevel >= 10) {
+                document.getElementById('helper-movement-upgrade').classList.add('maxed');
+                document.getElementById('helper-movement-upgrade').innerHTML = '🚶 Helper Movement - MAXED<br><small>Maximum level reached!</small><br><span class="upgrade-level">Level: 10/10</span>';
+            }
         }
 
         function generateTrees() {
             gameState.trees = [];
-            let treeCount = 50;
+            const splitPoint = canvas.width / 2;
             
-            // Different tree counts and types based on area
-            if (gameState.currentArea === 'forest') {
-                treeCount = 80; // More trees in forest
-            } else if (gameState.currentArea === 'city') {
-                treeCount = 10; // Fewer trees in city
-            } else if (gameState.currentArea === 'ocean') {
-                treeCount = 5; // Almost no trees at ocean
-            }
-            
-            for (let i = 0; i < treeCount; i++) {
+            // Generate trees only on the right side (forest area)
+            let forestTreeCount = 40;
+            for (let i = 0; i < forestTreeCount; i++) {
                 gameState.trees.push({
-                    x: Math.random() * (canvas.width * 2) - canvas.width / 2,
-                    y: Math.random() * (canvas.height * 2) - canvas.height / 2,
+                    x: splitPoint + Math.random() * (canvas.width - splitPoint), // Only right side
+                    y: Math.random() * canvas.height,
                     size: 30 + Math.random() * 20,
                     health: 3,
                     respawnTimer: 0,
                     maxRespawnTime: 30000 + Math.random() * 20000 // 30-50 seconds
                 });
             }
+            
+            // Final safety check - remove any trees on city side
+            gameState.trees = gameState.trees.filter(tree => tree.x > splitPoint);
+        }
+
+        function generateCityBuildings() {
+            gameState.cityBuildings = [];
+            const splitPoint = canvas.width / 2;
+            const streetWidth = 60;
+            const sidewalkWidth = 12;
+            
+            // Create 3x3 grid of blocks
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    // Calculate block boundaries based on road positions
+                    let leftRoad, rightRoad, topRoad, bottomRoad;
+                    
+                    // Left boundary
+                    if (col === 0) leftRoad = 0;
+                    else leftRoad = (splitPoint / 4) * col - streetWidth/2;
+                    
+                    // Right boundary  
+                    if (col === 2) rightRoad = splitPoint - streetWidth;
+                    else rightRoad = (splitPoint / 4) * (col + 1) - streetWidth/2;
+                    
+                    // Top boundary
+                    if (row === 0) topRoad = 0;
+                    else topRoad = (canvas.height / 4) * row - streetWidth/2;
+                    
+                    // Bottom boundary
+                    if (row === 2) bottomRoad = canvas.height - streetWidth;
+                    else bottomRoad = (canvas.height / 4) * (row + 1) - streetWidth/2;
+                    
+                    const blockLeft = leftRoad + streetWidth + sidewalkWidth;
+                    const blockRight = rightRoad - sidewalkWidth;
+                    const blockTop = topRoad + streetWidth + sidewalkWidth;
+                    const blockBottom = bottomRoad - sidewalkWidth;
+                    
+                    const blockWidth = blockRight - blockLeft;
+                    const blockHeight = blockBottom - blockTop;
+                    
+                    // Skip blocks with bus stop and parking lot
+                    if ((row === 2 && col === 0) || (row === 0 && col === 2)) {
+                        continue; // Bus stop and parking lot blocks
+                    }
+                    
+                    // Generate 2-4 buildings per block in rows
+                    const buildingsInBlock = 2 + Math.floor(Math.random() * 3);
+                    
+                    for (let b = 0; b < buildingsInBlock; b++) {
+                        // Place buildings in rows near streets
+                        let x, y;
+                        
+                        if (Math.random() < 0.5) {
+                            // Place along top or bottom of block (horizontal row)
+                            x = blockLeft + 20 + Math.random() * (blockWidth - 40);
+                            y = Math.random() < 0.5 ? blockTop + 25 : blockBottom - 25;
+                        } else {
+                            // Place along left or right of block (vertical row)
+                            x = Math.random() < 0.5 ? blockLeft + 25 : blockRight - 25;
+                            y = blockTop + 20 + Math.random() * (blockHeight - 40);
+                        }
+                        
+                        // Determine building type based on position
+                        let buildingType, size, height, floors;
+                        
+                        if (col === 1 && row === 1) {
+                            // Center block - tall skyscrapers
+                            buildingType = 'skyscraper';
+                            size = 35 + Math.random() * 15;
+                            height = 100 + Math.random() * 60;
+                            floors = 8 + Math.floor(Math.random() * 10);
+                        } else if (col === 1 || row === 1) {
+                            // Middle row/column - medium buildings
+                            buildingType = Math.random() < 0.6 ? 'apartment' : 'skyscraper';
+                            size = 28 + Math.random() * 12;
+                            height = 70 + Math.random() * 50;
+                            floors = 5 + Math.floor(Math.random() * 8);
+                        } else {
+                            // Corner blocks - smaller residential
+                            buildingType = 'apartment';
+                            size = 22 + Math.random() * 10;
+                            height = 50 + Math.random() * 40;
+                            floors = 3 + Math.floor(Math.random() * 6);
+                        }
+                        
+                        gameState.cityBuildings.push({
+                            x: x,
+                            y: y,
+                            size: size,
+                            height: height,
+                            floors: floors,
+                            health: 5,
+                            maxHealth: 5,
+                            ironYield: 3 + Math.floor(Math.random() * 4),
+                            respawnTimer: 0,
+                            maxRespawnTime: 60000,
+                            destroyed: false,
+                            buildingType: buildingType,
+                            blockId: row * 3 + col // Track which block this belongs to
+                        });
+                    }
+                }
+            }
         }
 
         function respawnTrees() {
             const now = Date.now();
-            const maxTrees = gameState.currentArea === 'forest' ? 80 : 
-                           gameState.currentArea === 'city' ? 10 : 
-                           gameState.currentArea === 'ocean' ? 5 : 50;
+            const splitPoint = canvas.width / 2;
+            const maxTrees = 40; // Only forest trees, no city trees ever
+            
+            // Remove any trees that somehow got on the city side
+            gameState.trees = gameState.trees.filter(tree => tree.x > splitPoint);
             
             // Calculate how many trees we're missing
             const missingTrees = maxTrees - gameState.trees.length;
-            
-            // SUPER AGGRESSIVE: Guaranteed spawning every 5 frames when low
-            if (missingTrees > maxTrees * 0.5 && Date.now() % 5 === 0) {
-                for (let i = 0; i < Math.min(2, missingTrees); i++) {
-                    gameState.trees.push({
-                        x: Math.random() * (canvas.width * 2) - canvas.width / 2,
-                        y: Math.random() * (canvas.height * 2) - canvas.height / 2,
-                        size: 30 + Math.random() * 20,
-                        health: 3,
-                        respawnTimer: 0,
-                        maxRespawnTime: 30000 + Math.random() * 20000
-                    });
-                }
-            }
             
             if (missingTrees > 0) {
                 // Much higher spawn rates for instant resource availability
@@ -619,23 +873,24 @@
                     // Always spawn multiple trees for faster recovery
                     
                     for (let i = 0; i < treesToSpawn; i++) {
-                        // 50% chance to spawn near player for convenience
                         let x, y;
-                        if (Math.random() < 0.5 && missingTrees > maxTrees * 0.4) {
-                            // Spawn near player but not too close
+                        
+                        // 50% chance to spawn near player if player is in forest area
+                        if (Math.random() < 0.5 && gameState.player.x > splitPoint && missingTrees > maxTrees * 0.4) {
+                            // Spawn near player but not too close (only if player is in forest)
                             const angle = Math.random() * Math.PI * 2;
                             const distance = 100 + Math.random() * 200;
                             x = gameState.player.x + Math.cos(angle) * distance;
                             y = gameState.player.y + Math.sin(angle) * distance;
-                            
-                            // Keep within bounds
-                            x = Math.max(50, Math.min(canvas.width - 50, x));
-                            y = Math.max(50, Math.min(canvas.height - 50, y));
                         } else {
-                            // Random placement
-                            x = Math.random() * (canvas.width * 2) - canvas.width / 2;
-                            y = Math.random() * (canvas.height * 2) - canvas.height / 2;
+                            // Random placement in forest area only
+                            x = splitPoint + Math.random() * (canvas.width - splitPoint);
+                            y = Math.random() * canvas.height;
                         }
+                        
+                        // Ensure tree is always on forest side
+                        x = Math.max(splitPoint + 50, Math.min(canvas.width - 50, x));
+                        y = Math.max(50, Math.min(canvas.height - 50, y));
                         
                         gameState.trees.push({
                             x: x,
@@ -646,21 +901,6 @@
                             maxRespawnTime: 30000 + Math.random() * 20000
                         });
                     }
-                }
-            }
-            
-            // TURBO MODE: Instant burst spawning every 30 frames when very low
-            if (missingTrees > maxTrees * 0.8 && Date.now() % 30 === 0) {
-                const burstSpawn = Math.min(10, missingTrees);
-                for (let i = 0; i < burstSpawn; i++) {
-                    gameState.trees.push({
-                        x: Math.random() * (canvas.width * 2) - canvas.width / 2,
-                        y: Math.random() * (canvas.height * 2) - canvas.height / 2,
-                        size: 30 + Math.random() * 20,
-                        health: 3,
-                        respawnTimer: 0,
-                        maxRespawnTime: 30000 + Math.random() * 20000
-                    });
                 }
             }
         }
@@ -683,8 +923,6 @@
                 };
                 document.getElementById('current-area').textContent = areaNames[area];
             }
-            
-            // Keep area selector visible (don't hide it)
         }
 
         function generateAreaSpecificResources() {
@@ -736,27 +974,80 @@
                 });
             }
             
-            // Spawn zombies from edges (faster spawning for better flow)
-            for (let i = 0; i < gameState.zombiesInWave; i++) {
+            // Spawn zombies from edges (group spawning after wave 8)
+            if (gameState.wave >= 8) {
+                // Group spawning for waves 8+: spawn in packs for dramatic effect
+                const groupSize = Math.min(5, Math.floor(gameState.zombiesInWave / 4) + 2); // 2-5 zombies per group
+                const numGroups = Math.ceil(gameState.zombiesInWave / groupSize);
+                const groupDelay = 4000; // 4 seconds between groups
+                
+                console.log(`Wave ${gameState.wave}: Spawning ${gameState.zombiesInWave} zombies in ${numGroups} groups of ~${groupSize}`);
+                
+                for (let group = 0; group < numGroups; group++) {
+                    setTimeout(() => {
+                        if (!gameState.betweenWaves) { // Only spawn if wave is still active
+                            const zombiesInThisGroup = Math.min(groupSize, gameState.zombiesInWave - (group * groupSize));
+                            const groupSpawnSide = Math.floor(Math.random() * 3); // Each group spawns from same side
+                            
+                            console.log(`Group ${group + 1}: Spawning ${zombiesInThisGroup} zombies from side ${groupSpawnSide}`);
+                            
+                            // Spawn all zombies in this group simultaneously from the same side
+                            for (let i = 0; i < zombiesInThisGroup; i++) {
+                                setTimeout(() => {
+                                    if (!gameState.betweenWaves) {
+                                        spawnZombieInGroup(groupSpawnSide);
+                                        console.log(`Group ${group + 1}: Spawned zombie ${i + 1}/${zombiesInThisGroup}`);
+                                    }
+                                }, i * 300); // Very small delay within group (0.3s)
+                            }
+                        }
+                    }, group * groupDelay);
+                }
+            } else {
+                // Individual spawning for waves 1-7 (original behavior)
+                for (let i = 0; i < gameState.zombiesInWave; i++) {
+                    setTimeout(() => {
+                        if (!gameState.betweenWaves) { // Only spawn if wave is still active
+                            spawnZombie();
+                            console.log(`Spawned zombie ${i + 1}/${gameState.zombiesInWave}, total spawned: ${gameState.zombies.length}`);
+                        }
+                    }, i * 2000); // 2 second delays for early waves
+                }
+            }
+            
+            // Spawn boss zombies on waves divisible by 5 (5, 10, 15, 20, etc.)
+            if (gameState.wave % 5 === 0) {
+                console.log(`🔥 BOSS WAVE ${gameState.wave}! Spawning boss zombie...`);
                 setTimeout(() => {
-                    if (!gameState.betweenWaves) { // Only spawn if wave is still active
-                        spawnZombie();
-                        console.log(`Spawned zombie ${i + 1}/${gameState.zombiesInWave}, total spawned: ${gameState.zombies.length}`);
+                    if (!gameState.betweenWaves) {
+                        spawnBossZombie();
                     }
-                }, i * 2000); // Reduced from 4000 to 2000ms for faster spawning
+                }, 2000); // Spawn boss 2 seconds after wave starts for dramatic timing
             }
         }
 
         function spawnZombie() {
-            const side = Math.floor(Math.random() * 4);
+            const splitPoint = canvas.width / 2;
+            const side = Math.floor(Math.random() * 3); // Only 3 sides from forest area
             let x, y;
             
             switch(side) {
-                case 0: x = -50; y = Math.random() * canvas.height; break;
-                case 1: x = canvas.width + 50; y = Math.random() * canvas.height; break;
-                case 2: x = Math.random() * canvas.width; y = -50; break;
-                case 3: x = Math.random() * canvas.width; y = canvas.height + 50; break;
+                case 0: // Right side
+                    x = canvas.width + 50; 
+                    y = Math.random() * canvas.height; 
+                    break;
+                case 1: // Top (right half only)
+                    x = splitPoint + Math.random() * (canvas.width - splitPoint); 
+                    y = -50; 
+                    break;
+                case 2: // Bottom (right half only)
+                    x = splitPoint + Math.random() * (canvas.width - splitPoint); 
+                    y = canvas.height + 50; 
+                    break;
             }
+            
+            // Simple wave-based speed: starts slow in wave 1, gets faster each wave, caps at wave 8
+            const waveSpeed = Math.min(1.5, 0.5 + (gameState.wave - 1) * 0.15); // Cap at 1.5 speed after wave 8
             
             gameState.zombies.push({
                 x: x,
@@ -764,29 +1055,203 @@
                 size: 15,
                 health: 50 + gameState.wave * 10,
                 maxHealth: 50 + gameState.wave * 10,
-                speed: 0.5 + gameState.wave * 0.1,
+                speed: waveSpeed,
                 angle: 0,
                 lastAttack: 0
             });
+            
+            console.log(`Spawned zombie with speed: ${waveSpeed.toFixed(2)} (Wave ${gameState.wave})`);
+        }
+
+        function spawnZombieInGroup(groupSide) {
+            const splitPoint = canvas.width / 2;
+            let x, y;
+            
+            // Use the specified group side for coordinated spawning
+            switch(groupSide) {
+                case 0: // Right side
+                    x = canvas.width + 50; 
+                    y = Math.random() * canvas.height; 
+                    break;
+                case 1: // Top (right half only)
+                    x = splitPoint + Math.random() * (canvas.width - splitPoint); 
+                    y = -50; 
+                    break;
+                case 2: // Bottom (right half only)
+                    x = splitPoint + Math.random() * (canvas.width - splitPoint); 
+                    y = canvas.height + 50; 
+                    break;
+            }
+            
+            // Add clustering for group spawn effect
+            const clusterRadius = 100;
+            x += (Math.random() - 0.5) * clusterRadius;
+            y += (Math.random() - 0.5) * clusterRadius;
+            
+            // Simple wave-based speed: starts slow in wave 1, gets faster each wave, caps at wave 8
+            const waveSpeed = Math.min(1.5, 0.5 + (gameState.wave - 1) * 0.15); // Cap at 1.5 speed after wave 8
+            
+            gameState.zombies.push({
+                x: x,
+                y: y,
+                size: 15,
+                health: 50 + gameState.wave * 10,
+                maxHealth: 50 + gameState.wave * 10,
+                speed: waveSpeed,
+                angle: 0,
+                lastAttack: 0
+            });
+            
+            console.log(`Group zombie spawned at (${Math.round(x)}, ${Math.round(y)}) from side ${groupSide}`);
+        }
+
+        function spawnBossZombie() {
+            const splitPoint = canvas.width / 2;
+            const side = Math.floor(Math.random() * 3); // Random side like regular zombies
+            let x, y;
+            
+            switch(side) {
+                case 0: // Right side
+                    x = canvas.width + 100; // Spawn further away for dramatic entrance
+                    y = Math.random() * canvas.height; 
+                    break;
+                case 1: // Top (right half only)
+                    x = splitPoint + Math.random() * (canvas.width - splitPoint); 
+                    y = -100; 
+                    break;
+                case 2: // Bottom (right half only)
+                    x = splitPoint + Math.random() * (canvas.width - splitPoint); 
+                    y = canvas.height + 100; 
+                    break;
+            }
+            
+            // Boss stats scale dramatically with wave
+            const waveMultiplier = Math.floor(gameState.wave / 5); // Every 5 waves = +1 multiplier
+            const baseHealth = 300 + (waveMultiplier * 200); // Much more health that scales with wave groups
+            const bossSize = 35 + (waveMultiplier * 5); // Bigger size that scales with wave groups
+            const bossSpeed = 0.6 + (waveMultiplier * 0.1); // Speed increases slightly with wave groups
+            
+            // Boss type affects stats
+            const bossType = Math.floor(Math.random() * 3); // 0: Tank, 1: Speed, 2: Regenerator
+            let finalHealth = baseHealth;
+            let finalSize = bossSize;
+            let finalSpeed = bossSpeed;
+            let bossName = '';
+            
+            switch(bossType) {
+                case 0: // Tank - Massive health, slow speed
+                    finalHealth = baseHealth * 1.5;
+                    finalSpeed = bossSpeed * 0.7;
+                    finalSize = bossSize * 1.3;
+                    bossName = 'TANK BOSS';
+                    break;
+                case 1: // Speed - Fast, moderate health
+                    finalHealth = baseHealth * 0.8;
+                    finalSpeed = bossSpeed * 1.8;
+                    finalSize = bossSize * 0.9;
+                    bossName = 'SPEED BOSS';
+                    break;
+                case 2: // Regenerator - Moderate stats, regenerates health
+                    finalHealth = baseHealth * 1.2;
+                    finalSpeed = bossSpeed * 1.1;
+                    finalSize = bossSize * 1.1;
+                    bossName = 'REGENERATOR BOSS';
+                    break;
+            }
+            
+            gameState.zombies.push({
+                x: x,
+                y: y,
+                size: finalSize,
+                health: finalHealth,
+                maxHealth: finalHealth,
+                speed: finalSpeed,
+                angle: 0,
+                lastAttack: 0,
+                isBoss: true, // Mark as boss for special rendering and behavior
+                bossType: bossType,
+                bossName: bossName,
+                waveMultiplier: waveMultiplier,
+                lastRegeneration: 0 // For regenerator type
+            });
+            
+            console.log(`👹 ${bossName} spawned! Wave ${gameState.wave} - Health: ${finalHealth}, Size: ${finalSize}, Speed: ${finalSpeed.toFixed(2)}, Wave Multiplier: ${waveMultiplier}`);
+            
+            // Boss spawn effect - dramatic particles
+            for (let i = 0; i < 150; i++) {
+                gameState.particles.push({
+                    x: x + (Math.random() - 0.5) * 300,
+                    y: y + (Math.random() - 0.5) * 300,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: (Math.random() - 0.5) * 12,
+                    life: 80,
+                    color: '#8B0000' // Dark red for boss effect
+                });
+            }
+            
+            // Boss spawn notification
+            showBossNotification(bossName, gameState.wave);
         }
 
         function cutNearestTree() {
             const player = gameState.player;
-            let closest = null;
-            let closestDist = 60;
+            let closestTree = null;
+            let closestBuilding = null;
+            let closestTreeDist = 60;
+            let closestBuildingDist = 60;
             
+            // Check trees
             gameState.trees.forEach((tree, index) => {
                 const dist = Math.sqrt((tree.x - player.x) ** 2 + (tree.y - player.y) ** 2);
-                if (dist < closestDist) {
-                    closest = index;
-                    closestDist = dist;
+                if (dist < closestTreeDist) {
+                    closestTree = index;
+                    closestTreeDist = dist;
                 }
             });
             
-            if (closest !== null) {
-                gameState.trees[closest].health--;
-                if (gameState.trees[closest].health <= 0) {
-                    const tree = gameState.trees[closest];
+            // Check city buildings (if unlocked)
+            if (gameState.cityUnlocked) {
+                gameState.cityBuildings.forEach((building, index) => {
+                    if (!building.destroyed) {
+                        const dist = Math.sqrt((building.x - player.x) ** 2 + (building.y - player.y) ** 2);
+                        if (dist < closestBuildingDist) {
+                            closestBuilding = index;
+                            closestBuildingDist = dist;
+                        }
+                    }
+                });
+            }
+            
+            if (closestBuilding !== null && closestBuildingDist <= closestTreeDist + 10) {
+                // Destroy city building
+                const building = gameState.cityBuildings[closestBuilding];
+                building.health--;
+                
+                if (building.health <= 0) {
+                    building.destroyed = true;
+                    building.respawnTimer = Date.now() + building.maxRespawnTime;
+                    
+                    // Give iron
+                    gameState.iron += building.ironYield;
+                    console.log(`Destroyed building! Gained ${building.ironYield} iron. Total iron: ${gameState.iron}`);
+                    
+                    // Iron particles
+                    for (let i = 0; i < 15; i++) {
+                        gameState.particles.push({
+                            x: building.x,
+                            y: building.y,
+                            vx: (Math.random() - 0.5) * 6,
+                            vy: (Math.random() - 0.5) * 6,
+                            life: 40,
+                            color: '#757575'
+                        });
+                    }
+                }
+            } else if (closestTree !== null) {
+                // Destroy tree
+                gameState.trees[closestTree].health--;
+                if (gameState.trees[closestTree].health <= 0) {
+                    const tree = gameState.trees[closestTree];
                     let particleColor = '#8B4513';
                     
                     // Give different resources based on tree type
@@ -797,8 +1262,8 @@
                         gameState.water += 4 + Math.floor(Math.random() * 4);
                         particleColor = '#2196F3';
                     } else {
-                        // Regular tree gives wood (increased amount)
-                        gameState.wood += 5 + Math.floor(Math.random() * 4); // 5-8 wood per tree
+                        // Regular tree gives blocks
+                        gameState.blocks += 5; // Always 5 blocks per tree
                         particleColor = '#8B4513';
                     }
                     
@@ -814,19 +1279,20 @@
                         });
                     }
                     
-                    gameState.trees.splice(closest, 1);
+                    gameState.trees.splice(closestTree, 1);
                     
-                    // INSTANT REPLACEMENT: Spawn 1-2 new trees immediately when one is cut
-                    const replacementTrees = Math.random() < 0.7 ? 1 : 2; // 70% chance for 1, 30% for 2
+                    // INSTANT REPLACEMENT: Spawn 1-2 new trees immediately when one is cut (only on right side)
+                    const replacementTrees = Math.random() < 0.7 ? 1 : 2;
+                    const splitPoint = canvas.width / 2;
+                    
                     for (let i = 0; i < replacementTrees; i++) {
-                        // Spawn away from player to not interfere
                         const angle = Math.random() * Math.PI * 2;
                         const distance = 150 + Math.random() * 300;
                         let newX = gameState.player.x + Math.cos(angle) * distance;
                         let newY = gameState.player.y + Math.sin(angle) * distance;
                         
-                        // Keep within reasonable bounds
-                        newX = Math.max(50, Math.min(canvas.width - 50, newX));
+                        // Keep within forest bounds (right side only)
+                        newX = Math.max(splitPoint + 50, Math.min(canvas.width - 50, newX));
                         newY = Math.max(50, Math.min(canvas.height - 50, newY));
                         
                         gameState.trees.push({
@@ -836,238 +1302,10 @@
                             health: 3,
                             respawnTimer: 0,
                             maxRespawnTime: 30000 + Math.random() * 20000,
-                            type: tree.type // Maintain the same type
+                            type: tree.type
                         });
                     }
                 }
-            }
-        }
-
-        function canPlaceBuildingAt(x, y, size) {
-            // Check if position would overlap with existing buildings
-            for (let building of gameState.buildings) {
-                const distance = Math.sqrt((building.x - x) ** 2 + (building.y - y) ** 2);
-                if (distance < (building.size + size) / 2 + 10) { // 10 pixel buffer between buildings
-                    return false;
-                }
-            }
-            
-            // Check if too close to player
-            const playerDist = Math.sqrt((gameState.player.x - x) ** 2 + (gameState.player.y - y) ** 2);
-            if (playerDist < 40) {
-                return false;
-            }
-            
-            return true;
-        }
-
-        function getObjectAtMouse() {
-            const mouseX = gameState.mouse.x;
-            const mouseY = gameState.mouse.y;
-            
-            // Check buildings first
-            for (let building of gameState.buildings) {
-                const distance = Math.sqrt((building.x - mouseX) ** 2 + (building.y - mouseY) ** 2);
-                if (distance < building.size / 2) {
-                    return { object: building, type: 'building' };
-                }
-            }
-            
-            // Check helpers
-            for (let helper of gameState.helpers) {
-                const distance = Math.sqrt((helper.x - mouseX) ** 2 + (helper.y - mouseY) ** 2);
-                if (distance < helper.size) {
-                    return { object: helper, type: 'helper' };
-                }
-            }
-            
-            return null;
-        }
-
-        function canMoveObjectTo(object, newX, newY) {
-            // Keep within canvas bounds
-            const margin = object.size || 20;
-            if (newX < margin || newX > canvas.width - margin || 
-                newY < margin || newY > canvas.height - margin) {
-                return false;
-            }
-            
-            // Check if new position would overlap with other objects
-            const objectSize = object.size || 20;
-            
-            // Check against buildings (excluding self)
-            for (let building of gameState.buildings) {
-                if (building === object) continue;
-                const distance = Math.sqrt((building.x - newX) ** 2 + (building.y - newY) ** 2);
-                if (distance < (building.size + objectSize) / 2 + 5) {
-                    return false;
-                }
-            }
-            
-            // Check against helpers (excluding self)
-            for (let helper of gameState.helpers) {
-                if (helper === object) continue;
-                const distance = Math.sqrt((helper.x - newX) ** 2 + (helper.y - newY) ** 2);
-                if (distance < (helper.size + objectSize) + 5) {
-                    return false;
-                }
-            }
-            
-            // Check if too close to player
-            const playerDist = Math.sqrt((gameState.player.x - newX) ** 2 + (gameState.player.y - newY) ** 2);
-            if (playerDist < 40) {
-                return false;
-            }
-            
-            return true;
-        }
-
-        function placeBuildingAtMouse() {
-            if (!gameState.selectedBuildType) {
-                console.log("No building type selected");
-                return;
-            }
-            
-            // Prevent rapid building (500ms cooldown)
-            const now = Date.now();
-            if (now - gameState.lastBuildTime < 500) {
-                console.log("Building cooldown active");
-                return;
-            }
-            
-            const x = gameState.mouse.x;
-            const y = gameState.mouse.y;
-            
-            console.log(`Attempting to place ${gameState.selectedBuildType} at (${x}, ${y})`);
-            
-            let canAfford = false;
-            let cost = {};
-            let buildingData = {};
-            
-            switch(gameState.selectedBuildType) {
-                case 'wall':
-                    canAfford = gameState.wood >= 5;
-                    cost = { wood: 5 };
-                    buildingData = { type: 'wall', health: 100, maxHealth: 100, size: 25 };
-                    break;
-                case 'house':
-                    canAfford = gameState.wood >= 15;
-                    cost = { wood: 15 };
-                    buildingData = { type: 'house', health: 200, maxHealth: 200, size: 40 };
-                    break;
-                case 'iron-wall':
-                    canAfford = gameState.iron >= 8;
-                    cost = { iron: 8 };
-                    buildingData = { type: 'iron-wall', health: 300, maxHealth: 300, size: 25 };
-                    break;
-                case 'water-tower':
-                    canAfford = gameState.water >= 10 && gameState.wood >= 5;
-                    cost = { water: 10, wood: 5 };
-                    buildingData = { type: 'water-tower', health: 150, maxHealth: 150, size: 35 };
-                    break;
-            }
-            
-            console.log(`Can afford: ${canAfford}, Current resources: wood=${gameState.wood}, iron=${gameState.iron}, water=${gameState.water}`);
-            
-            const canPlace = canPlaceBuildingAt(x, y, buildingData.size);
-            console.log(`Can place at location: ${canPlace}`);
-            
-            if (canAfford && canPlace) {
-                // Subtract resources
-                Object.keys(cost).forEach(resource => {
-                    gameState[resource] -= cost[resource];
-                });
-                
-                // Create building
-                gameState.buildings.push({
-                    x: x,
-                    y: y,
-                    ...buildingData
-                });
-                
-                console.log(`Successfully placed ${gameState.selectedBuildType} at (${x}, ${y})`);
-                
-                // Special effects for certain buildings
-                if (gameState.selectedBuildType === 'house') {
-                    gameState.player.maxHealth += 20;
-                    gameState.player.health = Math.min(gameState.player.health + 20, gameState.player.maxHealth);
-                }
-                
-                // Update build time
-                gameState.lastBuildTime = now;
-                
-                // Clear selection after placing
-                gameState.selectedBuildType = null;
-                document.getElementById('selected-build').textContent = 'None';
-                
-                // Clear highlighting
-                document.querySelectorAll('.shop-item').forEach(item => {
-                    item.style.backgroundColor = 'rgba(255,255,255,0.1)';
-                });
-                
-                // Construction particles
-                for (let i = 0; i < 15; i++) {
-                    gameState.particles.push({
-                        x: x + (Math.random() - 0.5) * buildingData.size,
-                        y: y + (Math.random() - 0.5) * buildingData.size,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: (Math.random() - 0.5) * 4,
-                        life: 30,
-                        color: '#FFD700'
-                    });
-                }
-            } else {
-                console.log(`Cannot place building - canAfford: ${canAfford}, canPlace: ${canPlace}`);
-            }
-        }
-
-        function buildWall() {
-            // Find suitable position near player
-            let attempts = 0;
-            while (attempts < 20) {
-                const angle = (Math.PI * 2 * attempts) / 20;
-                const x = gameState.player.x + Math.cos(angle) * 50;
-                const y = gameState.player.y + Math.sin(angle) * 50;
-                
-                if (gameState.wood >= 5 && canPlaceBuildingAt(x, y, 25)) {
-                    gameState.buildings.push({
-                        x: x,
-                        y: y,
-                        type: 'wall',
-                        health: 100,
-                        maxHealth: 100,
-                        size: 25
-                    });
-                    gameState.wood -= 5;
-                    break;
-                }
-                attempts++;
-            }
-        }
-
-        function buildHouse() {
-            // Find suitable position near player
-            let attempts = 0;
-            while (attempts < 20) {
-                const angle = (Math.PI * 2 * attempts) / 20;
-                const x = gameState.player.x + Math.cos(angle) * 60;
-                const y = gameState.player.y + Math.sin(angle) * 60;
-                
-                if (gameState.wood >= 15 && canPlaceBuildingAt(x, y, 40)) {
-                    gameState.buildings.push({
-                        x: x,
-                        y: y,
-                        type: 'house',
-                        health: 200,
-                        maxHealth: 200,
-                        size: 40
-                    });
-                    gameState.wood -= 15;
-                    gameState.player.maxHealth += 20;
-                    gameState.player.health = gameState.player.maxHealth;
-                    break;
-                }
-                attempts++;
             }
         }
 
@@ -1130,25 +1368,6 @@
                 gameState.points -= cost;
                 if (type === 'health') {
                     gameState.player.health = gameState.player.maxHealth;
-                } else if (type === 'ammo') {
-                    // Add ammo instead of just refilling to max
-                    const currentWeapon = weapons[gameState.player.weapon];
-                    const ammoToAdd = Math.floor(currentWeapon.maxAmmo * 0.5); // Add 50% of max ammo
-                    gameState.player.ammo = Math.min(currentWeapon.maxAmmo * 2, gameState.player.ammo + ammoToAdd); // Can hold 2x max ammo
-                    
-                    console.log(`Added ${ammoToAdd} ammo. Current ammo: ${gameState.player.ammo}/${currentWeapon.maxAmmo * 2}`);
-                    
-                    // Show ammo gained particles
-                    for (let i = 0; i < 10; i++) {
-                        gameState.particles.push({
-                            x: gameState.player.x + (Math.random() - 0.5) * 30,
-                            y: gameState.player.y + (Math.random() - 0.5) * 30,
-                            vx: (Math.random() - 0.5) * 3,
-                            vy: (Math.random() - 0.5) * 3,
-                            life: 30,
-                            color: '#FFD700'
-                        });
-                    }
                 }
             }
         }
@@ -1157,108 +1376,192 @@
             gameState.isPaused = true;
             document.getElementById('shop').style.display = 'block';
             document.getElementById('shop-button').style.display = 'none';
-            document.getElementById('build-button').style.display = 'none';
             document.getElementById('pause-overlay').style.display = 'flex';
+            updateShopUI();
         }
 
         function closeShop() {
             gameState.isPaused = false;
-            gameState.inBuildMode = false;
             document.getElementById('shop').style.display = 'none';
             document.getElementById('shop-button').style.display = 'block';
-            document.getElementById('build-button').style.display = 'block';
             document.getElementById('pause-overlay').style.display = 'none';
-        }
-
-        function openBuildMenu() {
-            gameState.isPaused = true;
-            gameState.inBuildMode = true;
-            document.getElementById('build-menu').style.display = 'block';
-            document.getElementById('shop-button').style.display = 'none';
-            document.getElementById('build-button').style.display = 'none';
-            document.getElementById('build-mode-indicator').style.display = 'block';
-        }
-
-        function closeBuildMenu(event) {
-            // Prevent event from propagating to canvas
-            if (event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
-            
-            gameState.isPaused = false;
-            gameState.inBuildMode = false;
-            gameState.selectedBuildType = null;
-            gameState.selectedObject = null;
-            gameState.selectedObjectType = null;
-            gameState.isDragging = false;
-            document.getElementById('build-menu').style.display = 'none';
-            document.getElementById('shop-button').style.display = 'block';
-            document.getElementById('build-button').style.display = 'block';
-            document.getElementById('build-mode-indicator').style.display = 'none';
-            document.getElementById('selected-build').textContent = 'None';
-            
-            // Clear highlighting
-            document.querySelectorAll('.shop-item').forEach(item => {
-                item.style.backgroundColor = 'rgba(255,255,255,0.1)';
-            });
-        }
-
-        function selectBuildItem(type, event) {
-            // Prevent event from propagating to canvas
-            if (event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
-            
-            gameState.selectedBuildType = type;
-            const names = {
-                'wall': 'Wall (5 Wood)',
-                'house': 'House (15 Wood)', 
-                'iron-wall': 'Iron Wall (8 Iron)',
-                'water-tower': 'Water Tower (10 Water + 5 Wood)'
-            };
-            document.getElementById('selected-build').textContent = names[type] || type;
-            console.log(`Selected building type: ${type}`);
-            
-            // Highlight selected item
-            document.querySelectorAll('.shop-item').forEach(item => {
-                item.style.backgroundColor = 'rgba(255,255,255,0.1)';
-            });
-            document.getElementById(`${type}-build`).style.backgroundColor = 'rgba(139, 195, 74, 0.3)';
         }
 
         function buyHelper(type, cost) {
             if (gameState.points >= cost) {
                 gameState.points -= cost;
                 
-                // Spawn helper near player
+                // Spawn helper near player (ensuring they stay on forest side initially)
+                const splitPoint = canvas.width / 2;
+                let baseHealth = 100;
+                
+                // Apply health upgrades
+                if (gameState.helperHealthLevel > 0) {
+                    baseHealth *= Math.pow(1.25, gameState.helperHealthLevel);
+                }
+                
                 const helper = {
                     x: gameState.player.x + (Math.random() - 0.5) * 100,
                     y: gameState.player.y + (Math.random() - 0.5) * 100,
                     type: type,
-                    health: 100,
-                    maxHealth: 100,
+                    health: baseHealth,
+                    maxHealth: baseHealth,
                     size: 15,
                     lastAction: 0,
                     angle: 0
                 };
                 
-                // Keep helper on screen
-                helper.x = Math.max(30, Math.min(canvas.width - 30, helper.x));
+                // Keep helper on screen and on forest side if city not unlocked
+                if (!gameState.cityUnlocked) {
+                    helper.x = Math.max(splitPoint + 30, Math.min(canvas.width - 30, helper.x));
+                } else {
+                    helper.x = Math.max(30, Math.min(canvas.width - 30, helper.x));
+                }
                 helper.y = Math.max(30, Math.min(canvas.height - 30, helper.y));
                 
                 gameState.helpers.push(helper);
             }
         }
 
-        function updatePlayer() {
-            const speed = 3;
+        function placeBlock(type) {
+            const blockSize = 30;
+            const circleRadius = 60; // Distance from player to blocks
+            const numBlocks = 8; // Number of blocks in circle
+            const totalCost = type === 'wood' ? numBlocks : numBlocks * 2; // Wood costs 1 per block, iron costs 2 per block
             
-            if (gameState.keys['KeyW'] || gameState.keys['ArrowUp']) gameState.player.y -= speed;
-            if (gameState.keys['KeyS'] || gameState.keys['ArrowDown']) gameState.player.y += speed;
-            if (gameState.keys['KeyA'] || gameState.keys['ArrowLeft']) gameState.player.x -= speed;
-            if (gameState.keys['KeyD'] || gameState.keys['ArrowRight']) gameState.player.x += speed;
+            // Check if player has enough resources
+            if (type === 'wood' && gameState.blocks < totalCost) {
+                console.log(`Need ${totalCost} blocks to place wood circle! You have ${gameState.blocks}.`);
+                return;
+            }
+            if (type === 'iron' && gameState.iron < totalCost) {
+                console.log(`Need ${totalCost} iron to place iron circle! You have ${gameState.iron}.`);
+                return;
+            }
+            
+            // Clear any existing blocks around player first
+            gameState.buildings = gameState.buildings.filter(building => {
+                const dist = Math.sqrt((building.x - gameState.player.x) ** 2 + (building.y - gameState.player.y) ** 2);
+                return dist > circleRadius + 20; // Remove blocks within slightly larger radius
+            });
+            
+            // Place blocks in a circle around player
+            for (let i = 0; i < numBlocks; i++) {
+                const angle = (i / numBlocks) * 2 * Math.PI; // Evenly spaced angles
+                const blockX = gameState.player.x + Math.cos(angle) * circleRadius;
+                const blockY = gameState.player.y + Math.sin(angle) * circleRadius;
+                
+                // Check if position is clear of city buildings
+                const tooCloseToCity = gameState.cityBuildings.some(building => {
+                    const dist = Math.sqrt((building.x - blockX) ** 2 + (building.y - blockY) ** 2);
+                    return dist < building.size / 2 + blockSize / 2;
+                });
+                
+                // Only place block if not too close to city buildings
+                if (!tooCloseToCity) {
+                    gameState.buildings.push({
+                        x: blockX,
+                        y: blockY,
+                        size: blockSize,
+                        type: type,
+                        health: type === 'wood' ? 150 : 200, // Wood blocks much stronger now
+                        maxHealth: type === 'wood' ? 150 : 200
+                    });
+                }
+            }
+            
+            // Deduct resources
+            if (type === 'wood') {
+                gameState.blocks -= totalCost;
+            } else {
+                gameState.iron -= totalCost;
+            }
+            
+            console.log(`Placed ${type} circle defense around player!`);
+        }
+
+        function updatePlayer() {
+            const speed = 6; // Increased from 3 to 6 for faster movement
+            
+            // Wall constants (defined once to avoid redeclaration)
+            const splitPoint = canvas.width / 2;
+            const wallThickness = 20;
+            const doorWidth = 60;
+            const doorHeight = 80;
+            const doorY = canvas.height / 2 - doorHeight / 2;
+            
+            // Calculate intended movement
+            let newX = gameState.player.x;
+            let newY = gameState.player.y;
+            
+            if (gameState.keys['KeyW'] || gameState.keys['ArrowUp']) newY -= speed;
+            if (gameState.keys['KeyS'] || gameState.keys['ArrowDown']) newY += speed;
+            if (gameState.keys['KeyA'] || gameState.keys['ArrowLeft']) newX -= speed;
+            if (gameState.keys['KeyD'] || gameState.keys['ArrowRight']) newX += speed;
+            
+            // Check collision with the wall and door
+            let canMoveX = true;
+            let canMoveY = true;
+            
+            // Check wall collision
+            if (!gameState.cityUnlocked) {
+                // Prevent crossing to left side before unlock
+                if (gameState.player.x > splitPoint - wallThickness / 2 && newX < splitPoint - wallThickness / 2) {
+                    canMoveX = false; // Can't go from right to left
+                }
+                if (gameState.player.x < splitPoint + wallThickness / 2 && newX > splitPoint + wallThickness / 2) {
+                    canMoveX = false; // Can't go from left to right
+                }
+            } else {
+                // City unlocked, but still check door collision
+                if (Math.abs(newX - splitPoint) < wallThickness / 2) {
+                    // In wall area, check if going through door
+                    if (newY < doorY || newY > doorY + doorHeight) {
+                        canMoveX = false; // Must go through door opening
+                    }
+                }
+            }
+            
+            // Check collision with city buildings (if unlocked)
+            if (gameState.cityUnlocked) {
+                gameState.cityBuildings.forEach(building => {
+                    if (!building.destroyed) {
+                        // Check X movement collision
+                        const futureXDist = Math.sqrt((building.x - newX) ** 2 + (building.y - gameState.player.y) ** 2);
+                        if (futureXDist < building.size / 2 + 25) {
+                            canMoveX = false;
+                        }
+                        
+                        // Check Y movement collision
+                        const futureYDist = Math.sqrt((building.x - gameState.player.x) ** 2 + (building.y - newY) ** 2);
+                        if (futureYDist < building.size / 2 + 25) {
+                            canMoveY = false;
+                        }
+                    }
+                });
+            }
+            
+            // Player can walk through their own blocks - no collision check needed
+            
+            // Apply movement if not blocked
+            if (canMoveX) gameState.player.x = newX;
+            if (canMoveY) gameState.player.y = newY;
+            
+            // Safety check: Push player out of wall if stuck
+            if (Math.abs(gameState.player.x - splitPoint) < wallThickness / 2 + 10) {
+                if (!gameState.cityUnlocked || gameState.player.y < doorY || gameState.player.y > doorY + doorHeight) {
+                    // Player is stuck in wall, push them out to the side they came from
+                    if (gameState.player.x < splitPoint) {
+                        // Push to left side (city side)
+                        gameState.player.x = splitPoint - wallThickness / 2 - 15;
+                        console.log("Pushed player out of wall to city side");
+                    } else {
+                        // Push to right side (forest side)
+                        gameState.player.x = splitPoint + wallThickness / 2 + 15;
+                        console.log("Pushed player out of wall to forest side");
+                    }
+                }
+            }
             
             // Keep player on screen
             gameState.player.x = Math.max(20, Math.min(canvas.width - 20, gameState.player.x));
@@ -1269,49 +1572,146 @@
             const dy = gameState.mouse.y - gameState.player.y;
             gameState.player.angle = Math.atan2(dy, dx);
             
-            // Handle mouse clicks for shooting only (building placement handled in mousedown event)
-            if (gameState.mouse.down && !gameState.inBuildMode) {
+            // Handle spacebar shooting
+            if (gameState.keys['Space']) {
                 shoot();
             }
         }
 
         function updateZombies() {
+            // Wall constants
+            const splitPoint = canvas.width / 2;
+            const wallThickness = 20;
+            const doorWidth = 60;
+            const doorHeight = 80;
+            const doorY = canvas.height / 2 - doorHeight / 2;
+            
             gameState.zombies.forEach((zombie, zIndex) => {
+                // Boss zombie special behaviors
+                if (zombie.isBoss) {
+                    // Regenerator boss heals over time
+                    if (zombie.bossType === 2 && Date.now() - zombie.lastRegeneration > 3000) {
+                        zombie.lastRegeneration = Date.now();
+                        const healAmount = zombie.maxHealth * 0.05; // Heal 5% of max health
+                        zombie.health = Math.min(zombie.maxHealth, zombie.health + healAmount);
+                        
+                        // Healing particles for regenerator
+                        for (let i = 0; i < 8; i++) {
+                            gameState.particles.push({
+                                x: zombie.x + (Math.random() - 0.5) * zombie.size,
+                                y: zombie.y + (Math.random() - 0.5) * zombie.size,
+                                vx: (Math.random() - 0.5) * 3,
+                                vy: (Math.random() - 0.5) * 3,
+                                life: 25,
+                                color: '#00FF00' // Green for healing
+                            });
+                        }
+                    }
+                }
+                
                 // Move towards player
                 const dx = gameState.player.x - zombie.x;
                 const dy = gameState.player.y - zombie.y;
                 const dist = Math.sqrt(dx ** 2 + dy ** 2);
                 
                 if (dist > 0) {
-                    // Calculate intended movement
+                    // Simple movement - speed is set by wave, no distance calculations
                     const moveX = (dx / dist) * zombie.speed;
                     const moveY = (dy / dist) * zombie.speed;
                     const newX = zombie.x + moveX;
                     const newY = zombie.y + moveY;
                     
-                    // Check collision with buildings before moving
+                    // Check collision with the wall and door
                     let canMove = true;
-                    gameState.buildings.forEach(building => {
+                    if (!gameState.cityUnlocked) {
+                        // Wall blocks zombies completely before unlock
+                        if (Math.abs(newX - splitPoint) < wallThickness / 2 + 15) {
+                            canMove = false;
+                        }
+                    } else {
+                        // City unlocked, but wall still blocks except through door
+                        if (Math.abs(newX - splitPoint) < wallThickness / 2 + 15) {
+                            if (newY < doorY - 15 || newY > doorY + doorHeight + 15) {
+                                canMove = false; // Must go through door opening
+                            }
+                        }
+                    }
+                    
+                    // Check collision with city buildings (they block movement but can't be damaged by zombies)
+                    if (gameState.cityUnlocked) {
+                        gameState.cityBuildings.forEach(building => {
+                            if (!building.destroyed) {
+                                const buildDist = Math.sqrt((building.x - newX) ** 2 + (building.y - newY) ** 2);
+                                if (buildDist < building.size / 2 + 20) { // Buildings block zombies
+                                    canMove = false;
+                                    
+                                    // Simple pathfinding: try to move around building
+                                    const angleToBuilding = Math.atan2(building.y - zombie.y, building.x - zombie.x);
+                                    const perpendicularAngle1 = angleToBuilding + Math.PI / 2;
+                                    const perpendicularAngle2 = angleToBuilding - Math.PI / 2;
+                                    
+                                    // Try moving perpendicular to building
+                                    const altMove1X = zombie.x + Math.cos(perpendicularAngle1) * zombie.speed;
+                                    const altMove1Y = zombie.y + Math.sin(perpendicularAngle1) * zombie.speed;
+                                    const altMove2X = zombie.x + Math.cos(perpendicularAngle2) * zombie.speed;
+                                    const altMove2Y = zombie.y + Math.sin(perpendicularAngle2) * zombie.speed;
+                                    
+                                    // Choose the path that gets closer to player
+                                    const dist1 = Math.sqrt((gameState.player.x - altMove1X) ** 2 + (gameState.player.y - altMove1Y) ** 2);
+                                    const dist2 = Math.sqrt((gameState.player.x - altMove2X) ** 2 + (gameState.player.y - altMove2Y) ** 2);
+                                    
+                                    if (dist1 < dist2) {
+                                        zombie.x = altMove1X;
+                                        zombie.y = altMove1Y;
+                                    } else {
+                                        zombie.x = altMove2X;
+                                        zombie.y = altMove2Y;
+                                    }
+                                    canMove = true; // Allow the alternate movement
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Check collision with player-placed blocks (they completely block movement and get destroyed)
+                    gameState.buildings.forEach((building, buildIndex) => {
                         const buildDist = Math.sqrt((building.x - newX) ** 2 + (building.y - newY) ** 2);
-                        if (buildDist < building.size + 15) { // Add buffer for zombie size
+                        if (buildDist < building.size / 2 + 15) { // Blocks completely prevent zombie movement
                             canMove = false;
                             
-                            // Attack building if close
-                            const currentDist = Math.sqrt((building.x - zombie.x) ** 2 + (building.y - zombie.y) ** 2);
-                            if (currentDist < building.size + 20 && Date.now() - zombie.lastAttack > 1000) {
-                                building.health -= 20;
-                                zombie.lastAttack = Date.now();
+                            // Zombies MUST destroy blocks to continue - no pathfinding around them
+                            if (Date.now() - (zombie.lastBlockDamage || 0) > 800) { // 0.8 second cooldown (slower destruction)
+                                building.health -= 8; // Less damage per hit
+                                zombie.lastBlockDamage = Date.now();
                                 
-                                // Building damage particles
+                                // Destruction particles every hit
                                 for (let i = 0; i < 3; i++) {
                                     gameState.particles.push({
-                                        x: building.x,
-                                        y: building.y,
+                                        x: building.x + (Math.random() - 0.5) * building.size,
+                                        y: building.y + (Math.random() - 0.5) * building.size,
                                         vx: (Math.random() - 0.5) * 4,
                                         vy: (Math.random() - 0.5) * 4,
                                         life: 20,
-                                        color: building.type === 'wall' ? '#8D6E63' : '#D7CCC8'
+                                        color: building.type === 'wood' ? '#8D6E63' : '#546E7A'
                                     });
+                                }
+                                
+                                if (building.health <= 0) {
+                                    // Block destroyed - zombie can now continue moving
+                                    gameState.buildings.splice(buildIndex, 1);
+                                    console.log(`${building.type} block destroyed by zombie!`);
+                                    
+                                    // Big destruction effect
+                                    for (let i = 0; i < 8; i++) {
+                                        gameState.particles.push({
+                                            x: building.x,
+                                            y: building.y,
+                                            vx: (Math.random() - 0.5) * 8,
+                                            vy: (Math.random() - 0.5) * 8,
+                                            life: 30,
+                                            color: building.type === 'wood' ? '#8D6E63' : '#546E7A'
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -1358,26 +1758,27 @@
                 gameState.wave++;
                 gameState.zombiesInWave += 5; // Add 5 extra zombies each wave
                 gameState.betweenWaves = true;
-                gameState.waveTimer = 45; // More time to prepare between waves
+                // 30 seconds for first 5 waves, then 45 seconds after wave 5
+                gameState.waveTimer = gameState.wave <= 5 ? 30 : 45; 
                 gameState.points += gameState.wave * 10; // Bonus for completing wave
                 
-                console.log(`Next wave (${gameState.wave}) will have ${gameState.zombiesInWave} zombies. Timer set to 45 seconds.`);
+                console.log(`Next wave (${gameState.wave}) will have ${gameState.zombiesInWave} zombies. Timer set to ${gameState.waveTimer} seconds.`);
                 
-                // Unlock areas after wave 5
-                if (gameState.wave === 6 && !gameState.areasUnlocked) {
-                    gameState.areasUnlocked = true;
-                    // Keep area selector visible by default after unlocking
-                    document.getElementById('area-selector').style.display = 'block';
+                // Unlock city after wave 5
+                if (gameState.wave === 6 && !gameState.cityUnlocked) {
+                    gameState.cityUnlocked = true;
+                    console.log("NYC City unlocked! The door is open - explore the streets and destroy skyscrapers for iron!");
                     
-                    // Show unlock message
-                    for (let i = 0; i < 30; i++) {
+                    // Show unlock message with particles at the door
+                    const splitPoint = canvas.width / 2;
+                    for (let i = 0; i < 50; i++) {
                         gameState.particles.push({
-                            x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+                            x: splitPoint + (Math.random() - 0.5) * 100,
                             y: canvas.height / 2 + (Math.random() - 0.5) * 100,
-                            vx: (Math.random() - 0.5) * 3,
-                            vy: (Math.random() - 0.5) * 3,
-                            life: 60,
-                            color: '#FFD700'
+                            vx: (Math.random() - 0.5) * 4,
+                            vy: (Math.random() - 0.5) * 4,
+                            life: 80,
+                            color: '#00FF00' // Green for door opening
                         });
                     }
                 }
@@ -1409,28 +1810,49 @@
                         }
                         
                         if (zombie.health <= 0) {
-                            gameState.points += 10 + gameState.wave;
-                            gameState.zombiesLeft = Math.max(0, gameState.zombiesLeft - 1); // Prevent negative
-                            
-                            console.log(`Zombie killed! zombiesLeft: ${gameState.zombiesLeft}, zombies array length: ${gameState.zombies.length - 1}`);
-                            
-                            // Death explosion
-                            for (let i = 0; i < 15; i++) {
-                                gameState.particles.push({
-                                    x: zombie.x,
-                                    y: zombie.y,
-                                    vx: (Math.random() - 0.5) * 6,
-                                    vy: (Math.random() - 0.5) * 6,
-                                    life: 25,
-                                    color: '#FF4444'
-                                });
+                            // Boss zombies give much more points
+                            if (zombie.isBoss) {
+                                const bossPoints = 50 + (gameState.wave * 25) + (zombie.waveMultiplier * 100);
+                                gameState.points += bossPoints;
+                                console.log(`🎉 BOSS ZOMBIE DEFEATED! +${bossPoints} points! Wave ${gameState.wave}, Type: ${zombie.bossName}`);
+                                
+                                // Boss death explosion (much bigger)
+                                for (let i = 0; i < 50; i++) {
+                                    gameState.particles.push({
+                                        x: zombie.x,
+                                        y: zombie.y,
+                                        vx: (Math.random() - 0.5) * 15,
+                                        vy: (Math.random() - 0.5) * 15,
+                                        life: 40,
+                                        color: '#FFD700' // Gold particles for boss death
+                                    });
+                                }
+                            } else {
+                                gameState.points += 10 + gameState.wave;
+                                console.log(`Zombie killed! zombiesLeft: ${gameState.zombiesLeft}, zombies array length: ${gameState.zombies.length - 1}`);
+                                
+                                // Regular death explosion
+                                for (let i = 0; i < 15; i++) {
+                                    gameState.particles.push({
+                                        x: zombie.x,
+                                        y: zombie.y,
+                                        vx: (Math.random() - 0.5) * 6,
+                                        vy: (Math.random() - 0.5) * 6,
+                                        life: 25,
+                                        color: '#FF4444'
+                                    });
+                                }
                             }
+                            
+                            gameState.zombiesLeft = Math.max(0, gameState.zombiesLeft - 1); // Prevent negative
                         }
                         
                         bullet.life = 0;
                     }
                 });
             });
+            
+            // Bullets pass through player blocks - no collision check needed
             
             gameState.bullets = gameState.bullets.filter(bullet => bullet.life > 0 && 
                 bullet.x > -50 && bullet.x < canvas.width + 50 && 
@@ -1449,26 +1871,206 @@
             gameState.particles = gameState.particles.filter(particle => particle.life > 0);
         }
 
-        function updateBuildings() {
-            gameState.buildings = gameState.buildings.filter(building => building.health > 0);
-            
-            // Water towers provide healing
-            gameState.buildings.forEach(building => {
-                if (building.type === 'water-tower') {
-                    const distance = Math.sqrt((building.x - gameState.player.x) ** 2 + (building.y - gameState.player.y) ** 2);
-                    if (distance < 100 && gameState.player.health < gameState.player.maxHealth) {
-                        // Heal 0.1 health per frame when near water tower (6 health per second at 60fps)
-                        gameState.player.health = Math.min(gameState.player.maxHealth, gameState.player.health + 0.1);
-                    }
-                }
-            });
-        }
-
         function updateHelpers() {
             const now = Date.now();
             
             gameState.helpers.forEach((helper, index) => {
                 if (helper.health <= 0) return;
+                
+                // Helper movement logic (if upgraded)
+                if (gameState.helperMovementLevel > 0) {
+                    const movementSpeed = 1 + (gameState.helperMovementLevel * 0.3); // Faster movement with upgrades
+                    
+                    if (helper.type === 'soldier') {
+                        // Soldiers move towards nearest zombie for better positioning
+                        let nearestZombie = null;
+                        let nearestDist = 200;
+                        
+                        gameState.zombies.forEach(zombie => {
+                            const dist = Math.sqrt((zombie.x - helper.x) ** 2 + (zombie.y - helper.y) ** 2);
+                            if (dist < nearestDist) {
+                                nearestZombie = zombie;
+                                nearestDist = dist;
+                            }
+                        });
+                        
+                        if (nearestZombie && nearestDist > 80) { // Move closer if too far
+                            const dx = nearestZombie.x - helper.x;
+                            const dy = nearestZombie.y - helper.y;
+                            const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                            
+                            if (dist > 0) {
+                                helper.x += (dx / dist) * movementSpeed;
+                                helper.y += (dy / dist) * movementSpeed;
+                            }
+                        } else if (nearestZombie && nearestDist < 40) { // Back away if too close
+                            const dx = helper.x - nearestZombie.x;
+                            const dy = helper.y - nearestZombie.y;
+                            const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                            
+                            if (dist > 0) {
+                                helper.x += (dx / dist) * movementSpeed * 0.5;
+                                helper.y += (dy / dist) * movementSpeed * 0.5;
+                            }
+                        }
+                        
+                    } else if (helper.type === 'medic') {
+                        // Medics stay close to player but not too close
+                        const dx = gameState.player.x - helper.x;
+                        const dy = gameState.player.y - helper.y;
+                        const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                        
+                        if (dist > 60) { // Move closer to player
+                            helper.x += (dx / dist) * movementSpeed;
+                            helper.y += (dy / dist) * movementSpeed;
+                        } else if (dist < 30) { // Back away if too close
+                            helper.x -= (dx / dist) * movementSpeed * 0.5;
+                            helper.y -= (dy / dist) * movementSpeed * 0.5;
+                        }
+                        
+                    } else if (helper.type === 'sniper') {
+                        // Snipers find elevated positions (move away from zombies for long shots)
+                        let nearestZombie = null;
+                        let nearestDist = 400;
+                        
+                        gameState.zombies.forEach(zombie => {
+                            const dist = Math.sqrt((zombie.x - helper.x) ** 2 + (zombie.y - helper.y) ** 2);
+                            if (dist < nearestDist) {
+                                nearestZombie = zombie;
+                                nearestDist = dist;
+                            }
+                        });
+                        
+                        if (nearestZombie && nearestDist < 150) { // Back away for better sniper position
+                            const dx = helper.x - nearestZombie.x;
+                            const dy = helper.y - nearestZombie.y;
+                            const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                            
+                            if (dist > 0) {
+                                helper.x += (dx / dist) * movementSpeed;
+                                helper.y += (dy / dist) * movementSpeed;
+                            }
+                        }
+                        
+                        // Also try to stay within reasonable distance of player
+                        const playerDx = gameState.player.x - helper.x;
+                        const playerDy = gameState.player.y - helper.y;
+                        const playerDist = Math.sqrt(playerDx ** 2 + playerDy ** 2);
+                        
+                        if (playerDist > 200) { // Don't get too far from player
+                            helper.x += (playerDx / playerDist) * movementSpeed * 0.3;
+                            helper.y += (playerDy / playerDist) * movementSpeed * 0.3;
+                        }
+                        
+                    } else if (helper.type === 'heavy') {
+                        // Heavy gunners position aggressively near zombies
+                        let nearestZombie = null;
+                        let nearestDist = 150;
+                        
+                        gameState.zombies.forEach(zombie => {
+                            const dist = Math.sqrt((zombie.x - helper.x) ** 2 + (zombie.y - helper.y) ** 2);
+                            if (dist < nearestDist) {
+                                nearestZombie = zombie;
+                                nearestDist = dist;
+                            }
+                        });
+                        
+                        if (nearestZombie && nearestDist > 60) { // Move closer for max damage
+                            const dx = nearestZombie.x - helper.x;
+                            const dy = nearestZombie.y - helper.y;
+                            const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                            
+                            if (dist > 0) {
+                                helper.x += (dx / dist) * movementSpeed * 1.2; // Faster movement
+                                helper.y += (dy / dist) * movementSpeed * 1.2;
+                            }
+                        }
+                        
+                    } else if (helper.type === 'gatherer') {
+                        // Gatherers move towards nearest tree
+                        let nearestTree = null;
+                        let nearestDist = 200;
+                        
+                        gameState.trees.forEach(tree => {
+                            const dist = Math.sqrt((tree.x - helper.x) ** 2 + (tree.y - helper.y) ** 2);
+                            if (dist < nearestDist) {
+                                nearestTree = tree;
+                                nearestDist = dist;
+                            }
+                        });
+                        
+                        if (nearestTree) {
+                            const dx = nearestTree.x - helper.x;
+                            const dy = nearestTree.y - helper.y;
+                            const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                            
+                            if (dist > 0) {
+                                helper.x += (dx / dist) * movementSpeed;
+                                helper.y += (dy / dist) * movementSpeed;
+                            }
+                        }
+                        
+                    } else if (helper.type === 'engineer') {
+                        // Engineers move towards damaged blocks
+                        let nearestBlock = null;
+                        let nearestDist = 150;
+                        
+                        gameState.buildings.forEach(building => {
+                            if (building.health < building.maxHealth) {
+                                const dist = Math.sqrt((building.x - helper.x) ** 2 + (building.y - helper.y) ** 2);
+                                if (dist < nearestDist) {
+                                    nearestBlock = building;
+                                    nearestDist = dist;
+                                }
+                            }
+                        });
+                        
+                        if (nearestBlock) {
+                            const dx = nearestBlock.x - helper.x;
+                            const dy = nearestBlock.y - helper.y;
+                            const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                            
+                            if (dist > 0) {
+                                helper.x += (dx / dist) * movementSpeed;
+                                helper.y += (dy / dist) * movementSpeed;
+                            }
+                        } else {
+                            // If no damaged blocks, stay near player
+                            const dx = gameState.player.x - helper.x;
+                            const dy = gameState.player.y - helper.y;
+                            const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                            
+                            if (dist > 80) {
+                                helper.x += (dx / dist) * movementSpeed * 0.5;
+                                helper.y += (dy / dist) * movementSpeed * 0.5;
+                            }
+                        }
+                    }
+                    
+                    // Keep helpers on screen
+                    helper.x = Math.max(20, Math.min(canvas.width - 20, helper.x));
+                    helper.y = Math.max(20, Math.min(canvas.height - 20, helper.y));
+                    
+                    // Check collision with city buildings (if unlocked)
+                    if (gameState.cityUnlocked) {
+                        gameState.cityBuildings.forEach(building => {
+                            if (!building.destroyed) {
+                                const buildDist = Math.sqrt((building.x - helper.x) ** 2 + (building.y - helper.y) ** 2);
+                                if (buildDist < building.size / 2 + 20) {
+                                    // Push helper away from building
+                                    const dx = helper.x - building.x;
+                                    const dy = helper.y - building.y;
+                                    const dist = Math.sqrt(dx ** 2 + dy ** 2);
+                                    
+                                    if (dist > 0) {
+                                        helper.x += (dx / dist) * 5;
+                                        helper.y += (dy / dist) * 5;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
                 
                 if (helper.type === 'soldier') {
                     // Find nearest zombie to shoot
@@ -1483,9 +2085,17 @@
                         }
                     });
                     
-                    if (nearestZombie && now - helper.lastAction > 800) {
+                    const actionSpeed = 800 / Math.pow(1.15, gameState.helperSpeedLevel); // Upgrade affects speed
+                    
+                    if (nearestZombie && now - helper.lastAction > actionSpeed) {
                         helper.lastAction = now;
                         helper.angle = Math.atan2(nearestZombie.y - helper.y, nearestZombie.x - helper.x);
+                        
+                        // Calculate damage with upgrades
+                        let damage = 30;
+                        if (gameState.helperDamageLevel > 0) {
+                            damage *= Math.pow(1.3, gameState.helperDamageLevel);
+                        }
                         
                         // Create bullet
                         gameState.bullets.push({
@@ -1493,14 +2103,16 @@
                             y: helper.y,
                             vx: Math.cos(helper.angle) * 6,
                             vy: Math.sin(helper.angle) * 6,
-                            damage: 30,
+                            damage: damage,
                             life: 100
                         });
                     }
                     
                 } else if (helper.type === 'medic') {
                     // Heal player slowly
-                    if (gameState.player.health < gameState.player.maxHealth && now - helper.lastAction > 2000) {
+                    const actionSpeed = 2000 / Math.pow(1.15, gameState.helperSpeedLevel);
+                    
+                    if (gameState.player.health < gameState.player.maxHealth && now - helper.lastAction > actionSpeed) {
                         helper.lastAction = now;
                         gameState.player.health = Math.min(gameState.player.maxHealth, gameState.player.health + 15);
                         
@@ -1517,34 +2129,207 @@
                         }
                     }
                     
-                } else if (helper.type === 'builder') {
-                    // Repair nearest damaged building
-                    let nearestBuilding = null;
-                    let nearestDist = 100; // Repair range
+                } else if (helper.type === 'sniper') {
+                    // Long-range high damage shots
+                    let nearestZombie = null;
+                    let nearestDist = 300; // Much longer range than soldier
+                    
+                    gameState.zombies.forEach(zombie => {
+                        const dist = Math.sqrt((zombie.x - helper.x) ** 2 + (zombie.y - helper.y) ** 2);
+                        if (dist < nearestDist) {
+                            nearestZombie = zombie;
+                            nearestDist = dist;
+                        }
+                    });
+                    
+                    const actionSpeed = 1500 / Math.pow(1.15, gameState.helperSpeedLevel); // Slower but powerful
+                    
+                    if (nearestZombie && now - helper.lastAction > actionSpeed) {
+                        helper.lastAction = now;
+                        helper.angle = Math.atan2(nearestZombie.y - helper.y, nearestZombie.x - helper.x);
+                        
+                        // Calculate damage with upgrades (much higher base damage)
+                        let damage = 100;
+                        if (gameState.helperDamageLevel > 0) {
+                            damage *= Math.pow(1.3, gameState.helperDamageLevel);
+                        }
+                        
+                        // Create bullet
+                        gameState.bullets.push({
+                            x: helper.x,
+                            y: helper.y,
+                            vx: Math.cos(helper.angle) * 8,
+                            vy: Math.sin(helper.angle) * 8,
+                            damage: damage,
+                            life: 150
+                        });
+                        
+                        // Sniper muzzle flash effect
+                        for (let i = 0; i < 10; i++) {
+                            gameState.particles.push({
+                                x: helper.x,
+                                y: helper.y,
+                                vx: Math.cos(helper.angle) * 5 + (Math.random() - 0.5) * 2,
+                                vy: Math.sin(helper.angle) * 5 + (Math.random() - 0.5) * 2,
+                                life: 15,
+                                color: '#FFFF00'
+                            });
+                        }
+                    }
+                    
+                } else if (helper.type === 'heavy') {
+                    // Heavy gunner with rapid-fire and spread shots
+                    let nearestZombie = null;
+                    let nearestDist = 120; // Close range for maximum carnage
+                    
+                    gameState.zombies.forEach(zombie => {
+                        const dist = Math.sqrt((zombie.x - helper.x) ** 2 + (zombie.y - helper.y) ** 2);
+                        if (dist < nearestDist) {
+                            nearestZombie = zombie;
+                            nearestDist = dist;
+                        }
+                    });
+                    
+                    const actionSpeed = 200 / Math.pow(1.15, gameState.helperSpeedLevel); // Very fast shooting
+                    
+                    if (nearestZombie && now - helper.lastAction > actionSpeed) {
+                        helper.lastAction = now;
+                        helper.angle = Math.atan2(nearestZombie.y - helper.y, nearestZombie.x - helper.x);
+                        
+                        // Calculate damage with upgrades
+                        let damage = 25;
+                        if (gameState.helperDamageLevel > 0) {
+                            damage *= Math.pow(1.3, gameState.helperDamageLevel);
+                        }
+                        
+                        // Create multiple bullets (shotgun spread + machine gun rate)
+                        for (let i = 0; i < 3; i++) {
+                            const spreadAngle = helper.angle + (Math.random() - 0.5) * 0.6; // Wide spread
+                            gameState.bullets.push({
+                                x: helper.x,
+                                y: helper.y,
+                                vx: Math.cos(spreadAngle) * 7,
+                                vy: Math.sin(spreadAngle) * 7,
+                                damage: damage,
+                                life: 80
+                            });
+                        }
+                        
+                        // Heavy weapon muzzle flash
+                        for (let i = 0; i < 15; i++) {
+                            gameState.particles.push({
+                                x: helper.x,
+                                y: helper.y,
+                                vx: Math.cos(helper.angle) * 8 + (Math.random() - 0.5) * 4,
+                                vy: Math.sin(helper.angle) * 8 + (Math.random() - 0.5) * 4,
+                                life: 20,
+                                color: '#FF6600'
+                            });
+                        }
+                    }
+                    
+                } else if (helper.type === 'gatherer') {
+                    // Auto-cut trees for blocks
+                    let nearestTree = null;
+                    let nearestDist = 50; // Must be close to cut
+                    
+                    gameState.trees.forEach((tree, index) => {
+                        const dist = Math.sqrt((tree.x - helper.x) ** 2 + (tree.y - helper.y) ** 2);
+                        if (dist < nearestDist) {
+                            nearestTree = { tree, index };
+                            nearestDist = dist;
+                        }
+                    });
+                    
+                    const actionSpeed = 3000 / Math.pow(1.15, gameState.helperSpeedLevel); // Moderate speed
+                    
+                    if (nearestTree && now - helper.lastAction > actionSpeed) {
+                        helper.lastAction = now;
+                        const { tree, index } = nearestTree;
+                        
+                        tree.health--;
+                        if (tree.health <= 0) {
+                            // Give resources like regular tree cutting
+                            if (tree.type === 'iron') {
+                                gameState.iron += 2 + Math.floor(Math.random() * 3);
+                            } else if (tree.type === 'water') {
+                                gameState.water += 4 + Math.floor(Math.random() * 4);
+                            } else {
+                                gameState.blocks += 5; // Regular trees give blocks
+                            }
+                            
+                            // Wood cutting particles
+                            for (let i = 0; i < 8; i++) {
+                                gameState.particles.push({
+                                    x: tree.x,
+                                    y: tree.y,
+                                    vx: (Math.random() - 0.5) * 6,
+                                    vy: (Math.random() - 0.5) * 6,
+                                    life: 30,
+                                    color: '#8B4513'
+                                });
+                            }
+                            
+                            // Replace tree like normal cutting
+                            gameState.trees.splice(index, 1);
+                            const splitPoint = canvas.width / 2;
+                            const replacementTrees = Math.random() < 0.7 ? 1 : 2;
+                            
+                            for (let i = 0; i < replacementTrees; i++) {
+                                const angle = Math.random() * Math.PI * 2;
+                                const distance = 150 + Math.random() * 300;
+                                let newX = gameState.player.x + Math.cos(angle) * distance;
+                                let newY = gameState.player.y + Math.sin(angle) * distance;
+                                
+                                newX = Math.max(splitPoint + 50, Math.min(canvas.width - 50, newX));
+                                newY = Math.max(50, Math.min(canvas.height - 50, newY));
+                                
+                                gameState.trees.push({
+                                    x: newX,
+                                    y: newY,
+                                    size: 30 + Math.random() * 20,
+                                    health: 3,
+                                    respawnTimer: 0,
+                                    maxRespawnTime: 30000 + Math.random() * 20000,
+                                    type: tree.type
+                                });
+                            }
+                        }
+                    }
+                    
+                } else if (helper.type === 'engineer') {
+                    // Repair damaged blocks
+                    let nearestBlock = null;
+                    let nearestDist = 40; // Must be very close to repair
                     
                     gameState.buildings.forEach(building => {
                         if (building.health < building.maxHealth) {
                             const dist = Math.sqrt((building.x - helper.x) ** 2 + (building.y - helper.y) ** 2);
                             if (dist < nearestDist) {
-                                nearestBuilding = building;
+                                nearestBlock = building;
                                 nearestDist = dist;
                             }
                         }
                     });
                     
-                    if (nearestBuilding && now - helper.lastAction > 1500) {
+                    const actionSpeed = 1000 / Math.pow(1.15, gameState.helperSpeedLevel); // Moderate repair speed
+                    
+                    if (nearestBlock && now - helper.lastAction > actionSpeed) {
                         helper.lastAction = now;
-                        nearestBuilding.health = Math.min(nearestBuilding.maxHealth, nearestBuilding.health + 25);
+                        
+                        // Repair the block
+                        const repairAmount = 25;
+                        nearestBlock.health = Math.min(nearestBlock.maxHealth, nearestBlock.health + repairAmount);
                         
                         // Repair particles
-                        for (let i = 0; i < 3; i++) {
+                        for (let i = 0; i < 5; i++) {
                             gameState.particles.push({
-                                x: nearestBuilding.x,
-                                y: nearestBuilding.y,
-                                vx: (Math.random() - 0.5) * 3,
-                                vy: (Math.random() - 0.5) * 3,
+                                x: nearestBlock.x + (Math.random() - 0.5) * 30,
+                                y: nearestBlock.y + (Math.random() - 0.5) * 30,
+                                vx: (Math.random() - 0.5) * 2,
+                                vy: (Math.random() - 0.5) * 2,
                                 life: 25,
-                                color: '#FFD700'
+                                color: '#00FFFF'
                             });
                         }
                     }
@@ -1580,21 +2365,406 @@
             }
         }
 
-        function draw() {
-            // Clear canvas with area-specific background
-            let backgroundColor = '#81C784'; // Base green
+        function startWaveEarly() {
+            if (gameState.betweenWaves) {
+                console.log(`Player started wave ${gameState.wave} early!`);
+                gameState.waveTimer = 0; // This will trigger startWave() on next update
+            }
+        }
+
+        function showBossNotification(bossName, wave) {
+            // Create boss notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #8B0000, #FF0000);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 24px;
+                font-weight: bold;
+                text-align: center;
+                z-index: 1000;
+                box-shadow: 0 0 30px #FF0000;
+                animation: bossSpawn 3s ease-out forwards;
+            `;
             
-            if (gameState.currentArea === 'city') {
-                backgroundColor = '#BDBDBD'; // Gray concrete
-            } else if (gameState.currentArea === 'forest') {
-                backgroundColor = '#388E3C'; // Dark forest green
-            } else if (gameState.currentArea === 'ocean') {
-                backgroundColor = '#1976D2'; // Ocean blue
+            notification.innerHTML = `
+                <div style="font-size: 36px; margin-bottom: 10px;">👹</div>
+                <div>BOSS ZOMBIE SPAWNED!</div>
+                <div style="font-size: 18px; margin-top: 5px;">${bossName}</div>
+                <div style="font-size: 14px; margin-top: 5px;">Wave ${wave}</div>
+            `;
+            
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes bossSpawn {
+                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+                    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+                    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after animation
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        function toggleInstructions() {
+            const instructions = document.getElementById('instructions');
+            const button = document.getElementById('toggle-instructions');
+            
+            if (instructions.classList.contains('hidden')) {
+                instructions.classList.remove('hidden');
+                button.textContent = 'ℹ️';
+            } else {
+                instructions.classList.add('hidden');
+                button.textContent = '📖';
+            }
+        }
+
+        function drawCityStreets(splitPoint) {
+            // 3x3 grid of city blocks with roads
+            const streetWidth = 60; // Wider streets for better navigation
+            const sidewalkWidth = 12;
+            const alpha = gameState.cityUnlocked ? 1.0 : 0.4;
+            
+            // Create 4 horizontal roads (creating 3 rows of blocks)
+            for (let i = 0; i < 4; i++) {
+                let roadY;
+                if (i === 0) roadY = 0;
+                else if (i === 3) roadY = canvas.height - streetWidth;
+                else roadY = (canvas.height / 4) * i - streetWidth/2;
+                
+                ctx.fillStyle = `rgba(28, 28, 28, ${alpha})`;
+                ctx.fillRect(0, roadY, splitPoint, streetWidth);
+                
+                // Yellow lane dividers
+                ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`;
+                for (let x = 20; x < splitPoint; x += 40) {
+                    ctx.fillRect(x, roadY + streetWidth/2 - 2, 20, 4);
+                }
+                
+                // Sidewalks
+                ctx.fillStyle = `rgba(208, 208, 208, ${alpha})`;
+                if (i > 0) ctx.fillRect(0, roadY - sidewalkWidth, splitPoint, sidewalkWidth);
+                if (i < 3) ctx.fillRect(0, roadY + streetWidth, splitPoint, sidewalkWidth);
             }
             
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Create 4 vertical roads (creating 3 columns of blocks)  
+            for (let j = 0; j < 4; j++) {
+                let roadX;
+                if (j === 0) roadX = 0;
+                else if (j === 3) roadX = splitPoint - streetWidth;
+                else roadX = (splitPoint / 4) * j - streetWidth/2;
+                
+                ctx.fillStyle = `rgba(28, 28, 28, ${alpha})`;
+                ctx.fillRect(roadX, 0, streetWidth, canvas.height);
+                
+                // Yellow lane dividers
+                ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`;
+                for (let y = 20; y < canvas.height; y += 40) {
+                    ctx.fillRect(roadX + streetWidth/2 - 2, y, 4, 20);
+                }
+                
+                // Sidewalks
+                ctx.fillStyle = `rgba(208, 208, 208, ${alpha})`;
+                if (j > 0) ctx.fillRect(roadX - sidewalkWidth, 0, sidewalkWidth, canvas.height);
+                if (j < 3) ctx.fillRect(roadX + streetWidth, 0, sidewalkWidth, canvas.height);
+            }
             
+            // Add bus stops and parking lots
+            drawUrbanFeatures(splitPoint, alpha);
+            
+            // Street lights at intersections
+            drawStreetLights(splitPoint, alpha);
+        }
+        
+        function drawUrbanFeatures(splitPoint, alpha) {
+            const streetWidth = 60;
+            
+            // Bus stop in bottom-left block
+            const busStopX = splitPoint / 8;
+            const busStopY = canvas.height - (canvas.height / 8);
+            
+            // Bus stop shelter
+            ctx.fillStyle = `rgba(100, 100, 100, ${alpha})`;
+            ctx.fillRect(busStopX - 15, busStopY - 20, 30, 25);
+            
+            // Bus stop roof
+            ctx.fillStyle = `rgba(150, 150, 150, ${alpha})`;
+            ctx.fillRect(busStopX - 18, busStopY - 25, 36, 5);
+            
+            // Bus stop sign
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.fillRect(busStopX + 20, busStopY - 30, 3, 40);
+            ctx.fillRect(busStopX + 15, busStopY - 35, 13, 15);
+            
+            // Parking lot in top-right block
+            const parkingX = splitPoint - (splitPoint / 6);
+            const parkingY = canvas.height / 6;
+            
+            // Parking lot asphalt
+            ctx.fillStyle = `rgba(40, 40, 40, ${alpha})`;
+            ctx.fillRect(parkingX - 25, parkingY - 15, 50, 30);
+            
+            // Parking spaces (white lines)
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            for (let i = 0; i < 3; i++) {
+                const spaceX = parkingX - 20 + (i * 15);
+                ctx.fillRect(spaceX, parkingY - 15, 1, 30);
+            }
+            
+            // Parking lot entrance
+            ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`;
+            ctx.fillRect(parkingX - 25, parkingY + 10, 10, 3);
+        }
+
+        function drawStreetLights(splitPoint, alpha = 1.0) {
+            const streetWidth = 60;
+            
+            // Street lights at major intersections in the 3x3 grid
+            for (let i = 1; i < 3; i++) { // Skip edge intersections
+                for (let j = 1; j < 3; j++) {
+                    const lightX = (splitPoint / 4) * j;
+                    const lightY = (canvas.height / 4) * i;
+                    
+                    // Street light pole
+                    ctx.fillStyle = `rgba(85, 85, 85, ${alpha})`;
+                    ctx.fillRect(lightX - 2, lightY - 25, 4, 25);
+                    
+                    // Light fixture
+                    ctx.fillStyle = `rgba(51, 51, 51, ${alpha})`;
+                    ctx.fillRect(lightX - 6, lightY - 30, 12, 8);
+                    
+                    // Light glow (animated)
+                    if (Math.random() < 0.1) { // Occasional flicker
+                        ctx.fillStyle = `rgba(255, 255, 200, ${0.3 * alpha})`;
+                        ctx.beginPath();
+                        ctx.arc(lightX, lightY - 26, 15, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    // Steady light
+                    ctx.fillStyle = `rgba(255, 255, 153, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(lightX, lightY - 26, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        function updateCityBuildings() {
+            if (!gameState.cityUnlocked) return;
+            
+            const now = Date.now();
+            gameState.cityBuildings.forEach((building, index) => {
+                if (building.destroyed && now >= building.respawnTimer) {
+                    building.destroyed = false;
+                    building.health = building.maxHealth;
+                    console.log(`City building respawned at (${building.x}, ${building.y})`);
+                    
+                    // Respawn particles
+                    for (let i = 0; i < 10; i++) {
+                        gameState.particles.push({
+                            x: building.x,
+                            y: building.y,
+                            vx: (Math.random() - 0.5) * 3,
+                            vy: (Math.random() - 0.5) * 3,
+                            life: 30,
+                            color: '#90CAF9'
+                        });
+                    }
+                }
+            });
+        }
+
+        function draw() {
+            // Split-screen layout: Right side forest, left side city
+            const splitPoint = canvas.width / 2;
+            
+            // Right side - Forest (green)
+            ctx.fillStyle = '#81C784'; // Forest green
+            ctx.fillRect(splitPoint, 0, canvas.width - splitPoint, canvas.height);
+            
+            // Left side - NYC-style City
+            // Always draw the city (unlocked or preview)
+            ctx.fillStyle = '#2C2C2C'; // Dark asphalt
+            ctx.fillRect(0, 0, splitPoint, canvas.height);
+            
+            // Draw city streets and infrastructure
+            drawCityStreets(splitPoint);
+            
+            // If locked, add a dark overlay to show it's inaccessible
+            if (!gameState.cityUnlocked) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // Semi-transparent dark overlay
+                ctx.fillRect(0, 0, splitPoint, canvas.height);
+                
+                // Add "UNLOCKS AT WAVE 5" text
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('UNLOCKS AT WAVE 5', splitPoint / 2, canvas.height / 2);
+                ctx.font = '16px Arial';
+                ctx.fillText('🏙️ City Area Preview 🏙️', splitPoint / 2, canvas.height / 2 + 30);
+            }
+            
+            // Draw brick wall separating the areas
+            const wallThickness = 20;
+            const doorWidth = 60;
+            const doorHeight = 80;
+            const doorY = canvas.height / 2 - doorHeight / 2;
+            
+            // Draw brick wall
+            ctx.fillStyle = '#8D6E63'; // Brown brick color
+            ctx.fillRect(splitPoint - wallThickness / 2, 0, wallThickness, canvas.height);
+            
+            // Draw brick pattern
+            ctx.fillStyle = '#A0522D';
+            for (let y = 0; y < canvas.height; y += 20) {
+                for (let x = 0; x < wallThickness; x += 30) {
+                    const offsetX = (y / 20) % 2 === 0 ? 0 : 15; // Stagger bricks
+                    ctx.fillRect(splitPoint - wallThickness / 2 + x + offsetX, y, 25, 18);
+                }
+            }
+            
+            // Draw door opening
+            if (gameState.cityUnlocked) {
+                // Open door (clear area)
+                ctx.fillStyle = '#BDBDBD';
+                ctx.fillRect(splitPoint - doorWidth / 2, doorY, doorWidth, doorHeight);
+                
+                // Door frame
+                ctx.strokeStyle = '#5D4037';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(splitPoint - doorWidth / 2, doorY, doorWidth, doorHeight);
+                
+                // "OPEN" sign
+                ctx.fillStyle = '#00FF00';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('OPEN', splitPoint, doorY - 10);
+            } else {
+                // Closed door
+                ctx.fillStyle = '#654321'; // Dark brown door
+                ctx.fillRect(splitPoint - doorWidth / 2, doorY, doorWidth, doorHeight);
+                
+                // Door details
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(splitPoint - doorWidth / 2 + 5, doorY + 10, doorWidth - 10, doorHeight - 20);
+                
+                // Door handle
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(splitPoint + doorWidth / 2 - 10, doorY + doorHeight / 2, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Lock symbol and text
+                ctx.fillStyle = '#FF0000';
+                ctx.font = '24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('🔒', splitPoint, doorY + doorHeight / 2);
+                ctx.font = '12px Arial';
+                ctx.fillText('LOCKED', splitPoint, doorY - 15);
+                ctx.fillText('WAVE 5 REQUIRED', splitPoint, doorY - 30);
+            }
+            
+            // Draw city buildings (always show for preview)
+            gameState.cityBuildings.forEach(building => {
+                if (!building.destroyed) {
+                    const baseY = building.y + building.size/2;
+                    
+                    // Set transparency based on city unlock status
+                    const alpha = gameState.cityUnlocked ? 1.0 : 0.4;
+                    
+                    // Building shadow
+                    ctx.fillStyle = `rgba(0,0,0,${0.4 * alpha})`;
+                    ctx.fillRect(building.x - building.size/2 + 3, baseY - building.height + 3, building.size, building.height);
+                        
+                    // Main building structure
+                    if (building.buildingType === 'skyscraper') {
+                        // Skyscraper style - steel and glass
+                        ctx.fillStyle = `rgba(74, 74, 74, ${alpha})`; // Steel gray with transparency
+                    } else {
+                        // Apartment building - brick/concrete
+                        ctx.fillStyle = `rgba(139, 115, 85, ${alpha})`; // Brownstone color with transparency
+                    }
+                    ctx.fillRect(building.x - building.size/2, baseY - building.height, building.size, building.height);
+                    
+                    // Draw floors and windows
+                    const floorHeight = building.height / building.floors;
+                    
+                    for (let floor = 0; floor < building.floors; floor++) {
+                        const floorY = baseY - building.height + (floor * floorHeight);
+                        
+                        // Floor separator line
+                        if (floor > 0) {
+                            ctx.fillStyle = `rgba(42, 42, 42, ${alpha})`;
+                            ctx.fillRect(building.x - building.size/2, floorY, building.size, 1);
+                        }
+                        
+                        // Windows for this floor
+                        const windowsPerFloor = building.buildingType === 'skyscraper' ? 4 : 3;
+                        const windowWidth = (building.size - 10) / windowsPerFloor;
+                        
+                        for (let w = 0; w < windowsPerFloor; w++) {
+                            const windowX = building.x - building.size/2 + 5 + (w * windowWidth);
+                            const windowY = floorY + 3;
+                            const windowHeight = Math.min(floorHeight - 6, 8);
+                            
+                            // Window glow (some windows are lit)
+                            if (Math.random() < 0.7) {
+                                ctx.fillStyle = building.buildingType === 'skyscraper' ? 
+                                    `rgba(135, 206, 235, ${alpha})` : `rgba(255, 228, 181, ${alpha})`;
+                            } else {
+                                ctx.fillStyle = `rgba(44, 44, 44, ${alpha})`; // Dark window
+                            }
+                            ctx.fillRect(windowX, windowY, windowWidth - 2, windowHeight);
+                            
+                            // Window frame
+                            ctx.strokeStyle = '#1A1A1A';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(windowX, windowY, windowWidth - 2, windowHeight);
+                        }
+                    }
+                    
+                    // Rooftop details
+                    if (building.buildingType === 'skyscraper') {
+                        // Antenna/spire
+                        ctx.fillStyle = `rgba(255, 0, 0, ${alpha})`;
+                        ctx.fillRect(building.x - 1, baseY - building.height - 10, 2, 10);
+                        
+                        // Rooftop equipment
+                        ctx.fillStyle = `rgba(102, 102, 102, ${alpha})`;
+                        ctx.fillRect(building.x - 4, baseY - building.height, 8, 4);
+                    } else {
+                        // Water tower or roof access
+                        ctx.fillStyle = `rgba(136, 136, 136, ${alpha})`;
+                        ctx.fillRect(building.x - 3, baseY - building.height - 5, 6, 5);
+                    }
+                    
+                    // Health bar if damaged (only show if city is unlocked)
+                    if (building.health < building.maxHealth && gameState.cityUnlocked) {
+                        ctx.fillStyle = '#FF0000';
+                        ctx.fillRect(building.x - building.size/2, baseY - building.height - 15, building.size, 4);
+                        ctx.fillStyle = '#00FF00';
+                        ctx.fillRect(building.x - building.size/2, baseY - building.height - 15, 
+                            building.size * (building.health / building.maxHealth), 4);
+                    }
+                }
+            });
+
             // Draw trees and resource nodes
             gameState.trees.forEach(tree => {
                 if (tree.type === 'iron') {
@@ -1620,7 +2790,7 @@
                     ctx.fill();
                     
                 } else {
-                    // Regular trees
+                    // Regular forest trees
                     ctx.fillStyle = '#2E7D32';
                     ctx.beginPath();
                     ctx.arc(tree.x, tree.y, tree.size, 0, Math.PI * 2);
@@ -1641,93 +2811,52 @@
                 }
             });
             
-            // Draw buildings
+            // Draw player-placed blocks
             gameState.buildings.forEach(building => {
-                // Highlight selected building in build mode
-                if (gameState.inBuildMode && gameState.selectedObject === building) {
-                    ctx.strokeStyle = '#FFD700';
-                    ctx.lineWidth = 4;
-                    ctx.setLineDash([5, 5]);
-                    ctx.strokeRect(building.x - building.size/2 - 5, building.y - building.size/2 - 5, 
-                                 building.size + 10, building.size + 10);
-                    ctx.setLineDash([]);
-                }
+                ctx.save();
                 
-                if (building.type === 'wall') {
+                // Different appearance based on type
+                if (building.type === 'wood') {
+                    // Wood block - brown with wood grain pattern
                     ctx.fillStyle = '#8D6E63';
                     ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
-                } else if (building.type === 'iron-wall') {
-                    // Iron wall (metallic gray)
-                    ctx.fillStyle = '#616161';
-                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
                     
-                    // Metal shine
-                    ctx.fillStyle = '#E0E0E0';
-                    ctx.fillRect(building.x - building.size/3, building.y - building.size/3, building.size/2, building.size/3);
-                } else if (building.type === 'house') {
-                    // House base
-                    ctx.fillStyle = '#D7CCC8';
-                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
-                    
-                    // Roof
-                    ctx.fillStyle = '#FF5722';
-                    ctx.beginPath();
-                    ctx.moveTo(building.x - building.size/2 - 5, building.y - building.size/2);
-                    ctx.lineTo(building.x, building.y - building.size/2 - 15);
-                    ctx.lineTo(building.x + building.size/2 + 5, building.y - building.size/2);
-                    ctx.closePath();
-                    ctx.fill();
-                    
-                    // Door
-                    ctx.fillStyle = '#8D6E63';
-                    ctx.fillRect(building.x - 5, building.y, 10, building.size/2);
-                } else if (building.type === 'water-tower') {
-                    // Tower base
-                    ctx.fillStyle = '#90CAF9';
-                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
-                    
-                    // Water tank (top)
-                    ctx.fillStyle = '#1976D2';
-                    ctx.beginPath();
-                    ctx.arc(building.x, building.y - building.size/3, building.size/3, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Support beams
-                    ctx.fillStyle = '#8D6E63';
-                    ctx.fillRect(building.x - 2, building.y - building.size/2, 4, building.size);
-                    ctx.fillRect(building.x - building.size/4, building.y - 2, building.size/2, 4);
-                    
-                    // Water droplets (animation effect)
-                    if (Math.random() < 0.3) {
-                        ctx.fillStyle = '#E3F2FD';
+                    // Wood grain lines
+                    ctx.strokeStyle = '#5D4037';
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < 3; i++) {
+                        const y = building.y - building.size/2 + (building.size/4) * (i + 1);
                         ctx.beginPath();
-                        ctx.arc(building.x + (Math.random() - 0.5) * building.size/2, 
-                               building.y + building.size/3, 2, 0, Math.PI * 2);
-                        ctx.fill();
+                        ctx.moveTo(building.x - building.size/2, y);
+                        ctx.lineTo(building.x + building.size/2, y);
+                        ctx.stroke();
                     }
+                } else if (building.type === 'iron') {
+                    // Iron block - metallic gray with highlights
+                    ctx.fillStyle = '#546E7A';
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
+                    
+                    // Metallic highlights
+                    ctx.fillStyle = '#90A4AE';
+                    ctx.fillRect(building.x - building.size/2 + 2, building.y - building.size/2 + 2, building.size/3, building.size/3);
+                    ctx.fillRect(building.x, building.y, building.size/4, building.size/4);
+                    
+                    // Metal border
+                    ctx.strokeStyle = '#37474F';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(building.x - building.size/2, building.y - building.size/2, building.size, building.size);
                 }
                 
-                // Health bar
+                // Health bar if damaged
                 if (building.health < building.maxHealth) {
                     ctx.fillStyle = '#FF0000';
-                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2 - 15, building.size, 5);
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2 - 10, building.size, 4);
                     ctx.fillStyle = '#00FF00';
-                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2 - 15, 
-                        building.size * (building.health / building.maxHealth), 5);
+                    ctx.fillRect(building.x - building.size/2, building.y - building.size/2 - 10, 
+                        building.size * (building.health / building.maxHealth), 4);
                 }
                 
-                // Show move cursor hint in build mode
-                if (gameState.inBuildMode && !gameState.isDragging) {
-                    const mouseX = gameState.mouse.x;
-                    const mouseY = gameState.mouse.y;
-                    const distance = Math.sqrt((building.x - mouseX) ** 2 + (building.y - mouseY) ** 2);
-                    if (distance < building.size / 2) {
-                        ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-                        ctx.beginPath();
-                        ctx.arc(building.x, building.y, building.size / 2 + 5, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                }
+                ctx.restore();
             });
             
             // Draw zombies (human-like)
@@ -1736,55 +2865,142 @@
                 ctx.translate(zombie.x, zombie.y);
                 ctx.rotate(zombie.angle);
                 
-                // Human-like zombie body
-                // Torso
-                ctx.fillStyle = '#8FBC8F'; // Pale green skin
-                ctx.fillRect(-6, -8, 12, 16);
+                // Boss zombie special rendering
+                if (zombie.isBoss) {
+                    // Boss-specific color and effects
+                    let bossColor;
+                    let bossGlow;
+                    
+                    switch(zombie.bossType) {
+                        case 0: // Tank - Dark red with strong glow
+                            bossColor = '#8B0000';
+                            bossGlow = '#FF0000';
+                            break;
+                        case 1: // Speed - Bright red with orange glow
+                            bossColor = '#DC143C';
+                            bossGlow = '#FF6600';
+                            break;
+                        case 2: // Regenerator - Purple with green glow
+                            bossColor = '#800080';
+                            bossGlow = '#00FF00';
+                            break;
+                    }
+                    
+                    // Boss glow effect
+                    ctx.shadowColor = bossGlow;
+                    ctx.shadowBlur = 15 + (zombie.waveMultiplier * 3);
+                    
+                    // Boss size multiplier
+                    const sizeMultiplier = zombie.isBoss ? 1.5 : 1;
+                    const scaledSize = zombie.size * sizeMultiplier;
+                    
+                    // Boss body (larger and more intimidating)
+                    ctx.fillStyle = bossColor;
+                    ctx.fillRect(-scaledSize/2, -scaledSize/2, scaledSize, scaledSize);
+                    
+                    // Boss armor/details
+                    ctx.fillStyle = '#2F2F2F';
+                    ctx.fillRect(-scaledSize/2 + 2, -scaledSize/2 + 2, scaledSize - 4, scaledSize - 4);
+                    
+                    // Boss spikes/spikes
+                    ctx.fillStyle = '#FF0000';
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (i / 4) * Math.PI * 2;
+                        const spikeX = Math.cos(angle) * (scaledSize/2 + 5);
+                        const spikeY = Math.sin(angle) * (scaledSize/2 + 5);
+                        ctx.beginPath();
+                        ctx.moveTo(spikeX, spikeY);
+                        ctx.lineTo(spikeX + Math.cos(angle) * 8, spikeY + Math.sin(angle) * 8);
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                    }
+                    
+                    // Boss eyes (larger and more menacing)
+                    ctx.fillStyle = '#FF0000';
+                    ctx.beginPath();
+                    ctx.arc(-scaledSize/4, -scaledSize/4, 3, 0, Math.PI * 2);
+                    ctx.arc(scaledSize/4, -scaledSize/4, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Boss name tag
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(zombie.bossName, 0, -scaledSize/2 - 15);
+                    
+                } else {
+                    // Regular zombie rendering
+                    // Zombie color based on wave (higher waves = more aggressive/red)
+                    const waveIntensity = Math.min(gameState.wave, 10); // Cap at wave 10 for color
+                    const redIntensity = Math.floor(100 + waveIntensity * 10); // 100-200
+                    const greenIntensity = Math.floor(180 - waveIntensity * 8); // 180-100
+                    const zombieColor = `rgb(${redIntensity}, ${greenIntensity}, ${greenIntensity})`;
+                    
+                    // Wave-based glow for higher waves
+                    if (gameState.wave >= 5) {
+                        ctx.shadowColor = '#FF0000';
+                        ctx.shadowBlur = gameState.wave - 3; // Stronger glow for higher waves
+                    } else if (gameState.wave >= 3) {
+                        ctx.shadowColor = '#FF6600';
+                        ctx.shadowBlur = 3;
+                    }
                 
-                // Head
-                ctx.fillStyle = '#7a9a7a'; // Decaying skin tone
-                ctx.beginPath();
-                ctx.arc(0, -12, 6, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Arms
-                ctx.fillStyle = '#8FBC8F';
-                ctx.fillRect(-10, -6, 4, 12); // Left arm
-                ctx.fillRect(6, -6, 4, 12);   // Right arm
-                
-                // Legs
-                ctx.fillRect(-6, 8, 5, 10);   // Left leg
-                ctx.fillRect(1, 8, 5, 10);    // Right leg
-                
-                // Hands
-                ctx.beginPath();
-                ctx.arc(-8, 3, 2, 0, Math.PI * 2); // Left hand
-                ctx.arc(8, 3, 2, 0, Math.PI * 2);  // Right hand
-                ctx.fill();
-                
-                // Feet
-                ctx.fillRect(-6, 18, 5, 3);   // Left foot
-                ctx.fillRect(1, 18, 5, 3);    // Right foot
-                
-                // Zombie features
-                // Glowing red eyes
-                ctx.fillStyle = '#FF0000';
-                ctx.beginPath();
-                ctx.arc(-2, -12, 1.5, 0, Math.PI * 2); // Left eye
-                ctx.arc(2, -12, 1.5, 0, Math.PI * 2);  // Right eye
-                ctx.fill();
-                
-                // Blood stains
-                ctx.fillStyle = '#8B0000';
-                ctx.beginPath();
-                ctx.arc(-3, -2, 1, 0, Math.PI * 2); // Blood on chest
-                ctx.arc(4, 2, 0.8, 0, Math.PI * 2);  // Blood on arm
-                ctx.fill();
-                
-                // Torn clothes (dark patches)
-                ctx.fillStyle = '#2F4F2F';
-                ctx.fillRect(-5, -3, 3, 6);  // Torn shirt
-                ctx.fillRect(-4, 10, 3, 4);  // Torn pants
+                    // Human-like zombie body
+                    // Torso
+                    ctx.fillStyle = zombieColor; // Color based on wave
+                    ctx.fillRect(-6, -8, 12, 16);
+                    
+                    // Head (slightly darker)
+                    const headIntensity = Math.floor(redIntensity * 0.8);
+                    const headGreenIntensity = Math.floor(greenIntensity * 0.8);
+                    ctx.fillStyle = `rgb(${headIntensity}, ${headGreenIntensity}, ${headGreenIntensity})`;
+                    ctx.beginPath();
+                    ctx.arc(0, -12, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Arms
+                    ctx.fillStyle = zombieColor;
+                    ctx.fillRect(-10, -6, 4, 12); // Left arm
+                    ctx.fillRect(6, -6, 4, 12);   // Right arm
+                    
+                    // Legs
+                    ctx.fillRect(-6, 8, 5, 10);   // Left leg
+                    ctx.fillRect(1, 8, 5, 10);    // Right leg
+                    
+                    // Hands
+                    ctx.beginPath();
+                    ctx.arc(-8, 3, 2, 0, Math.PI * 2); // Left hand
+                    ctx.arc(8, 3, 2, 0, Math.PI * 2);  // Right hand
+                    ctx.fill();
+                    
+                    // Feet
+                    ctx.fillRect(-6, 18, 5, 3);   // Left foot
+                    ctx.fillRect(1, 18, 5, 3);    // Right foot
+                    
+                    // Zombie features
+                    // Glowing red eyes
+                    ctx.fillStyle = '#FF0000';
+                    ctx.beginPath();
+                    ctx.arc(-2, -12, 1.5, 0, Math.PI * 2); // Left eye
+                    ctx.arc(2, -12, 1.5, 0, Math.PI * 2);  // Right eye
+                    ctx.fill();
+                    
+                    // Blood stains
+                    ctx.fillStyle = '#8B0000';
+                    ctx.beginPath();
+                    ctx.arc(-3, -2, 1, 0, Math.PI * 2); // Blood on chest
+                    ctx.arc(4, 2, 0.8, 0, Math.PI * 2);  // Blood on arm
+                    ctx.fill();
+                    
+                    // Torn clothes (dark patches)
+                    ctx.fillStyle = '#2F4F2F';
+                    ctx.fillRect(-5, -3, 3, 6);  // Torn shirt
+                    ctx.fillRect(-4, 10, 3, 4);  // Torn pants
+                    
+                    // Reset shadow
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                }
                 
                 ctx.restore();
                 
@@ -1800,30 +3016,6 @@
             
             // Draw helpers
             gameState.helpers.forEach(helper => {
-                // Highlight selected helper in build mode
-                if (gameState.inBuildMode && gameState.selectedObject === helper) {
-                    ctx.strokeStyle = '#00FF00';
-                    ctx.lineWidth = 3;
-                    ctx.setLineDash([3, 3]);
-                    ctx.beginPath();
-                    ctx.arc(helper.x, helper.y, helper.size + 8, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                }
-                
-                // Show move cursor hint in build mode
-                if (gameState.inBuildMode && !gameState.isDragging) {
-                    const mouseX = gameState.mouse.x;
-                    const mouseY = gameState.mouse.y;
-                    const distance = Math.sqrt((helper.x - mouseX) ** 2 + (helper.y - mouseY) ** 2);
-                    if (distance < helper.size) {
-                        ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
-                        ctx.beginPath();
-                        ctx.arc(helper.x, helper.y, helper.size + 5, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                }
-                
                 ctx.save();
                 ctx.translate(helper.x, helper.y);
                 ctx.rotate(helper.angle);
@@ -1852,19 +3044,85 @@
                     ctx.fillRect(-2, -6, 4, 12);
                     ctx.fillRect(-6, -2, 12, 4);
                     
-                } else if (helper.type === 'builder') {
-                    ctx.fillStyle = '#FF9800'; // Orange builder
+                } else if (helper.type === 'sniper') {
+                    ctx.fillStyle = '#795548'; // Brown sniper
                     ctx.fillRect(-helper.size/2, -helper.size/2, helper.size, helper.size);
                     
-                    // Hard hat
-                    ctx.fillStyle = '#FFD54F';
+                    // Sniper rifle (longer)
+                    ctx.fillStyle = '#424242';
+                    ctx.fillRect(helper.size/2, -2, 25, 3);
+                    
+                    // Scope
+                    ctx.fillStyle = '#FFD700';
                     ctx.beginPath();
-                    ctx.arc(0, -helper.size/2, helper.size/3, 0, Math.PI * 2);
+                    ctx.arc(helper.size/2 + 15, -1, 2, 0, Math.PI * 2);
                     ctx.fill();
                     
-                    // Tool
-                    ctx.fillStyle = '#8D6E63';
-                    ctx.fillRect(helper.size/2, -3, 12, 6);
+                    // Ghillie suit details
+                    ctx.fillStyle = '#4CAF50';
+                    ctx.fillRect(-helper.size/3, -helper.size/3, 3, 3);
+                    ctx.fillRect(helper.size/4, -helper.size/4, 2, 4);
+                    
+                } else if (helper.type === 'heavy') {
+                    ctx.fillStyle = '#FF5722'; // Orange heavy gunner
+                    ctx.fillRect(-helper.size/2, -helper.size/2, helper.size, helper.size);
+                    
+                    // Heavy weapons (dual barrels)
+                    ctx.fillStyle = '#212121';
+                    ctx.fillRect(helper.size/2, -4, 20, 3);
+                    ctx.fillRect(helper.size/2, 1, 20, 3);
+                    
+                    // Ammo belts
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(-helper.size/3, -helper.size/2 + 2, helper.size/2, 2);
+                    ctx.fillRect(-helper.size/3, helper.size/2 - 4, helper.size/2, 2);
+                    
+                    // Heavy armor
+                    ctx.fillStyle = '#37474F';
+                    ctx.fillRect(-helper.size/2 + 2, -helper.size/2 + 2, helper.size - 4, helper.size - 4);
+                    
+                } else if (helper.type === 'gatherer') {
+                    ctx.fillStyle = '#8D6E63'; // Brown lumberjack
+                    ctx.fillRect(-helper.size/2, -helper.size/2, helper.size, helper.size);
+                    
+                    // Axe
+                    ctx.fillStyle = '#3E2723';
+                    ctx.fillRect(helper.size/2, -1, 15, 2); // Handle
+                    ctx.fillStyle = '#757575';
+                    ctx.fillRect(helper.size/2 + 12, -4, 6, 8); // Axe head
+                    
+                    // Flannel pattern
+                    ctx.fillStyle = '#D32F2F';
+                    for (let i = 0; i < 3; i++) {
+                        ctx.fillRect(-helper.size/2 + i * 4, -helper.size/2, 2, helper.size);
+                        ctx.fillRect(-helper.size/2, -helper.size/2 + i * 4, helper.size, 2);
+                    }
+                    
+                } else if (helper.type === 'engineer') {
+                    ctx.fillStyle = '#00BCD4'; // Cyan engineer
+                    ctx.fillRect(-helper.size/2, -helper.size/2, helper.size, helper.size);
+                    
+                    // Wrench
+                    ctx.fillStyle = '#424242';
+                    ctx.fillRect(helper.size/2, -2, 12, 4);
+                    ctx.fillRect(helper.size/2 + 8, -4, 4, 8);
+                    
+                    // Tool belt
+                    ctx.fillStyle = '#795548';
+                    ctx.fillRect(-helper.size/2, helper.size/3, helper.size, 3);
+                    
+                    // Hard hat
+                    ctx.fillStyle = '#FFC107';
+                    ctx.beginPath();
+                    ctx.arc(0, -helper.size/2 - 2, helper.size/3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Goggles
+                    ctx.fillStyle = '#212121';
+                    ctx.beginPath();
+                    ctx.arc(-3, -helper.size/4, 2, 0, Math.PI * 2);
+                    ctx.arc(3, -helper.size/4, 2, 0, Math.PI * 2);
+                    ctx.fill();
                 }
                 
                 ctx.restore();
@@ -1921,49 +3179,6 @@
             });
             ctx.globalAlpha = 1;
             
-            // Show building preview in build mode
-            if (gameState.inBuildMode && gameState.selectedBuildType) {
-                const mouseX = gameState.mouse.x;
-                const mouseY = gameState.mouse.y;
-                
-                let size = 25;
-                let canPlace = false;
-                
-                switch(gameState.selectedBuildType) {
-                    case 'wall':
-                    case 'iron-wall':
-                        size = 25;
-                        canPlace = canPlaceBuildingAt(mouseX, mouseY, size);
-                        break;
-                    case 'house':
-                        size = 40;
-                        canPlace = canPlaceBuildingAt(mouseX, mouseY, size);
-                        break;
-                    case 'water-tower':
-                        size = 35;
-                        canPlace = canPlaceBuildingAt(mouseX, mouseY, size);
-                        break;
-                }
-                
-                // Draw preview with transparency
-                ctx.globalAlpha = 0.5;
-                ctx.fillStyle = canPlace ? '#00FF00' : '#FF0000';
-                ctx.strokeStyle = canPlace ? '#008000' : '#800000';
-                ctx.lineWidth = 2;
-                
-                if (gameState.selectedBuildType === 'house') {
-                    ctx.fillRect(mouseX - size/2, mouseY - size/2, size, size);
-                    ctx.strokeRect(mouseX - size/2, mouseY - size/2, size, size);
-                } else {
-                    ctx.beginPath();
-                    ctx.arc(mouseX, mouseY, size/2, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                }
-                
-                ctx.globalAlpha = 1.0; // Reset transparency
-            }
-            
             // Draw crosshair
             ctx.strokeStyle = '#FF0000';
             ctx.lineWidth = 2;
@@ -1978,47 +3193,38 @@
         function updateUI() {
             document.getElementById('points').textContent = gameState.points;
             document.getElementById('wood').textContent = gameState.wood;
+            document.getElementById('blocks').textContent = gameState.blocks;
             document.getElementById('iron').textContent = gameState.iron;
             document.getElementById('water').textContent = gameState.water;
             document.getElementById('health').textContent = Math.max(0, Math.floor(gameState.player.health));
             document.getElementById('weapon').textContent = gameState.player.weapon.charAt(0).toUpperCase() + gameState.player.weapon.slice(1);
-            const currentWeapon = weapons[gameState.player.weapon];
-            const maxCarryAmmo = currentWeapon ? currentWeapon.maxAmmo * 2 : 30;
-            document.getElementById('ammo').textContent = `${gameState.player.ammo}/${maxCarryAmmo}`;
-            document.getElementById('buildings').textContent = gameState.buildings.length;
+            document.getElementById('ammo').textContent = `${gameState.player.ammo}`;
             document.getElementById('helpers').textContent = gameState.helpers.length;
             document.getElementById('wave').textContent = gameState.wave;
             document.getElementById('zombies-left').textContent = Math.max(0, gameState.zombiesLeft);
             
-            // Update build menu resources
-            if (document.getElementById('build-wood')) {
-                document.getElementById('build-wood').textContent = gameState.wood;
-                document.getElementById('build-iron').textContent = gameState.iron;
-                document.getElementById('build-water').textContent = gameState.water;
-            }
-            
             if (gameState.betweenWaves) {
                 const timeLeft = Math.ceil(gameState.waveTimer);
                 document.getElementById('wave-timer').innerHTML = `<span style="color: #FFD700; font-size: 16px; font-weight: bold;">⏰ Next wave in: ${timeLeft}s</span>`;
+                
+                // Show start wave button (but hide when time is very low)
+                const startButton = document.getElementById('start-wave-button');
+                if (timeLeft > 3) {
+                    startButton.style.display = 'block';
+                } else {
+                    startButton.style.display = 'none';
+                }
                 
                 // Flash warning when time is low
                 if (timeLeft <= 10) {
                     document.getElementById('wave-timer').innerHTML = `<span style="color: #FF4444; font-size: 18px; font-weight: bold; text-shadow: 0 0 10px #FF4444;">⚠️ WAVE ${gameState.wave} STARTING IN: ${timeLeft}s ⚠️</span>`;
                 }
             } else {
+                // Hide start wave button during active waves
+                document.getElementById('start-wave-button').style.display = 'none';
+                
                 // Show current wave progress
                 document.getElementById('wave-timer').innerHTML = `<span style="color: #FF6B6B; font-weight: bold;">🧟 WAVE ${gameState.wave} - ${gameState.zombiesLeft} zombies left</span>`;
-            }
-            
-            // Show area unlock notification
-            if (gameState.wave === 6 && gameState.areasUnlocked && gameState.betweenWaves) {
-                const waveTimer = document.getElementById('wave-timer');
-                const timeLeft = Math.ceil(gameState.waveTimer);
-                const baseText = timeLeft <= 10 ? 
-                    `<span style="color: #FF4444; font-size: 18px; font-weight: bold; text-shadow: 0 0 10px #FF4444;">⚠️ WAVE ${gameState.wave} STARTING IN: ${timeLeft}s ⚠️</span>` :
-                    `<span style="color: #FFD700; font-size: 16px; font-weight: bold;">⏰ Next wave in: ${timeLeft}s</span>`;
-                
-                waveTimer.innerHTML = baseText + '<br><span style="color: #FFD700; font-size: 14px; animation: blink 1s infinite;">🗺️ NEW AREAS UNLOCKED! Check the map on the right!</span>';
             }
             
             // Game over
@@ -2043,10 +3249,14 @@
                 updateZombies();
                 updateBullets();
                 updateParticles();
-                updateBuildings();
                 updateHelpers();
                 updateWaveTimer();
+                updateCityBuildings(); // Add city building respawn
                 respawnTrees(); // Add tree respawning
+                
+                // Ensure no trees are ever on city side
+                const splitPoint = canvas.width / 2;
+                gameState.trees = gameState.trees.filter(tree => tree.x > splitPoint);
             }
             
             draw();

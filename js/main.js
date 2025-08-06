@@ -264,26 +264,39 @@ class ArcadeHub {
     renderGameLibrary() {
         const library = document.getElementById('game-library');
         if (!library) return;
-    
-        const games = window.gameRegistry.getAllGames();
+
+        const allGames = window.gameRegistry.getAllGames();
         
-        // Add placeholder games
-        const placeholderGames = [
-            { id: 'coming-soon-1', name: 'COMING SOON', description: 'New game in development', folder: 'coming-soon-1', preview: '🔜', difficulty: 1, tokensOnWin: 1, scoreType: 'points' },
-            { id: 'coming-soon-2', name: 'COMING SOON', description: 'New game in development', folder: 'coming-soon-2', preview: '🔜', difficulty: 1, tokensOnWin: 1, scoreType: 'points' },
-            { id: 'coming-soon-3', name: 'COMING SOON', description: 'New game in development', folder: 'coming-soon-3', preview: '🔜', difficulty: 1, tokensOnWin: 1, scoreType: 'points' }
-        ];
+        // Filter to only show available games
+        const availableGames = allGames.filter(game => 
+            window.gameLoader.isGameAvailable(game.id)
+        );
         
-        const allGames = [...games, ...placeholderGames];
-        
+        if (availableGames.length === 0) {
+            library.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #666; text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🎮</div>
+                    <div style="font-size: 1.5rem; margin-bottom: 15px;">No Games Available</div>
+                    <div style="font-size: 1rem; max-width: 400px; line-height: 1.5;">
+                        Add your game folders to the <strong>games/</strong> directory to see them here:
+                        <br><br>
+                        • <strong>games/RockandRoll/</strong><br>
+                        • <strong>games/QuickShot/</strong><br>
+                        • <strong>games/ZombieShooter/</strong>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
         library.innerHTML = `
             <div class="game-grid">
-                ${allGames.map(game => this.createGameCard(game)).join('')}
+                ${availableGames.map(game => this.createGameCard(game)).join('')}
             </div>
         `;
-    
-        // Add click listeners to real game cards only
-        games.forEach(game => {
+
+        // Add click listeners to available game cards only
+        availableGames.forEach(game => {
             const card = document.getElementById(`game-${game.id}`);
             if (card) {
                 card.addEventListener('click', () => this.selectGame(game));
@@ -293,33 +306,20 @@ class ArcadeHub {
 
     createGameCard(game) {
         const hasTokens = this.tokens > 0;
-        const isAvailable = window.gameLoader.isGameAvailable(game.id);
         
         return `
-            <div class="game-card ${!hasTokens || !isAvailable ? 'disabled' : ''}" id="game-${game.id}">
+            <div class="game-card ${!hasTokens ? 'disabled' : ''}" id="game-${game.id}">
                 <div class="game-preview">${game.preview}</div>
                 <div class="game-name">${game.name}</div>
                 <div class="game-description">${game.description}</div>
                 <div class="game-info">
                     <span class="difficulty">★ ${game.difficulty}/5</span>
                     <span class="cost-indicator">
-                        ${!isAvailable ? '📁 MISSING' : hasTokens ? '1 TOKEN' : 'NO TOKENS'}
+                        ${hasTokens ? '1 TOKEN' : 'NO TOKENS'}
                     </span>
                 </div>
-                ${!isAvailable ? `<div style="font-size: 0.6rem; color: #ff6666; margin-top: 5px;">Add games/${game.folder}/ folder</div>` : ''}
-            </div>
-        `;
-    }
-
-    createComingSoonCard(card) {
-        return `
-            <div class="game-card disabled coming-soon" id="${card.id}">
-                <div class="game-preview">${card.preview}</div>
-                <div class="game-name">${card.name}</div>
-                <div class="game-description">${card.description}</div>
-                <div class="game-info">
-                    <span class="difficulty">★ ?/5</span>
-                    <span class="cost-indicator">SOON</span>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 8px;">
+                    Controls: ${game.controls}
                 </div>
             </div>
         `;
@@ -333,7 +333,7 @@ class ArcadeHub {
 
         const gameUrl = window.gameLoader.getGameUrl(game.id);
         if (!gameUrl) {
-            alert(`Please add the ${game.folder} folder to the games/ directory to play this game.`);
+            alert(`Game not available: ${game.name}`);
             return;
         }
 
@@ -536,10 +536,6 @@ class ArcadeHub {
         this.updateDisplay();
     }
 }
-
-
-
-
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
